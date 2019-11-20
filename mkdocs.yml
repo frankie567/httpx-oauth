@@ -1,0 +1,25 @@
+site_name: HTTPX OAuth
+site_description: Async OAuth client using HTTPX
+
+theme:
+  name: material
+  palette:
+    primary: blue-grey
+    accent: red
+
+repo_name: frankie567/httpx-oauth
+repo_url: https://github.com/frankie567/httpx-oauth
+edit_uri: ""
+
+markdown_extensions:
+  - markdown_include.include:
+      base_path: docs
+  - toc:
+      permalink: true
+  - admonition
+  - codehilite
+  - pymdownx.superfences
+  - pymdownx.tasklist
+
+nav:
+  - About: index.md

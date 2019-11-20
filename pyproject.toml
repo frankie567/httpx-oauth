@@ -1,0 +1,24 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+module = "httpx_oauth"
+dist-name = "httpx-oauth"
+author = "François Voron"
+author-email = "fvoron@gmail.com"
+home-page = "https://github.com/frankie567/httpx-oauth"
+classifiers = [
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3 :: Only",
+]
+description-file = "README.md"
+requires-python = ">=3.7"
+requires = [
+]
+
+[tool.flit.metadata.requires-extra]
+
+[tool.flit.metadata.urls]
+Documentation = "https://frankie567.github.io/httpx-oauth/"
