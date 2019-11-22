@@ -20,8 +20,11 @@ markdown-include = "*"
 pygments = "*"
 pymdown-extensions = "*"
 bumpversion = "*"
+pytest-asyncio = "*"
+respx = "*"
 
 [packages]
+httpx = "==0.7.8"
 
 [requires]
 python_version = "3.7"
