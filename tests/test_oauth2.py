@@ -110,3 +110,22 @@ class TestRefreshToken:
         assert type(access_token) == dict
         assert "access_token" in access_token
         assert "token_type" in access_token
+
+
+class TestRevoleToken:
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_unsupported_revoke_token(self):
+        with pytest.raises(RevokeTokenNotSupportedError):
+            await client.revoke_token("TOKEN")
+
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_revoke_token(self, load_mock, get_respx_call_args):
+        request = respx.post(client_revoke.revoke_token_endpoint)
+        await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
+
+        headers, content = get_respx_call_args(request)
+        assert headers["Content-Type"] == "application/x-www-form-urlencoded"
+        assert "token=TOKEN" in content
+        assert "token_type_hint=TOKEN_TYPE_HINT" in content

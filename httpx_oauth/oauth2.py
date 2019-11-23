@@ -84,12 +84,16 @@ class OAuth2:
             )
             return response.json()
 
-    async def revoke_token(self, token: str):
+    async def revoke_token(self, token: str, token_type_hint: str = None):
         if self.revoke_token_endpoint is None:
             raise RevokeTokenNotSupportedError()
 
         async with httpx.AsyncClient() as client:
-            response = await client.post(
-                self.revoke_token_endpoint, data={"token": token}
+            data = {"token": token}
+
+            if token_type_hint is not None:
+                data["token_type_hint"] = token_type_hint
+
+            await client.post(
+                self.revoke_token_endpoint, data=data
             )
-            return response.json()
