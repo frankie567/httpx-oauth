@@ -2,8 +2,11 @@ import pytest
 import respx
 
 from httpx_oauth.oauth2 import (
+    GetAccessTokenError,
     OAuth2,
     RefreshTokenNotSupportedError,
+    RefreshTokenError,
+    RevokeTokenError,
     RevokeTokenNotSupportedError,
 )
 
@@ -60,6 +63,14 @@ class TestGetAuthorizationURL:
         )
         assert "scope=SCOPE1+SCOPE2+SCOPE3" in authorization_url
 
+    @pytest.mark.asyncio
+    async def test_get_authorization_url_with_extras_params(self):
+        authorization_url = await client.get_authorization_url(
+            REDIRECT_URI, extras_params={"PARAM1": "VALUE1", "PARAM2": "VALUE2"},
+        )
+        assert "PARAM1=VALUE1" in authorization_url
+        assert "PARAM2=VALUE2" in authorization_url
+
 
 class TestGetAccessToken:
     @pytest.mark.asyncio
@@ -82,6 +93,20 @@ class TestGetAccessToken:
         assert type(access_token) == dict
         assert "access_token" in access_token
         assert "token_type" in access_token
+
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_get_access_token_error(self, load_mock, get_respx_call_args):
+        respx.post(
+            client.access_token_endpoint,
+            status_code=400,
+            content=load_mock("google_error"),
+        )
+
+        with pytest.raises(GetAccessTokenError) as excinfo:
+            await client.get_access_token("CODE", REDIRECT_URI)
+        assert type(excinfo.value.args[0]) == dict
+        assert "error" in excinfo.value.args[0]
 
 
 class TestRefreshToken:
@@ -111,8 +136,22 @@ class TestRefreshToken:
         assert "access_token" in access_token
         assert "token_type" in access_token
 
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_refresh_token_error(self, load_mock, get_respx_call_args):
+        respx.post(
+            client_refresh.refresh_token_endpoint,
+            status_code=400,
+            content=load_mock("google_error"),
+        )
 
-class TestRevoleToken:
+        with pytest.raises(RefreshTokenError) as excinfo:
+            await client_refresh.refresh_token("REFRESH_TOKEN")
+        assert type(excinfo.value.args[0]) == dict
+        assert "error" in excinfo.value.args[0]
+
+
+class TestRevokeToken:
     @pytest.mark.asyncio
     @respx.mock
     async def test_unsupported_revoke_token(self):
@@ -129,3 +168,17 @@ class TestRevoleToken:
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert "token=TOKEN" in content
         assert "token_type_hint=TOKEN_TYPE_HINT" in content
+
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_revoke_token_error(self, load_mock, get_respx_call_args):
+        respx.post(
+            client_revoke.revoke_token_endpoint,
+            status_code=400,
+            content=load_mock("google_error"),
+        )
+
+        with pytest.raises(RevokeTokenError) as excinfo:
+            await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
+        assert type(excinfo.value.args[0]) == dict
+        assert "error" in excinfo.value.args[0]

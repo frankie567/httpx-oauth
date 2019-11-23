@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import urlencode
 
 import httpx
@@ -9,6 +9,18 @@ class RefreshTokenNotSupportedError(Exception):
 
 
 class RevokeTokenNotSupportedError(Exception):
+    pass
+
+
+class GetAccessTokenError(Exception):
+    pass
+
+
+class RefreshTokenError(Exception):
+    pass
+
+
+class RevokeTokenError(Exception):
     pass
 
 
@@ -38,7 +50,11 @@ class OAuth2:
         self.revoke_token_endpoint = revoke_token_endpoint
 
     async def get_authorization_url(
-        self, redirect_uri: str, state: str = None, scope: Optional[List[str]] = None
+        self,
+        redirect_uri: str,
+        state: str = None,
+        scope: Optional[List[str]] = None,
+        extras_params: Optional[Dict[str, Any]] = None,
     ) -> str:
         params = {
             "response_type": "code",
@@ -51,6 +67,9 @@ class OAuth2:
 
         if scope is not None:
             params["scope"] = " ".join(scope)
+
+        if extras_params is not None:
+            params = {**params, **extras_params}
 
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
@@ -66,7 +85,13 @@ class OAuth2:
                     "client_secret": self.client_secret,
                 },
             )
-            return response.json()
+
+            data = response.json()
+
+            if response.status_code == 400:
+                raise GetAccessTokenError(data)
+
+            return data
 
     async def refresh_token(self, refresh_token: str):
         if self.refresh_token_endpoint is None:
@@ -82,7 +107,13 @@ class OAuth2:
                     "client_secret": self.client_secret,
                 },
             )
-            return response.json()
+
+            data = response.json()
+
+            if response.status_code == 400:
+                raise RefreshTokenError(data)
+
+            return data
 
     async def revoke_token(self, token: str, token_type_hint: str = None):
         if self.revoke_token_endpoint is None:
@@ -94,6 +125,7 @@ class OAuth2:
             if token_type_hint is not None:
                 data["token_type_hint"] = token_type_hint
 
-            await client.post(
-                self.revoke_token_endpoint, data=data
-            )
+            response = await client.post(self.revoke_token_endpoint, data=data)
+
+            if response.status_code == 400:
+                raise RevokeTokenError(response.json())
