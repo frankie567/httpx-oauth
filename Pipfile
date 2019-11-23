@@ -25,6 +25,7 @@ respx = "*"
 
 [packages]
 httpx = "==0.7.8"
+typing-extensions = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Generic, List, Optional, TypeVar
 from urllib.parse import urlencode
 
 import httpx
@@ -24,7 +24,10 @@ class RevokeTokenError(Exception):
     pass
 
 
-class OAuth2:
+T = TypeVar('T')
+
+
+class BaseOAuth2(Generic[T]):
 
     client_id: str
     client_secret: str
@@ -39,8 +42,8 @@ class OAuth2:
         client_secret: str,
         authorize_endpoint: str,
         access_token_endpoint: str,
-        revoke_token_endpoint: Optional[str] = None,
         refresh_token_endpoint: Optional[str] = None,
+        revoke_token_endpoint: Optional[str] = None,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -54,7 +57,7 @@ class OAuth2:
         redirect_uri: str,
         state: str = None,
         scope: Optional[List[str]] = None,
-        extras_params: Optional[Dict[str, Any]] = None,
+        extras_params: Optional[T] = None,
     ) -> str:
         params = {
             "response_type": "code",
@@ -69,7 +72,7 @@ class OAuth2:
             params["scope"] = " ".join(scope)
 
         if extras_params is not None:
-            params = {**params, **extras_params}
+            params = {**params, **extras_params}  # type: ignore
 
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
@@ -129,3 +132,6 @@ class OAuth2:
 
             if response.status_code == 400:
                 raise RevokeTokenError(response.json())
+
+
+OAuth2 = BaseOAuth2[Dict[str, Any]]
