@@ -56,6 +56,12 @@ class TestOAuth2Token:
         assert token["access_token"] == "ACCESS_TOKEN"
         assert token.is_expired() is False
 
+    def test_no_expire(self):
+        token = OAuth2Token({"access_token": "ACCESS_TOKEN"})
+
+        assert token["access_token"] == "ACCESS_TOKEN"
+        assert token.is_expired() is False
+
 
 class TestGetAuthorizationURL:
     @pytest.mark.asyncio

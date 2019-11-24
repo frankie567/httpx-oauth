@@ -34,6 +34,8 @@ class OAuth2Token(Dict[str, Any]):
         super().__init__(token_dict)
 
     def is_expired(self):
+        if "expires_at" not in self:
+            return False
         return time.time() > self["expires_at"]
 
 
