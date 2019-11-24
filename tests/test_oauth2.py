@@ -127,7 +127,7 @@ class TestGetAccessToken:
         respx.post(
             client.access_token_endpoint,
             status_code=400,
-            content=load_mock("google_error"),
+            content=load_mock("error"),
         )
 
         with pytest.raises(GetAccessTokenError) as excinfo:
@@ -170,7 +170,7 @@ class TestRefreshToken:
         respx.post(
             client_refresh.refresh_token_endpoint,
             status_code=400,
-            content=load_mock("google_error"),
+            content=load_mock("error"),
         )
 
         with pytest.raises(RefreshTokenError) as excinfo:
@@ -203,7 +203,7 @@ class TestRevokeToken:
         respx.post(
             client_revoke.revoke_token_endpoint,
             status_code=400,
-            content=load_mock("google_error"),
+            content=load_mock("error"),
         )
 
         with pytest.raises(RevokeTokenError) as excinfo:
