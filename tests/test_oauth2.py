@@ -1,9 +1,12 @@
+import time
+
 import pytest
 import respx
 
 from httpx_oauth.oauth2 import (
     GetAccessTokenError,
     OAuth2,
+    OAuth2Token,
     RefreshTokenNotSupportedError,
     RefreshTokenError,
     RevokeTokenError,
@@ -35,6 +38,23 @@ client_revoke = OAuth2(
     ACCESS_TOKEN_ENDPOINT,
     revoke_token_endpoint=REVOKE_TOKEN_ENDPOINT,
 )
+
+
+class TestOAuth2Token:
+    @pytest.mark.parametrize(
+        "expires_at,expired", [(0, True), (time.time() + 3600, False)]
+    )
+    def test_expires_at(self, expires_at, expired):
+        token = OAuth2Token({"access_token": "ACCESS_TOKEN", "expires_at": expires_at})
+
+        assert token["access_token"] == "ACCESS_TOKEN"
+        assert token.is_expired() is expired
+
+    def test_expires_in(self):
+        token = OAuth2Token({"access_token": "ACCESS_TOKEN", "expires_in": 3600})
+
+        assert token["access_token"] == "ACCESS_TOKEN"
+        assert token.is_expired() is False
 
 
 class TestGetAuthorizationURL:
@@ -90,9 +110,10 @@ class TestGetAccessToken:
         assert f"client_id={CLIENT_ID}" in content
         assert f"client_secret={CLIENT_SECRET}" in content
 
-        assert type(access_token) == dict
+        assert type(access_token) == OAuth2Token
         assert "access_token" in access_token
         assert "token_type" in access_token
+        assert access_token.is_expired() is False
 
     @pytest.mark.asyncio
     @respx.mock
@@ -132,9 +153,10 @@ class TestRefreshToken:
         assert f"client_id={CLIENT_ID}" in content
         assert f"client_secret={CLIENT_SECRET}" in content
 
-        assert type(access_token) == dict
+        assert type(access_token) == OAuth2Token
         assert "access_token" in access_token
         assert "token_type" in access_token
+        assert access_token.is_expired() is False
 
     @pytest.mark.asyncio
     @respx.mock

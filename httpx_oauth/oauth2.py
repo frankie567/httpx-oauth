@@ -1,4 +1,5 @@
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+import time
+from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 from urllib.parse import urlencode
 
 import httpx
@@ -24,7 +25,19 @@ class RevokeTokenError(Exception):
     pass
 
 
-T = TypeVar('T')
+class OAuth2Token(Dict[str, Any]):
+    def __init__(self, token_dict: Dict[str, Any]):
+        if "expires_at" in token_dict:
+            token_dict["expires_at"] = int(token_dict["expires_at"])
+        elif "expires_in" in token_dict:
+            token_dict["expires_at"] = int(time.time()) + int(token_dict["expires_in"])
+        super().__init__(token_dict)
+
+    def is_expired(self):
+        return time.time() > self["expires_at"]
+
+
+T = TypeVar("T")
 
 
 class BaseOAuth2(Generic[T]):
@@ -89,12 +102,12 @@ class BaseOAuth2(Generic[T]):
                 },
             )
 
-            data = response.json()
+            data = cast(Dict[str, Any], response.json())
 
             if response.status_code == 400:
                 raise GetAccessTokenError(data)
 
-            return data
+            return OAuth2Token(data)
 
     async def refresh_token(self, refresh_token: str):
         if self.refresh_token_endpoint is None:
@@ -111,12 +124,12 @@ class BaseOAuth2(Generic[T]):
                 },
             )
 
-            data = response.json()
+            data = cast(Dict[str, Any], response.json())
 
             if response.status_code == 400:
                 raise RefreshTokenError(data)
 
-            return data
+            return OAuth2Token(data)
 
     async def revoke_token(self, token: str, token_type_hint: str = None):
         if self.revoke_token_endpoint is None:

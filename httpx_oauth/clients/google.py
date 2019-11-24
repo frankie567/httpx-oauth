@@ -15,7 +15,6 @@ class GoogleOAuth2AuthorizeParams(TypedDict, total=False):
 
 
 class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
-
     def __init__(self, client_id: str, client_secret: str):
         super().__init__(
             client_id,
