@@ -1,4 +1,4 @@
-from typing import cast, Any, Dict
+from typing import Any, Dict, cast
 
 import httpx
 
@@ -15,10 +15,7 @@ class GetLongLivedAccessTokenError(Exception):
 class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
     def __init__(self, client_id: str, client_secret: str):
         super().__init__(
-            client_id,
-            client_secret,
-            AUTHORIZE_ENDPOINT,
-            ACCESS_TOKEN_ENDPOINT,
+            client_id, client_secret, AUTHORIZE_ENDPOINT, ACCESS_TOKEN_ENDPOINT,
         )
 
     async def get_long_lived_access_token(self, token: str):

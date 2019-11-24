@@ -13,7 +13,10 @@ client = FacebookOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
 def test_facebook_oauth2():
     assert client.authorize_endpoint == "https://www.facebook.com/v5.0/dialog/oauth"
-    assert client.access_token_endpoint == "https://graph.facebook.com/v5.0/oauth/access_token"
+    assert (
+        client.access_token_endpoint
+        == "https://graph.facebook.com/v5.0/oauth/access_token"
+    )
     assert client.refresh_token_endpoint is None
     assert client.revoke_token_endpoint is None
 
@@ -42,11 +45,11 @@ class TestGetLongLivedAccessToken:
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_get_long_lived_access_token_error(self, load_mock, get_respx_call_args):
+    async def test_get_long_lived_access_token_error(
+        self, load_mock, get_respx_call_args
+    ):
         respx.post(
-            client.access_token_endpoint,
-            status_code=400,
-            content=load_mock("error"),
+            client.access_token_endpoint, status_code=400, content=load_mock("error"),
         )
 
         with pytest.raises(GetLongLivedAccessTokenError) as excinfo:

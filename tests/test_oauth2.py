@@ -125,9 +125,7 @@ class TestGetAccessToken:
     @respx.mock
     async def test_get_access_token_error(self, load_mock, get_respx_call_args):
         respx.post(
-            client.access_token_endpoint,
-            status_code=400,
-            content=load_mock("error"),
+            client.access_token_endpoint, status_code=400, content=load_mock("error"),
         )
 
         with pytest.raises(GetAccessTokenError) as excinfo:
