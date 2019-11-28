@@ -607,11 +607,11 @@
         },
         "respx": {
             "hashes": [
-                "sha256:0bdd547e74585a27907df47191edda7780896ca21406f7a38053ffe49d18ba19",
-                "sha256:59decbb34922b63582d28f62c63edcbaa695a88c783f3f8c182645d1583d4761"
+                "sha256:3b075351e8ba27c3947fa9c939e58f62cd700791f46696fb8b4c5526e14fd46b",
+                "sha256:fb24cadcb3bbc1bbe20a1e685c675f47844fe57df9acad6b830b8bc2fa79b68d"
             ],
             "index": "pypi",
-            "version": "==0.7.4"
+            "version": "==0.8"
         },
         "rfc3986": {
             "hashes": [
