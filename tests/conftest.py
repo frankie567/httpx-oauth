@@ -3,7 +3,7 @@ import os
 from typing import Any, Dict, Tuple
 
 import pytest
-from respx.mock import HTTPXMock
+from respx import HTTPXMock
 
 
 @pytest.fixture()
