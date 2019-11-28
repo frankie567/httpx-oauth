@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "35e8f376c8ce1043d0d5d4e1d7c25f50219f7493cc03692421614f6cb8d3dabd"
+            "sha256": "78bdc1c3d79af4cb2679736a69dfccb125d671569a71bca66f37a67cd9497252"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -59,11 +59,11 @@
         },
         "httpx": {
             "hashes": [
-                "sha256:4315a1dcd19ccd40b58b6630093880ba81d962a902de77f8e87a3d984e62b3f5",
-                "sha256:a54fea66c94ba68ac373f43e659698da602f8c9a8a817387385fee3b225a7870"
+                "sha256:c9535c6914129a38e2a65d9a97f6e9386824cc8518606d2c177ddd1bc143681d",
+                "sha256:ee0ca2cd9ee917232199d60c848fa91ae3ebfb2314f92ea9446b5acd1ef6fd83"
             ],
             "index": "pypi",
-            "version": "==0.7.8"
+            "version": "==0.8.0"
         },
         "hyperframe": {
             "hashes": [
@@ -278,11 +278,11 @@
         },
         "httpx": {
             "hashes": [
-                "sha256:4315a1dcd19ccd40b58b6630093880ba81d962a902de77f8e87a3d984e62b3f5",
-                "sha256:a54fea66c94ba68ac373f43e659698da602f8c9a8a817387385fee3b225a7870"
+                "sha256:c9535c6914129a38e2a65d9a97f6e9386824cc8518606d2c177ddd1bc143681d",
+                "sha256:ee0ca2cd9ee917232199d60c848fa91ae3ebfb2314f92ea9446b5acd1ef6fd83"
             ],
             "index": "pypi",
-            "version": "==0.7.8"
+            "version": "==0.8.0"
         },
         "hyperframe": {
             "hashes": [
