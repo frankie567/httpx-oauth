@@ -21,7 +21,7 @@ REDIRECT_URI = "https://www.tintagel.bt/oauth-callback"
 REFRESH_TOKEN_ENDPOINT = "https://www.camelot.bt/refresh"
 REVOKE_TOKEN_ENDPOINT = "https://www.camelot.bt/revoke"
 
-client = OAuth2(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_ENDPOINT, ACCESS_TOKEN_ENDPOINT,)
+client = OAuth2(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_ENDPOINT, ACCESS_TOKEN_ENDPOINT)
 
 client_refresh = OAuth2(
     CLIENT_ID,

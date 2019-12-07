@@ -22,6 +22,7 @@ pymdown-extensions = "*"
 bumpversion = "*"
 pytest-asyncio = "*"
 respx = "*"
+fastapi = "==0.44.1"
 
 [packages]
 httpx = "==0.8.0"
