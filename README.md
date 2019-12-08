@@ -17,6 +17,14 @@
 
 ---
 
+<p align="center">⚠️ This library is still in early development stage ⚠️</p>
+
+## Installation
+
+```bash
+pip install httpx-oauth
+```
+
 ## Development
 
 ### Setup environement

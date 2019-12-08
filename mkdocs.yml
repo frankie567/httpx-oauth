@@ -25,3 +25,7 @@ markdown_extensions:
 
 nav:
   - About: index.md
+  - Usage:
+    - oauth2.md
+  - Integrations:
+    - fastapi.md
