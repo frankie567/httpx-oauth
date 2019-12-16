@@ -25,7 +25,7 @@ respx = "*"
 fastapi = "==0.45.0"
 
 [packages]
-httpx = "==0.9.3"
+httpx = "==0.9.4"
 typing-extensions = "*"
 
 [requires]
