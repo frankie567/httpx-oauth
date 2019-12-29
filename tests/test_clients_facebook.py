@@ -31,7 +31,7 @@ class TestGetLongLivedAccessToken:
         )
         access_token = await client.get_long_lived_access_token("ACCESS_TOKEN")
 
-        headers, content = get_respx_call_args(request)
+        headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert "grant_type=fb_exchange_token" in content
         assert "fb_exchange_token=ACCESS_TOKEN" in content
@@ -46,7 +46,7 @@ class TestGetLongLivedAccessToken:
     @pytest.mark.asyncio
     @respx.mock
     async def test_get_long_lived_access_token_error(
-        self, load_mock, get_respx_call_args
+        self, load_mock
     ):
         respx.post(
             client.access_token_endpoint, status_code=400, content=load_mock("error"),

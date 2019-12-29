@@ -108,7 +108,7 @@ class TestGetAccessToken:
         )
         access_token = await client.get_access_token("CODE", REDIRECT_URI)
 
-        headers, content = get_respx_call_args(request)
+        headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert "grant_type=authorization_code" in content
         assert "code=CODE" in content
@@ -123,7 +123,7 @@ class TestGetAccessToken:
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_get_access_token_error(self, load_mock, get_respx_call_args):
+    async def test_get_access_token_error(self, load_mock):
         respx.post(
             client.access_token_endpoint, status_code=400, content=load_mock("error"),
         )
@@ -150,7 +150,7 @@ class TestRefreshToken:
         )
         access_token = await client_refresh.refresh_token("REFRESH_TOKEN")
 
-        headers, content = get_respx_call_args(request)
+        headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert "grant_type=refresh_token" in content
         assert "refresh_token=REFRESH_TOKEN" in content
@@ -164,7 +164,7 @@ class TestRefreshToken:
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_refresh_token_error(self, load_mock, get_respx_call_args):
+    async def test_refresh_token_error(self, load_mock):
         respx.post(
             client_refresh.refresh_token_endpoint,
             status_code=400,
@@ -190,14 +190,14 @@ class TestRevokeToken:
         request = respx.post(client_revoke.revoke_token_endpoint)
         await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
 
-        headers, content = get_respx_call_args(request)
+        headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert "token=TOKEN" in content
         assert "token_type_hint=TOKEN_TYPE_HINT" in content
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_revoke_token_error(self, load_mock, get_respx_call_args):
+    async def test_revoke_token_error(self, load_mock):
         respx.post(
             client_revoke.revoke_token_endpoint,
             status_code=400,

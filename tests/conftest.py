@@ -19,8 +19,13 @@ def load_mock():
 
 @pytest.fixture()
 def get_respx_call_args():
-    def _get_respx_call_args(mock: HTTPXMock) -> Tuple[httpx.Headers, str]:
+    async def _get_respx_call_args(mock: HTTPXMock) -> Tuple[httpx.Headers, str]:
         request_call = mock.calls[0][0]
-        return request_call.headers, request_call.content.body.decode("utf-8")
+
+        content = ""
+        async for c in request_call.content:
+            content += c.decode("utf-8")
+
+        return request_call.headers, content
 
     return _get_respx_call_args
