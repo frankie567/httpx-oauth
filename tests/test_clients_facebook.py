@@ -45,9 +45,7 @@ class TestGetLongLivedAccessToken:
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_get_long_lived_access_token_error(
-        self, load_mock
-    ):
+    async def test_get_long_lived_access_token_error(self, load_mock):
         respx.post(
             client.access_token_endpoint, status_code=400, content=load_mock("error"),
         )
