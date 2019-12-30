@@ -106,13 +106,10 @@ class BaseOAuth2(Generic[T]):
 
             data = cast(Dict[str, Any], response.json())
 
-            print("R", response.status_code, data)
             if response.status_code == 400:
                 raise GetAccessTokenError(data)
 
-            t = OAuth2Token(data)
-            print(t)
-            return t
+            return OAuth2Token(data)
 
     async def refresh_token(self, refresh_token: str):
         if self.refresh_token_endpoint is None:
