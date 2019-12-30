@@ -4,24 +4,32 @@ from urllib.parse import urlencode
 
 import httpx
 
+from httpx_oauth.errors import HTTPXOAuthError
 
-class RefreshTokenNotSupportedError(Exception):
+
+class OAuth2Error(HTTPXOAuthError):
+    """Base exception class for OAuth2 client errors."""
+
     pass
 
 
-class RevokeTokenNotSupportedError(Exception):
+class RefreshTokenNotSupportedError(OAuth2Error):
     pass
 
 
-class GetAccessTokenError(Exception):
+class RevokeTokenNotSupportedError(OAuth2Error):
     pass
 
 
-class RefreshTokenError(Exception):
+class GetAccessTokenError(OAuth2Error):
     pass
 
 
-class RevokeTokenError(Exception):
+class RefreshTokenError(OAuth2Error):
+    pass
+
+
+class RevokeTokenError(OAuth2Error):
     pass
 
 
