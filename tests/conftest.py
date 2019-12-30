@@ -23,7 +23,7 @@ def get_respx_call_args():
         request_call = mock.calls[0][0]
 
         content = ""
-        async for c in request_call.content:
+        async for c in request_call.stream:
             content += c.decode("utf-8")
 
         return request_call.headers, content
