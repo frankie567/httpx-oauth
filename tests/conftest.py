@@ -3,6 +3,7 @@ import os
 from typing import Any, Dict, Tuple
 
 import pytest
+import httpx
 from respx import HTTPXMock
 
 
@@ -18,8 +19,13 @@ def load_mock():
 
 @pytest.fixture()
 def get_respx_call_args():
-    def _get_respx_call_args(mock: HTTPXMock) -> Tuple[Dict[str, str], str]:
+    async def _get_respx_call_args(mock: HTTPXMock) -> Tuple[httpx.Headers, str]:
         request_call = mock.calls[0][0]
-        return request_call.headers, request_call.content.decode("utf-8")
+
+        content = ""
+        async for c in request_call.stream:
+            content += c.decode("utf-8")
+
+        return request_call.headers, content
 
     return _get_respx_call_args
