@@ -100,7 +100,7 @@ class BaseOAuth2(Generic[T]):
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
     async def get_access_token(self, code: str, redirect_uri: str):
-        async with httpx.Client() as client:
+        async with httpx.AsyncClient() as client:
             response = await client.post(
                 self.access_token_endpoint,
                 data={
@@ -123,7 +123,7 @@ class BaseOAuth2(Generic[T]):
         if self.refresh_token_endpoint is None:
             raise RefreshTokenNotSupportedError()
 
-        async with httpx.Client() as client:
+        async with httpx.AsyncClient() as client:
             response = await client.post(
                 self.refresh_token_endpoint,
                 data={
@@ -145,7 +145,7 @@ class BaseOAuth2(Generic[T]):
         if self.revoke_token_endpoint is None:
             raise RevokeTokenNotSupportedError()
 
-        async with httpx.Client() as client:
+        async with httpx.AsyncClient() as client:
             data = {"token": token}
 
             if token_type_hint is not None:
