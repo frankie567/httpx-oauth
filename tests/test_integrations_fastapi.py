@@ -10,16 +10,21 @@ CLIENT_ID = "CLIENT_ID"
 CLIENT_SECRET = "CLIENT_SECRET"
 AUTHORIZE_ENDPOINT = "https://www.camelot.bt/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://www.camelot.bt/access-token"
-REDIRECT_URI = "https://www.tintagel.bt/oauth-callback"
+ROUTE_NAME = "callback"
 
 client = OAuth2(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_ENDPOINT, ACCESS_TOKEN_ENDPOINT)
-oauth2_authorize_callback = OAuth2AuthorizeCallback(client, REDIRECT_URI)
+oauth2_authorize_callback = OAuth2AuthorizeCallback(client, ROUTE_NAME)
 app = FastAPI()
 
 
 @app.get("/authorize")
 async def authorize(access_token_state=Depends(oauth2_authorize_callback)):
     return access_token_state
+
+
+@app.get("/callback", name="callback")
+async def callback():
+    pass
 
 
 test_client = TestClient(app)
@@ -42,7 +47,7 @@ def test_oauth2_authorize_without_state():
         response = test_client.get("/authorize", params={"code": "CODE"})
 
     mock.assert_called()
-    mock.assert_awaited_once_with("CODE", REDIRECT_URI)
+    mock.assert_awaited_once_with("CODE", "http://testserver/callback")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == ["ACCESS_TOKEN", None]
 
@@ -55,6 +60,6 @@ def test_oauth2_authorize_with_state():
         )
 
     mock.assert_called()
-    mock.assert_awaited_once_with("CODE", REDIRECT_URI)
+    mock.assert_awaited_once_with("CODE", "http://testserver/callback")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == ["ACCESS_TOKEN", "STATE"]
