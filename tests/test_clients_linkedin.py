@@ -14,3 +14,4 @@ def test_linkedin_oauth2():
         client.refresh_token_endpoint == "https://www.linkedin.com/oauth/v2/accessToken"
     )
     assert client.revoke_token_endpoint is None
+    assert client.name == "linkedin"

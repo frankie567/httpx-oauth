@@ -8,3 +8,4 @@ def test_google_oauth2():
     assert client.access_token_endpoint == "https://oauth2.googleapis.com/token"
     assert client.refresh_token_endpoint == "https://oauth2.googleapis.com/token"
     assert client.revoke_token_endpoint == "https://accounts.google.com/o/oauth2/revoke"
+    assert client.name == "google"

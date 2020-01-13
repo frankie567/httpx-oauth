@@ -7,7 +7,13 @@ ACCESS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/
 
 
 class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
-    def __init__(self, client_id: str, client_secret: str, tenant: str = "common"):
+    def __init__(
+        self,
+        client_id: str,
+        client_secret: str,
+        tenant: str = "common",
+        name: str = "microsoft",
+    ):
         access_token_endpoint = ACCESS_TOKEN_ENDPOINT.format(tenant=tenant)
         super().__init__(
             client_id,
@@ -15,6 +21,7 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             AUTHORIZE_ENDPOINT.format(tenant=tenant),
             access_token_endpoint,
             access_token_endpoint,
+            name=name,
         )
 
     def get_authorization_url(

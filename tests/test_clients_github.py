@@ -8,3 +8,4 @@ def test_github_oauth2():
     assert client.access_token_endpoint == "https://github.com/login/oauth/access_token"
     assert client.refresh_token_endpoint is None
     assert client.revoke_token_endpoint is None
+    assert client.name == "github"

@@ -12,7 +12,11 @@ class GitHubOAuth2AuthorizeParams(TypedDict, total=False):
 
 
 class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
-    def __init__(self, client_id: str, client_secret: str):
+    def __init__(self, client_id: str, client_secret: str, name: str = "github"):
         super().__init__(
-            client_id, client_secret, AUTHORIZE_ENDPOINT, ACCESS_TOKEN_ENDPOINT,
+            client_id,
+            client_secret,
+            AUTHORIZE_ENDPOINT,
+            ACCESS_TOKEN_ENDPOINT,
+            name=name,
         )

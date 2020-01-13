@@ -15,7 +15,7 @@ class GoogleOAuth2AuthorizeParams(TypedDict, total=False):
 
 
 class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
-    def __init__(self, client_id: str, client_secret: str):
+    def __init__(self, client_id: str, client_secret: str, name="google"):
         super().__init__(
             client_id,
             client_secret,
@@ -23,4 +23,5 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             ACCESS_TOKEN_ENDPOINT,
             ACCESS_TOKEN_ENDPOINT,
             REVOKE_TOKEN_ENDPOINT,
+            name=name,
         )

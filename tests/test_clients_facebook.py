@@ -19,6 +19,7 @@ def test_facebook_oauth2():
     )
     assert client.refresh_token_endpoint is None
     assert client.revoke_token_endpoint is None
+    assert client.name == "facebook"
 
 
 class TestGetLongLivedAccessToken:

@@ -7,11 +7,12 @@ ACCESS_TOKEN_ENDPOINT = "https://www.linkedin.com/oauth/v2/accessToken"
 
 
 class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
-    def __init__(self, client_id: str, client_secret: str):
+    def __init__(self, client_id: str, client_secret: str, name: str = "linkedin"):
         super().__init__(
             client_id,
             client_secret,
             AUTHORIZE_ENDPOINT,
             ACCESS_TOKEN_ENDPOINT,
             ACCESS_TOKEN_ENDPOINT,
+            name=name,
         )

@@ -19,6 +19,7 @@ def test_microsoft_graph_oauth2_default_tenant():
         == "https://login.microsoftonline.com/common/oauth2/v2.0/token"
     )
     assert client.revoke_token_endpoint is None
+    assert client.name == "microsoft"
 
 
 def test_microsoft_graph_oauth2_custom_tenant():
