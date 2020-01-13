@@ -19,7 +19,7 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
         )
 
     async def get_long_lived_access_token(self, token: str):
-        async with httpx.Client() as client:
+        async with httpx.AsyncClient() as client:
             response = await client.post(
                 self.access_token_endpoint,
                 data={
