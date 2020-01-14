@@ -1,9 +1,14 @@
 from typing import Any, Dict
 
+import httpx
+
+from httpx_oauth.errors import GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+BASE_SCOPES = ["User.Read"]
+PROFILE_ENDPOINT = "https://graph.microsoft.com/v1.0/me"
 
 
 class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
@@ -22,6 +27,7 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             access_token_endpoint,
             access_token_endpoint,
             name=name,
+            base_scopes=BASE_SCOPES,
         )
 
     def get_authorization_url(
@@ -33,3 +39,14 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
         return super().get_authorization_url(
             redirect_uri, state=state, scope=scope, extras_params=extras_params
         )
+
+    async def get_profile(self, token: str):
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                PROFILE_ENDPOINT, headers={"Authorization": f"Bearer {token}"},
+            )
+
+            if response.status_code >= 400:
+                raise GetProfileError(response.json())
+
+            return response.json()

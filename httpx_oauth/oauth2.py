@@ -59,6 +59,7 @@ class BaseOAuth2(Generic[T]):
     access_token_endpoint: str
     refresh_token_endpoint: Optional[str]
     revoke_token_endpoint: Optional[str]
+    base_scopes: Optional[List[str]]
 
     def __init__(
         self,
@@ -69,6 +70,7 @@ class BaseOAuth2(Generic[T]):
         refresh_token_endpoint: Optional[str] = None,
         revoke_token_endpoint: Optional[str] = None,
         name: str = "oauth2",
+        base_scopes: Optional[List[str]] = None,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -77,6 +79,7 @@ class BaseOAuth2(Generic[T]):
         self.refresh_token_endpoint = refresh_token_endpoint
         self.revoke_token_endpoint = revoke_token_endpoint
         self.name = name
+        self.base_scopes = base_scopes
 
     async def get_authorization_url(
         self,
@@ -158,6 +161,9 @@ class BaseOAuth2(Generic[T]):
 
             if response.status_code == 400:
                 raise RevokeTokenError(response.json())
+
+    async def get_profile(self, token: str):
+        raise NotImplementedError()
 
 
 OAuth2 = BaseOAuth2[Dict[str, Any]]

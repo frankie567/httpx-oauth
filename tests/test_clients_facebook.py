@@ -1,8 +1,15 @@
+import re
+
 import pytest
 import respx
 
 from httpx_oauth.oauth2 import OAuth2Token
-from httpx_oauth.clients.facebook import FacebookOAuth2, GetLongLivedAccessTokenError
+from httpx_oauth.clients.facebook import (
+    FacebookOAuth2,
+    GetLongLivedAccessTokenError,
+    PROFILE_ENDPOINT,
+)
+from httpx_oauth.errors import GetProfileError
 
 CLIENT_ID = "CLIENT_ID"
 CLIENT_SECRET = "CLIENT_SECRET"
@@ -19,6 +26,7 @@ def test_facebook_oauth2():
     )
     assert client.refresh_token_endpoint is None
     assert client.revoke_token_endpoint is None
+    assert client.base_scopes == ["email", "public_profile"]
     assert client.name == "facebook"
 
 
@@ -32,7 +40,7 @@ class TestGetLongLivedAccessToken:
         )
         access_token = await client.get_long_lived_access_token("ACCESS_TOKEN")
 
-        headers, content = await get_respx_call_args(request)
+        url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert "grant_type=fb_exchange_token" in content
         assert "fb_exchange_token=ACCESS_TOKEN" in content
@@ -55,3 +63,32 @@ class TestGetLongLivedAccessToken:
             await client.get_long_lived_access_token("ACCESS_TOKEN")
         assert type(excinfo.value.args[0]) == dict
         assert "error" in excinfo.value.args[0]
+
+
+class TestFacebookGetProfile:
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_facebook_get_profile(self, get_respx_call_args):
+        request = respx.get(
+            re.compile(f"^{PROFILE_ENDPOINT}"), status_code=200, content={"foo": "bar"}
+        )
+
+        result = await client.get_profile("TOKEN")
+        url, headers, content = await get_respx_call_args(request)
+
+        assert "access_token=TOKEN" in url.query
+        assert "fields=" in url.query
+        assert result == {"foo": "bar"}
+
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_facebook_get_profile_error(self, get_respx_call_args):
+        respx.get(
+            re.compile(f"^{PROFILE_ENDPOINT}"), status_code=400, content={"foo": "bar"}
+        )
+
+        with pytest.raises(GetProfileError) as excinfo:
+            await client.get_profile("TOKEN")
+
+        assert type(excinfo.value.args[0]) == dict
+        assert excinfo.value.args[0] == {"foo": "bar"}

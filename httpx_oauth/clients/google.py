@@ -1,10 +1,18 @@
+import httpx
 from typing_extensions import Literal, TypedDict
 
+from httpx_oauth.errors import GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 ACCESS_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
 REVOKE_TOKEN_ENDPOINT = "https://accounts.google.com/o/oauth2/revoke"
+BASE_SCOPES = [
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "https://www.googleapis.com/auth/userinfo.email",
+]
+PROFILE_FIELDS = ["names", "emailAddresses", "photos"]
+PROFILE_ENDPOINT = "https://people.googleapis.com/v1/people/me"
 
 
 class GoogleOAuth2AuthorizeParams(TypedDict, total=False):
@@ -24,4 +32,17 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             ACCESS_TOKEN_ENDPOINT,
             REVOKE_TOKEN_ENDPOINT,
             name=name,
+            base_scopes=BASE_SCOPES,
         )
+
+    async def get_profile(self, token: str):
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                PROFILE_ENDPOINT,
+                params={"personFields": ",".join(PROFILE_FIELDS), "key": token},
+            )
+
+            if response.status_code >= 400:
+                raise GetProfileError(response.json())
+
+            return response.json()

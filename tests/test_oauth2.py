@@ -108,7 +108,7 @@ class TestGetAccessToken:
         )
         access_token = await client.get_access_token("CODE", REDIRECT_URI)
 
-        headers, content = await get_respx_call_args(request)
+        url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert "grant_type=authorization_code" in content
         assert "code=CODE" in content
@@ -150,7 +150,7 @@ class TestRefreshToken:
         )
         access_token = await client_refresh.refresh_token("REFRESH_TOKEN")
 
-        headers, content = await get_respx_call_args(request)
+        url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert "grant_type=refresh_token" in content
         assert "refresh_token=REFRESH_TOKEN" in content
@@ -190,7 +190,7 @@ class TestRevokeToken:
         request = respx.post(client_revoke.revoke_token_endpoint)
         await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
 
-        headers, content = await get_respx_call_args(request)
+        url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert "token=TOKEN" in content
         assert "token_type_hint=TOKEN_TYPE_HINT" in content
@@ -208,3 +208,10 @@ class TestRevokeToken:
             await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
         assert type(excinfo.value.args[0]) == dict
         assert "error" in excinfo.value.args[0]
+
+
+class TestGetProfile:
+    @pytest.mark.asyncio
+    async def test_not_implemented(self):
+        with pytest.raises(NotImplementedError):
+            await client.get_profile("TOKEN")

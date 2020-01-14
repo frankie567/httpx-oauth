@@ -1,11 +1,15 @@
-from typing import Any, Dict, cast
+from typing import Any, Dict, List, cast
 
 import httpx
 
+from httpx_oauth.errors import GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token
 
 AUTHORIZE_ENDPOINT = "https://www.facebook.com/v5.0/dialog/oauth"
 ACCESS_TOKEN_ENDPOINT = "https://graph.facebook.com/v5.0/oauth/access_token"
+BASE_SCOPES = ["email", "public_profile"]
+PROFILE_FIELDS = ["email", "name", "first_name", "last_name"]
+PROFILE_ENDPOINT = "https://graph.facebook.com/v5.0/me"
 
 
 class GetLongLivedAccessTokenError(Exception):
@@ -20,6 +24,7 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
             AUTHORIZE_ENDPOINT,
             ACCESS_TOKEN_ENDPOINT,
             name=name,
+            base_scopes=BASE_SCOPES,
         )
 
     async def get_long_lived_access_token(self, token: str):
@@ -40,3 +45,15 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
                 raise GetLongLivedAccessTokenError(data)
 
             return OAuth2Token(data)
+
+    async def get_profile(self, token: str, fields: List[str] = PROFILE_FIELDS):
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                PROFILE_ENDPOINT,
+                params={"fields": ",".join(fields), "access_token": token},
+            )
+
+            if response.status_code >= 400:
+                raise GetProfileError(response.json())
+
+            return response.json()
