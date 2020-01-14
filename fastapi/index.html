@@ -390,16 +390,21 @@
 <p>Utilities are provided to ease the integration of an OAuth2 process in <a href="https://fastapi.tiangolo.com/">FastAPI</a>.</p>
 <h2 id="oauth2authorizecallback"><code>OAuth2AuthorizeCallback</code><a class="headerlink" href="#oauth2authorizecallback" title="Permanent link">&para;</a></h2>
 <p>Dependency callable to handle the authorization callback. It reads the query parameters and returns the access token and the state.</p>
+<div class="admonition abstract">
+<p class="admonition-title">Parameters</p>
+<ul>
+<li><code>client: OAuth2</code>: The OAuth2 client.</li>
+<li><code>route_name: str</code>: Name of the callback route, as defined in the <code>name</code> parameter of the route decorator.</li>
+</ul>
+</div>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">httpx_oauth.integrations.fastapi</span> <span class="kn">import</span> <span class="n">OAuth2AuthorizeCallback</span>
 <span class="kn">from</span> <span class="nn">httpx_oauth.oauth2</span> <span class="kn">import</span> <span class="n">OAuth2</span>
 
-<span class="n">REDIRECT_URI</span> <span class="o">=</span> <span class="s2">&quot;https://www.tintagel.bt/oauth-callback&quot;</span>
-
 <span class="n">client</span> <span class="o">=</span> <span class="n">OAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">,</span> <span class="s2">&quot;AUTHORIZE_ENDPOINT&quot;</span><span class="p">,</span> <span class="s2">&quot;ACCESS_TOKEN_ENDPOINT&quot;</span><span class="p">)</span>
-<span class="n">oauth2_authorize_callback</span> <span class="o">=</span> <span class="n">OAuth2AuthorizeCallback</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">REDIRECT_URI</span><span class="p">)</span>
+<span class="n">oauth2_authorize_callback</span> <span class="o">=</span> <span class="n">OAuth2AuthorizeCallback</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="s2">&quot;oauth-callback&quot;</span><span class="p">)</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/oauth-callback&quot;</span><span class="p">)</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/oauth-callback&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;oauth-callback&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">oauth_callback</span><span class="p">(</span><span class="n">access_token_state</span><span class="o">=</span><span class="n">Depends</span><span class="p">(</span><span class="n">oauth2_authorize_callback</span><span class="p">)):</span>
     <span class="n">token</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">access_token_state</span>
     <span class="c1"># Do something useful</span>
