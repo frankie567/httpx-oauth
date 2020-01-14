@@ -328,8 +328,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_profile" class="md-nav__link">
-    get_profile
+  <a href="#get_id_email" class="md-nav__link">
+    get_id_email
   </a>
   
 </li>
@@ -387,13 +387,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#get_profile_1" class="md-nav__link">
-    get_profile
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -410,19 +403,6 @@
   <a href="#google" class="md-nav__link">
     Google
   </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#get_profile_2" class="md-nav__link">
-    get_profile
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -555,8 +535,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#get_profile" class="md-nav__link">
-    get_profile
+  <a href="#get_id_email" class="md-nav__link">
+    get_id_email
   </a>
   
 </li>
@@ -614,13 +594,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#get_profile_1" class="md-nav__link">
-    get_profile
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -637,19 +610,6 @@
   <a href="#google" class="md-nav__link">
     Google
   </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#get_profile_2" class="md-nav__link">
-    get_profile
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -765,9 +725,9 @@
 </pre></div>
 
 </div>
-<h4 id="get_profile"><code>get_profile</code><a class="headerlink" href="#get_profile" title="Permanent link">&para;</a></h4>
-<p>Returns the basic profile of the authenticated user from the API provider. <strong>It assumes you have asked for the required scopes</strong>.</p>
-<p>Raises a <code>GetProfileError</code> if an error occurs.</p>
+<h4 id="get_id_email"><code>get_id_email</code><a class="headerlink" href="#get_id_email" title="Permanent link">&para;</a></h4>
+<p>Returns the id and the email of the authenticated user from the API provider. <strong>It assumes you have asked for the required scopes</strong>.</p>
+<p>Raises a <code>GetIdEmailError</code> if an error occurs.</p>
 <div class="admonition abstract">
 <p class="admonition-title">Parameters</p>
 <ul>
@@ -776,7 +736,7 @@
 </div>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="codehilite"><pre><span></span><span class="n">profile</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_profile</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><span class="n">user_id</span><span class="p">,</span> <span class="n">user_email</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_id_email</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -825,15 +785,6 @@
 </pre></div>
 
 </div>
-<h4 id="get_profile_1"><code>get_profile</code><a class="headerlink" href="#get_profile_1" title="Permanent link">&para;</a></h4>
-<p>See <a href="#get_profile"><code>get_profile</code></a> for general information.</p>
-<div class="admonition abstract">
-<p class="admonition-title">Parameters</p>
-<ul>
-<li><code>token: str</code>: A token or refresh token to revoke.</li>
-<li><code>fields: List[str]</code>: List of fields to return in the response. Check the <a href="https://developers.facebook.com/docs/graph-api/reference/user/#fields">official documentation</a>. Defaults to <code>email, name, first_name, last_name</code>.</li>
-</ul>
-</div>
 <h3 id="github">GitHub<a class="headerlink" href="#github" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">httpx_oauth.clients.github</span> <span class="kn">import</span> <span class="n">GitHubOAuth2</span>
 
@@ -854,15 +805,6 @@
 <li>✅ <code>refresh_token</code></li>
 <li>✅ <code>revoke_token</code></li>
 </ul>
-<h4 id="get_profile_2"><code>get_profile</code><a class="headerlink" href="#get_profile_2" title="Permanent link">&para;</a></h4>
-<p>See <a href="#get_profile"><code>get_profile</code></a> for general information.</p>
-<div class="admonition abstract">
-<p class="admonition-title">Parameters</p>
-<ul>
-<li><code>token: str</code>: A token or refresh token to revoke.</li>
-<li><code>fields: List[str]</code>: List of fields to return in the response. Check the <a href="https://developers.google.com/people/api/rest/v1/people/get#query-parameters">official documentation</a>. Defaults to <code>names, emailAddresses, photos</code>.</li>
-</ul>
-</div>
 <h3 id="linkedin">LinkedIn<a class="headerlink" href="#linkedin" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">httpx_oauth.clients.linkedin</span> <span class="kn">import</span> <span class="n">LinkedInOAuth2</span>
 
