@@ -210,8 +210,8 @@ class TestRevokeToken:
         assert "error" in excinfo.value.args[0]
 
 
-class TestGetProfile:
+class TestGetIdEmail:
     @pytest.mark.asyncio
     async def test_not_implemented(self):
         with pytest.raises(NotImplementedError):
-            await client.get_profile("TOKEN")
+            await client.get_id_email("TOKEN")

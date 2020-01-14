@@ -4,7 +4,7 @@ import pytest
 import respx
 
 from httpx_oauth.clients.microsoft import MicrosoftGraphOAuth2, PROFILE_ENDPOINT
-from httpx_oauth.errors import GetProfileError
+from httpx_oauth.errors import GetIdEmailError
 
 client = MicrosoftGraphOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
@@ -56,29 +56,37 @@ async def test_microsoft_graph_oauth2_authorization_url():
     assert "response_mode=query" in authorization_url
 
 
-class TestGoogleGetProfile:
+profile_response = {"id": "424242", "userPrincipalName": "arthur@camelot.bt"}
+
+
+class TestGoogleGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
-    async def test_microsoft_get_profile(self, get_respx_call_args):
+    async def test_success(self, get_respx_call_args):
         request = respx.get(
-            re.compile(f"^{PROFILE_ENDPOINT}"), status_code=200, content={"foo": "bar"}
+            re.compile(f"^{PROFILE_ENDPOINT}"),
+            status_code=200,
+            content=profile_response,
         )
 
-        result = await client.get_profile("TOKEN")
+        user_id, user_email = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
 
         assert headers["Authorization"] == "Bearer TOKEN"
-        assert result == {"foo": "bar"}
+        assert user_id == "424242"
+        assert user_email == "arthur@camelot.bt"
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_microsoft_get_profile_error(self, get_respx_call_args):
+    async def test_error(self, get_respx_call_args):
         respx.get(
-            re.compile(f"^{PROFILE_ENDPOINT}"), status_code=400, content={"foo": "bar"}
+            re.compile(f"^{PROFILE_ENDPOINT}"),
+            status_code=400,
+            content={"error": "message"},
         )
 
-        with pytest.raises(GetProfileError) as excinfo:
-            await client.get_profile("TOKEN")
+        with pytest.raises(GetIdEmailError) as excinfo:
+            await client.get_id_email("TOKEN")
 
         assert type(excinfo.value.args[0]) == dict
-        assert excinfo.value.args[0] == {"foo": "bar"}
+        assert excinfo.value.args[0] == {"error": "message"}

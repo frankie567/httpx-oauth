@@ -1,5 +1,5 @@
 import time
-from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
+from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, cast
 from urllib.parse import urlencode
 
 import httpx
@@ -162,7 +162,7 @@ class BaseOAuth2(Generic[T]):
             if response.status_code == 400:
                 raise RevokeTokenError(response.json())
 
-    async def get_profile(self, token: str):
+    async def get_id_email(self, token: str) -> Tuple[str, str]:
         raise NotImplementedError()
 
 

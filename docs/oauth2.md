@@ -82,18 +82,18 @@ Raises a `RevokeTokenNotSupportedError` if no `revoke_token_endpoint` was provid
     await client.revoke_token("TOKEN")
     ```
 
-#### `get_profile`
+#### `get_id_email`
 
-Returns the basic profile of the authenticated user from the API provider. **It assumes you have asked for the required scopes**.
+Returns the id and the email of the authenticated user from the API provider. **It assumes you have asked for the required scopes**.
 
-Raises a `GetProfileError` if an error occurs.
+Raises a `GetIdEmailError` if an error occurs.
 
 !!! abstract "Parameters"
     * `token: str`: A token or refresh token to revoke.
 
 !!! example
     ```py
-    profile = await client.get_profile("TOKEN")
+    user_id, user_email = await client.get_id_email("TOKEN")
     ```
 
 ### `OAuth2Token` class
@@ -147,14 +147,6 @@ Raises a `GetLongLivedAccessTokenError` if an error occurs.
     long_lived_access_token = await client.get_long_lived_access_token("TOKEN")
     ```
 
-#### `get_profile`
-
-See [`get_profile`](#get_profile) for general information.
-
-!!! abstract "Parameters"
-    * `token: str`: A token or refresh token to revoke.
-    * `fields: List[str]`: List of fields to return in the response. Check the [official documentation](https://developers.facebook.com/docs/graph-api/reference/user/#fields). Defaults to `email, name, first_name, last_name`.
-
 ### GitHub
 
 ```py
@@ -176,14 +168,6 @@ client = GoogleOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
 * ✅ `refresh_token`
 * ✅ `revoke_token`
-
-#### `get_profile`
-
-See [`get_profile`](#get_profile) for general information.
-
-!!! abstract "Parameters"
-    * `token: str`: A token or refresh token to revoke.
-    * `fields: List[str]`: List of fields to return in the response. Check the [official documentation](https://developers.google.com/people/api/rest/v1/people/get#query-parameters). Defaults to `names, emailAddresses, photos`.
 
 ### LinkedIn
 

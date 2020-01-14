@@ -1,8 +1,8 @@
-from typing import Any, Dict
+from typing import Any, Dict, Tuple, cast
 
 import httpx
 
-from httpx_oauth.errors import GetProfileError
+from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize"
@@ -40,13 +40,15 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             redirect_uri, state=state, scope=scope, extras_params=extras_params
         )
 
-    async def get_profile(self, token: str):
+    async def get_id_email(self, token: str) -> Tuple[str, str]:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 PROFILE_ENDPOINT, headers={"Authorization": f"Bearer {token}"},
             )
 
             if response.status_code >= 400:
-                raise GetProfileError(response.json())
+                raise GetIdEmailError(response.json())
 
-            return response.json()
+            data = cast(Dict[str, Any], response.json())
+
+            return data["id"], data["userPrincipalName"]

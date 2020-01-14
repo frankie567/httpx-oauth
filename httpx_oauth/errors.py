@@ -4,7 +4,7 @@ class HTTPXOAuthError(Exception):
     pass
 
 
-class GetProfileError(HTTPXOAuthError):
+class GetIdEmailError(HTTPXOAuthError):
     """Error raised while retrieving user profile from provider API."""
 
     pass

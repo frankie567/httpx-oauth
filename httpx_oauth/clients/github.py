@@ -1,7 +1,9 @@
+from typing import Any, Dict, Tuple, cast
+
 import httpx
 from typing_extensions import TypedDict
 
-from httpx_oauth.errors import GetProfileError
+from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://github.com/login/oauth/authorize"
@@ -26,13 +28,15 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             base_scopes=BASE_SCOPES,
         )
 
-    async def get_profile(self, token: str):
+    async def get_id_email(self, token: str) -> Tuple[str, str]:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 PROFILE_ENDPOINT, headers={"Authorization": f"token {token}"},
             )
 
             if response.status_code >= 400:
-                raise GetProfileError(response.json())
+                raise GetIdEmailError(response.json())
 
-            return response.json()
+            data = cast(Dict[str, Any], response.json())
+
+            return str(data["id"]), data["email"]

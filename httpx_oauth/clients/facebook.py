@@ -1,14 +1,13 @@
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, Tuple, cast
 
 import httpx
 
-from httpx_oauth.errors import GetProfileError
+from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token
 
 AUTHORIZE_ENDPOINT = "https://www.facebook.com/v5.0/dialog/oauth"
 ACCESS_TOKEN_ENDPOINT = "https://graph.facebook.com/v5.0/oauth/access_token"
 BASE_SCOPES = ["email", "public_profile"]
-PROFILE_FIELDS = ["email", "name", "first_name", "last_name"]
 PROFILE_ENDPOINT = "https://graph.facebook.com/v5.0/me"
 
 
@@ -46,14 +45,15 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
 
             return OAuth2Token(data)
 
-    async def get_profile(self, token: str, fields: List[str] = PROFILE_FIELDS):
+    async def get_id_email(self, token: str) -> Tuple[str, str]:
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                PROFILE_ENDPOINT,
-                params={"fields": ",".join(fields), "access_token": token},
+                PROFILE_ENDPOINT, params={"fields": "id,email", "access_token": token},
             )
 
             if response.status_code >= 400:
-                raise GetProfileError(response.json())
+                raise GetIdEmailError(response.json())
 
-            return response.json()
+            data = cast(Dict[str, Any], response.json())
+
+            return data["id"], data["email"]

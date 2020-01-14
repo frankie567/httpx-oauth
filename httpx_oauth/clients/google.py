@@ -1,7 +1,9 @@
+from typing import Any, Dict, Tuple, cast
+
 import httpx
 from typing_extensions import Literal, TypedDict
 
-from httpx_oauth.errors import GetProfileError
+from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
@@ -11,7 +13,6 @@ BASE_SCOPES = [
     "https://www.googleapis.com/auth/userinfo.profile",
     "https://www.googleapis.com/auth/userinfo.email",
 ]
-PROFILE_FIELDS = ["names", "emailAddresses", "photos"]
 PROFILE_ENDPOINT = "https://people.googleapis.com/v1/people/me"
 
 
@@ -35,14 +36,23 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             base_scopes=BASE_SCOPES,
         )
 
-    async def get_profile(self, token: str):
+    async def get_id_email(self, token: str) -> Tuple[str, str]:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
-                params={"personFields": ",".join(PROFILE_FIELDS), "key": token},
+                params={"personFields": "emailAddresses", "key": token},
             )
 
             if response.status_code >= 400:
-                raise GetProfileError(response.json())
+                raise GetIdEmailError(response.json())
 
-            return response.json()
+            data = cast(Dict[str, Any], response.json())
+
+            user_id = data["resourceName"]
+            user_email = next(
+                email["value"]
+                for email in data["emailAddresses"]
+                if email["metadata"]["primary"]
+            )
+
+            return user_id, user_email
