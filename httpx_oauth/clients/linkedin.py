@@ -7,7 +7,7 @@ from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://www.linkedin.com/oauth/v2/authorization"
 ACCESS_TOKEN_ENDPOINT = "https://www.linkedin.com/oauth/v2/accessToken"
-BASE_SCOPES = ["r_basicprofile"]
+BASE_SCOPES = ["r_emailaddress", "r_liteprofile"]
 PROFILE_ENDPOINT = "https://api.linkedin.com/v2/me"
 
 
