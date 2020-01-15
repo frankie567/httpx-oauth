@@ -10,11 +10,18 @@ from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token
 class OAuth2AuthorizeCallback:
 
     client: BaseOAuth2
-    route_name: str
+    route_name: Optional[str]
+    redirect_url: Optional[str]
 
-    def __init__(self, client: BaseOAuth2, route_name: str):
+    def __init__(
+        self, client: BaseOAuth2, route_name: str = None, redirect_url: str = None
+    ):
+        assert (route_name is not None and redirect_url is None) or (
+            route_name is None and redirect_url is not None
+        ), "You should either set route_name or redirect_url"
         self.client = client
         self.route_name = route_name
+        self.redirect_url = redirect_url
 
     async def __call__(
         self, request: Request, code: str = None, state: str = None, error: str = None
@@ -25,7 +32,10 @@ class OAuth2AuthorizeCallback:
                 detail=error if error is not None else None,
             )
 
-        redirect_url = request.url_for(self.route_name)
+        if self.route_name:
+            redirect_url = request.url_for(self.route_name)
+        elif self.redirect_url:
+            redirect_url = self.redirect_url
 
         access_token = await self.client.get_access_token(code, redirect_url)
 

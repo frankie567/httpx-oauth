@@ -8,7 +8,11 @@ Dependency callable to handle the authorization callback. It reads the query par
 
 !!! abstract "Parameters"
     * `client: OAuth2`: The OAuth2 client.
-    * `route_name: str`: Name of the callback route, as defined in the `name` parameter of the route decorator.
+    * `route_name: Optional[str]`: Name of the callback route, as defined in the `name` parameter of the route decorator.
+    * `redirect_url: Optional[str]`: Full URL to the callback route.
+
+!!! tip
+    You should either set `route_name`, which will automatically reverse the URL, or `redirect_url`, which is an arbitrary URL you set.
 
 ```py
 from httpx_oauth.integrations.fastapi import OAuth2AuthorizeCallback
