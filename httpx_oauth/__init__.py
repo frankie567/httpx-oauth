@@ -1,3 +1,3 @@
 """Async OAuth client using HTTPX."""
 
-__version__ = "0.1.2"
+__version__ = "0.2.0"
