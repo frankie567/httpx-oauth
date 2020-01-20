@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "cb8a98343c637194278dbb98837c647da2b5df21924c720ce3aa9ffcd15c7f1a"
+            "sha256": "f358f2249a428ff160c85ab09f243afbe1ff87ae5458a65dc5f860d59640e3d3"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -53,9 +53,9 @@
         },
         "hstspreload": {
             "hashes": [
-                "sha256:7ec1d33da7da00a79aed79e995b151f81824a5d4aac0547557da348711292d46"
+                "sha256:1cde56803877ad3aa0a4aa91d0c9c52203f4b7ceb93280c87ad399d3fd79679c"
             ],
-            "version": "==2020.1.15"
+            "version": "==2020.1.17"
         },
         "httpx": {
             "hashes": [
@@ -229,11 +229,11 @@
         },
         "fastapi": {
             "hashes": [
-                "sha256:6c9b919f2ed742d2ad78e6dce5ad1be761e67292b838ba114cb525ec784d10a1",
-                "sha256:7f8d795be11e21675b6843424b378fe2ec95a14cecba1c53c68471412cca28c7"
+                "sha256:3130313f23935d99150953422dfe5f6b43f043b6fe3aac22cc4c8d537a4464d9",
+                "sha256:be62491f536dc50041913a37bdcd6b5e05c84e756ff331506b5afeddec859013"
             ],
             "index": "pypi",
-            "version": "==0.46.0"
+            "version": "==0.47.1"
         },
         "flake8": {
             "hashes": [
@@ -289,9 +289,9 @@
         },
         "hstspreload": {
             "hashes": [
-                "sha256:7ec1d33da7da00a79aed79e995b151f81824a5d4aac0547557da348711292d46"
+                "sha256:1cde56803877ad3aa0a4aa91d0c9c52203f4b7ceb93280c87ad399d3fd79679c"
             ],
-            "version": "==2020.1.15"
+            "version": "==2020.1.17"
         },
         "htmlmin": {
             "hashes": [
@@ -671,10 +671,10 @@
         },
         "six": {
             "hashes": [
-                "sha256:1f1b7d42e254082a9db6279deae68afb421ceba6158efa6131de7b3003ee93fd",
-                "sha256:30f610279e8b2578cab6db20741130331735c781b56053c59c4076da27f06b66"
+                "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a",
+                "sha256:8f3cd2e254d8f793e7f3d6d9df77b92252b52637291d0f0da013c76ea2724b6c"
             ],
-            "version": "==1.13.0"
+            "version": "==1.14.0"
         },
         "sniffio": {
             "hashes": [
@@ -766,10 +766,10 @@
         },
         "zipp": {
             "hashes": [
-                "sha256:8dda78f06bd1674bd8720df8a50bb47b6e1233c503a4eed8e7810686bde37656",
-                "sha256:d38fbe01bbf7a3593a32bc35a9c4453c32bc42b98c377f9bff7e9f8da157786c"
+                "sha256:57147f6b0403b59f33fd357f169f860e031303415aeb7d04ede4839d23905ab8",
+                "sha256:7ae5ccaca427bafa9760ac3cd8f8c244bfc259794b5b6bb9db4dda2241575d09"
             ],
-            "version": "==1.0.0"
+            "version": "==2.0.0"
         }
     }
 }
