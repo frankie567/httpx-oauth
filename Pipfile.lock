@@ -53,9 +53,9 @@
         },
         "hstspreload": {
             "hashes": [
-                "sha256:e1fc3184ddf1c8b1af7143b28d76cf648fe385cf29b6d4e7bc9d8fbab98867be"
+                "sha256:93c360debe16a74821ebd04eb9844597da904b99db1b7e6280c778f4df422eb1"
             ],
-            "version": "==2020.2.5"
+            "version": "==2020.2.1"
         },
         "httpx": {
             "hashes": [
@@ -289,9 +289,9 @@
         },
         "hstspreload": {
             "hashes": [
-                "sha256:e1fc3184ddf1c8b1af7143b28d76cf648fe385cf29b6d4e7bc9d8fbab98867be"
+                "sha256:93c360debe16a74821ebd04eb9844597da904b99db1b7e6280c778f4df422eb1"
             ],
-            "version": "==2020.2.5"
+            "version": "==2020.2.1"
         },
         "htmlmin": {
             "hashes": [
@@ -339,10 +339,10 @@
         },
         "jinja2": {
             "hashes": [
-                "sha256:c10142f819c2d22bdcd17548c46fa9b77cf4fda45097854c689666bf425e7484",
-                "sha256:c922560ac46888d47384de1dbdc3daaa2ea993af4b26a436dec31fa2c19ec668"
+                "sha256:93187ffbc7808079673ef52771baa950426fd664d3aad1d0fa3e95644360e250",
+                "sha256:b0eaf100007721b5c16c1fc1eecb87409464edc10469ddc9a22a27a99123be49"
             ],
-            "version": "==3.0.0a1"
+            "version": "==2.11.1"
         },
         "jsmin": {
             "hashes": [
