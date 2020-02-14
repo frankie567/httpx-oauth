@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.3">
     
     
       
@@ -42,7 +42,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -53,7 +53,7 @@
       
     
     
-      <script src="../assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="../assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -87,7 +87,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#oauth2" tabindex="1" class="md-skip">
+      <a href="#oauth2" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -96,7 +96,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href=".." title="HTTPX OAuth" class="md-header-nav__button md-logo">
+        <a href=".." title="HTTPX OAuth" aria-label="HTTPX OAuth" class="md-header-nav__button md-logo">
           
             <i class="md-icon">security</i>
           
@@ -127,7 +127,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="__search"></label>
       <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
         &#xE5CD;
@@ -645,7 +645,7 @@
                 <h1 id="oauth2">OAuth2<a class="headerlink" href="#oauth2" title="Permanent link">&para;</a></h1>
 <h2 id="generic-client">Generic client<a class="headerlink" href="#generic-client" title="Permanent link">&para;</a></h2>
 <p>A generic OAuth2 class is provided to adapt to any OAuth2-compliant service. You can instantiate it like this:</p>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">httpx_oauth.oauth2</span> <span class="kn">import</span> <span class="n">OAuth2</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.oauth2</span> <span class="kn">import</span> <span class="n">OAuth2</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">OAuth2</span><span class="p">(</span>
     <span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span>
@@ -655,7 +655,7 @@
     <span class="n">refresh_token_endpoint</span><span class="o">=</span><span class="s2">&quot;REFRESH_TOKEN_ENDPOINT&quot;</span><span class="p">,</span>
     <span class="n">revoke_token_endpoint</span><span class="o">=</span><span class="s2">&quot;REVOKE_TOKEN_ENDPOINT&quot;</span><span class="p">,</span>
 <span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 <p>Note that <code>refresh_token_endpoint</code> and <code>revoke_token_endpoint</code> are optional since not every services propose to refresh and revoke tokens.</p>
 <h3 id="available-methods">Available methods<a class="headerlink" href="#available-methods" title="Permanent link">&para;</a></h3>
@@ -672,10 +672,10 @@
 </div>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="codehilite"><pre><span></span><span class="n">authorization_url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_authorization_url</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><code><span class="n">authorization_url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_authorization_url</span><span class="p">(</span>
     <span class="s2">&quot;https://www.tintagel.bt/oauth-callback&quot;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SCOPE1&quot;</span><span class="p">,</span> <span class="s2">&quot;SCOPE2&quot;</span><span class="p">,</span> <span class="s2">&quot;SCOPE3&quot;</span><span class="p">],</span>
 <span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 </div>
 <h4 id="get_access_token"><code>get_access_token</code><a class="headerlink" href="#get_access_token" title="Permanent link">&para;</a></h4>
@@ -690,8 +690,8 @@
 </div>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="codehilite"><pre><span></span><span class="n">access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_access_token</span><span class="p">(</span><span class="s2">&quot;CODE&quot;</span><span class="p">,</span> <span class="s2">&quot;https://www.tintagel.bt/oauth-callback&quot;</span><span class="p">)</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="n">access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_access_token</span><span class="p">(</span><span class="s2">&quot;CODE&quot;</span><span class="p">,</span> <span class="s2">&quot;https://www.tintagel.bt/oauth-callback&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 </div>
 <h4 id="refresh_token"><code>refresh_token</code><a class="headerlink" href="#refresh_token" title="Permanent link">&para;</a></h4>
@@ -705,8 +705,8 @@
 </div>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="codehilite"><pre><span></span><span class="n">access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">(</span><span class="s2">&quot;REFRESH_TOKEN&quot;</span><span class="p">)</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="n">access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">(</span><span class="s2">&quot;REFRESH_TOKEN&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 </div>
 <h4 id="revoke_token"><code>revoke_token</code><a class="headerlink" href="#revoke_token" title="Permanent link">&para;</a></h4>
@@ -721,8 +721,8 @@
 </div>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="codehilite"><pre><span></span><span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">revoke_token</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">revoke_token</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 </div>
 <h4 id="get_id_email"><code>get_id_email</code><a class="headerlink" href="#get_id_email" title="Permanent link">&para;</a></h4>
@@ -736,35 +736,35 @@
 </div>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="codehilite"><pre><span></span><span class="n">user_id</span><span class="p">,</span> <span class="n">user_email</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_id_email</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="n">user_id</span><span class="p">,</span> <span class="n">user_email</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_id_email</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 </div>
 <h3 id="oauth2token-class"><code>OAuth2Token</code> class<a class="headerlink" href="#oauth2token-class" title="Permanent link">&para;</a></h3>
 <p>This class is a wrapper around a standard <code>Dict[str, Any]</code> that bears the response of <code>get_access_token</code>. Properties can vary greatly from a service to another but, usually, you can get access token like this:</p>
-<div class="codehilite"><pre><span></span><span class="n">access_token</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="n">access_token</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
+</code></pre></div>
 
 <h4 id="is_expired"><code>is_expired</code><a class="headerlink" href="#is_expired" title="Permanent link">&para;</a></h4>
 <p>A utility method is provided to quickly determine if the token is still valid or needs to be refreshed.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="codehilite"><pre><span></span><span class="k">if</span> <span class="n">token</span><span class="o">.</span><span class="n">is_expired</span><span class="p">():</span>
+<div class="codehilite"><pre><span></span><code><span class="k">if</span> <span class="n">token</span><span class="o">.</span><span class="n">is_expired</span><span class="p">():</span>
     <span class="n">token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">(</span><span class="n">token</span><span class="p">[</span><span class="s2">&quot;refresh_token&quot;</span><span class="p">])</span>
     <span class="c1"># Save token to DB</span>
 
 <span class="n">access_token</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
 <span class="c1"># Do something useful with this access token</span>
-</pre></div>
+</code></pre></div>
 
 </div>
 <h2 id="provided-clients">Provided clients<a class="headerlink" href="#provided-clients" title="Permanent link">&para;</a></h2>
 <p>We provide several ready-to-use clients for widely used services with configured endpoints and specificites took into account.</p>
 <h3 id="facebook">Facebook<a class="headerlink" href="#facebook" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">httpx_oauth.clients.facebook</span> <span class="kn">import</span> <span class="n">FacebookOAuth2</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.facebook</span> <span class="kn">import</span> <span class="n">FacebookOAuth2</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">FacebookOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 <ul>
 <li>❌ <code>refresh_token</code></li>
@@ -781,35 +781,35 @@
 </div>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="codehilite"><pre><span></span><span class="n">long_lived_access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_long_lived_access_token</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="n">long_lived_access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_long_lived_access_token</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 </div>
 <h3 id="github">GitHub<a class="headerlink" href="#github" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">httpx_oauth.clients.github</span> <span class="kn">import</span> <span class="n">GitHubOAuth2</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.github</span> <span class="kn">import</span> <span class="n">GitHubOAuth2</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">GitHubOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 <ul>
 <li>❌ <code>refresh_token</code></li>
 <li>❌ <code>revoke_token</code></li>
 </ul>
 <h3 id="google">Google<a class="headerlink" href="#google" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">httpx_oauth.clients.google</span> <span class="kn">import</span> <span class="n">GoogleOAuth2</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.google</span> <span class="kn">import</span> <span class="n">GoogleOAuth2</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">GoogleOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 <ul>
 <li>✅ <code>refresh_token</code></li>
 <li>✅ <code>revoke_token</code></li>
 </ul>
 <h3 id="linkedin">LinkedIn<a class="headerlink" href="#linkedin" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">httpx_oauth.clients.linkedin</span> <span class="kn">import</span> <span class="n">LinkedInOAuth2</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.linkedin</span> <span class="kn">import</span> <span class="n">LinkedInOAuth2</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">LinkedInOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 <ul>
 <li>✅ <code>refresh_token</code> (only for <a href="https://docs.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens">selected partners</a>)</li>
@@ -873,9 +873,9 @@
       <div class="md-footer-copyright">
         
         powered by
-        <a href="https://www.mkdocs.org">MkDocs</a>
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">MkDocs</a>
         and
-        <a href="https://squidfunk.github.io/mkdocs-material/">
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs</a>
       </div>
       
@@ -885,7 +885,7 @@
       
     </div>
     
-      <script src="../assets/javascripts/application.808e90bb.js"></script>
+      <script src="../assets/javascripts/application.c33a9706.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
