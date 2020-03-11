@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ddc0ab90451c8d1ab0688423a62102149cd542a4471ce438709df0515de25caa"
+            "sha256": "0af04207c0090b524c71fa34697f022b6a40b539ef4a7d46c29f7e7aa7b407db"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -59,11 +59,11 @@
         },
         "httpx": {
             "hashes": [
-                "sha256:1d3893d3e4244c569764a6bae5c5a9fbbc4a6ec3825450b5696602af7a275576",
-                "sha256:7d2bfb726eeed717953d15dddb22da9c2fcf48a4d70ba1456aa0a7faeda33cf7"
+                "sha256:a3e82b1fec1e672e500c650b5d54a7353f7d20497f1fbfc6faae5f66aecd91d1",
+                "sha256:add141cad7602f58289287fd8e8b7adb610550e2c183712b31860ac7e113c150"
             ],
             "index": "pypi",
-            "version": "==0.11.1"
+            "version": "==0.12.0"
         },
         "hyperframe": {
             "hashes": [
@@ -164,10 +164,10 @@
         },
         "click": {
             "hashes": [
-                "sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13",
-                "sha256:5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"
+                "sha256:8a18b4ea89d8820c5d0c7da8a64b2c324b4dabb695804dbfea19b9be9d88c0cc",
+                "sha256:e345d143d80bf5ee7534056164e5e112ea5e22716bbb1ce727941f4c8b471b9a"
             ],
-            "version": "==7.0"
+            "version": "==7.1.1"
         },
         "codecov": {
             "hashes": [
@@ -301,11 +301,11 @@
         },
         "httpx": {
             "hashes": [
-                "sha256:1d3893d3e4244c569764a6bae5c5a9fbbc4a6ec3825450b5696602af7a275576",
-                "sha256:7d2bfb726eeed717953d15dddb22da9c2fcf48a4d70ba1456aa0a7faeda33cf7"
+                "sha256:a3e82b1fec1e672e500c650b5d54a7353f7d20497f1fbfc6faae5f66aecd91d1",
+                "sha256:add141cad7602f58289287fd8e8b7adb610550e2c183712b31860ac7e113c150"
             ],
             "index": "pypi",
-            "version": "==0.11.1"
+            "version": "==0.12.0"
         },
         "hyperframe": {
             "hashes": [
@@ -554,7 +554,7 @@
         "pygments": {
             "hashes": [
                 "sha256:647344a061c249a3b74e230c739f434d7ea4d8b1d5f3721bc0f3558049b38f44",
-                "sha256:aa931c0bd5daa25c475afadb2147115134cfe501f0656828cbe7cb566c7123bc"
+                "sha256:ff7a40b4860b727ab48fad6360eb351cc1b33cbf9b15a0f689ca5353e9463324"
             ],
             "index": "pypi",
             "version": "==2.6.1"
