@@ -6,8 +6,6 @@ theme:
   palette:
     primary: blue-grey
     accent: red
-  logo:
-    icon: security
 
 repo_name: frankie567/httpx-oauth
 repo_url: https://github.com/frankie567/httpx-oauth
