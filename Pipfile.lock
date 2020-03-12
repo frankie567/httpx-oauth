@@ -53,9 +53,9 @@
         },
         "hstspreload": {
             "hashes": [
-                "sha256:5f120aa14869019e547166d5d3efa7f40dc5569bf830b130e5ba8bdef5bc9d5a"
+                "sha256:0f02fd8f4fd40eb8dd406742c2a2531685dbdb6f7e96f3eb88c80b856de658fe"
             ],
-            "version": "==2020.3.4"
+            "version": "==2020.3.12"
         },
         "httpx": {
             "hashes": [
@@ -295,9 +295,9 @@
         },
         "hstspreload": {
             "hashes": [
-                "sha256:5f120aa14869019e547166d5d3efa7f40dc5569bf830b130e5ba8bdef5bc9d5a"
+                "sha256:0f02fd8f4fd40eb8dd406742c2a2531685dbdb6f7e96f3eb88c80b856de658fe"
             ],
-            "version": "==2020.3.4"
+            "version": "==2020.3.12"
         },
         "httpx": {
             "hashes": [
@@ -664,11 +664,11 @@
         },
         "respx": {
             "hashes": [
-                "sha256:5cdd2581b5105eb01b11260d11315060f135bcad4b2481ada395ee7ade4de5e5",
-                "sha256:c2c6910675a8df6361cd8aa6e88f85be1245e69ff945a2816db5a5d4565496f2"
+                "sha256:190d1fb5bddaf6fcc1319a3cdfbd682c77d7167017b3283cbe79b8fb74927135",
+                "sha256:43aca802e0fd0c964865b07f101943e7b5902ea070ec94cf8e84a39db8729b06"
             ],
             "index": "pypi",
-            "version": "==0.10.0"
+            "version": "==0.10.1"
         },
         "rfc3986": {
             "hashes": [
