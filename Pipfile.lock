@@ -60,11 +60,11 @@
         },
         "httpx": {
             "hashes": [
-                "sha256:a3e82b1fec1e672e500c650b5d54a7353f7d20497f1fbfc6faae5f66aecd91d1",
-                "sha256:add141cad7602f58289287fd8e8b7adb610550e2c183712b31860ac7e113c150"
+                "sha256:405b4749f597b1f45cae5bffc17b23dc251cce30a0c4c8126f1007b9e728a615",
+                "sha256:ce51c8e8ed2834447fde5a94650299fd74017b7da69cc786b6421fefda09a393"
             ],
             "index": "pypi",
-            "version": "==0.12.0"
+            "version": "==0.12.1"
         },
         "hyperframe": {
             "hashes": [
@@ -303,11 +303,11 @@
         },
         "httpx": {
             "hashes": [
-                "sha256:a3e82b1fec1e672e500c650b5d54a7353f7d20497f1fbfc6faae5f66aecd91d1",
-                "sha256:add141cad7602f58289287fd8e8b7adb610550e2c183712b31860ac7e113c150"
+                "sha256:405b4749f597b1f45cae5bffc17b23dc251cce30a0c4c8126f1007b9e728a615",
+                "sha256:ce51c8e8ed2834447fde5a94650299fd74017b7da69cc786b6421fefda09a393"
             ],
             "index": "pypi",
-            "version": "==0.12.0"
+            "version": "==0.12.1"
         },
         "hyperframe": {
             "hashes": [
