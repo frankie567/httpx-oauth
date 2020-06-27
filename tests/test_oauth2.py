@@ -54,6 +54,7 @@ class TestOAuth2Token:
         token = OAuth2Token({"access_token": "ACCESS_TOKEN", "expires_in": 3600})
 
         assert token["access_token"] == "ACCESS_TOKEN"
+        assert "expires_at" in token
         assert token.is_expired() is False
 
     def test_no_expire(self):
