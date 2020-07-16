@@ -1,12 +1,9 @@
 PIPENV_RUN := pipenv run
 
 isort-src:
-	$(PIPENV_RUN) isort -rc ./httpx_oauth
+	$(PIPENV_RUN) isort ./httpx_oauth
 
-isort-docs:
-	$(PIPENV_RUN) isort -rc ./docs/src -o httpx_oauth
-
-format: isort-src isort-docs
+format: isort-src
 	$(PIPENV_RUN) black .
 
 test:
