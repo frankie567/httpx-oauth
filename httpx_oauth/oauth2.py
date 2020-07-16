@@ -60,6 +60,7 @@ class BaseOAuth2(Generic[T]):
     refresh_token_endpoint: Optional[str]
     revoke_token_endpoint: Optional[str]
     base_scopes: Optional[List[str]]
+    request_headers: Dict[str, str]
 
     def __init__(
         self,
@@ -80,6 +81,10 @@ class BaseOAuth2(Generic[T]):
         self.revoke_token_endpoint = revoke_token_endpoint
         self.name = name
         self.base_scopes = base_scopes
+
+        self.request_headers = {
+            "Accept": "application/json",
+        }
 
     async def get_authorization_url(
         self,
@@ -116,6 +121,7 @@ class BaseOAuth2(Generic[T]):
                     "client_id": self.client_id,
                     "client_secret": self.client_secret,
                 },
+                headers=self.request_headers,
             )
 
             data = cast(Dict[str, Any], response.json())
@@ -138,6 +144,7 @@ class BaseOAuth2(Generic[T]):
                     "client_id": self.client_id,
                     "client_secret": self.client_secret,
                 },
+                headers=self.request_headers,
             )
 
             data = cast(Dict[str, Any], response.json())
@@ -157,7 +164,9 @@ class BaseOAuth2(Generic[T]):
             if token_type_hint is not None:
                 data["token_type_hint"] = token_type_hint
 
-            response = await client.post(self.revoke_token_endpoint, data=data)
+            response = await client.post(
+                self.revoke_token_endpoint, data=data, headers=self.request_headers
+            )
 
             if response.status_code == 400:
                 raise RevokeTokenError(response.json())

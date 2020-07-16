@@ -35,6 +35,7 @@ class TestGitHubGetIdEmail:
         url, headers, content = await get_respx_call_args(request)
 
         assert headers["Authorization"] == "token TOKEN"
+        assert headers["Accept"] == "application/json"
         assert user_id == "42"
         assert user_email == "arthur@camelot.bt"
 

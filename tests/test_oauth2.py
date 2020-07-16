@@ -111,6 +111,7 @@ class TestGetAccessToken:
 
         url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
+        assert headers["Accept"] == "application/json"
         assert "grant_type=authorization_code" in content
         assert "code=CODE" in content
         assert "redirect_uri=https%3A%2F%2Fwww.tintagel.bt%2Foauth-callback" in content
@@ -153,6 +154,7 @@ class TestRefreshToken:
 
         url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
+        assert headers["Accept"] == "application/json"
         assert "grant_type=refresh_token" in content
         assert "refresh_token=REFRESH_TOKEN" in content
         assert f"client_id={CLIENT_ID}" in content
@@ -193,6 +195,7 @@ class TestRevokeToken:
 
         url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
+        assert headers["Accept"] == "application/json"
         assert "token=TOKEN" in content
         assert "token_type_hint=TOKEN_TYPE_HINT" in content
 

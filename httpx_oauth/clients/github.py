@@ -31,7 +31,8 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
     async def get_id_email(self, token: str) -> Tuple[str, str]:
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                PROFILE_ENDPOINT, headers={"Authorization": f"token {token}"},
+                PROFILE_ENDPOINT,
+                headers={**self.request_headers, "Authorization": f"token {token}"},
             )
 
             if response.status_code >= 400:
