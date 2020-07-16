@@ -40,7 +40,8 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
-                params={"personFields": "emailAddresses", "key": token},
+                params={"personFields": "emailAddresses"},
+                headers={**self.request_headers, "Authorization": f"Bearer {token}"},
             )
 
             if response.status_code >= 400:

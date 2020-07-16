@@ -43,8 +43,8 @@ class TestGoogleGetIdEmail:
         user_id, user_email = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
 
-        assert "key=TOKEN" in url.query
         assert "personFields=emailAddresses" in url.query
+        assert headers["Authorization"] == "Bearer TOKEN"
         assert user_id == "people/424242424242"
         assert user_email == "arthur@camelot.bt"
 
