@@ -6,7 +6,6 @@
 
 [![build](https://github.com/frankie567/httpx-oauth/workflows/Build/badge.svg)](https://github.com/frankie567/httpx-oauth/actions)
 [![codecov](https://codecov.io/gh/frankie567/httpx-oauth/branch/master/graph/badge.svg)](https://codecov.io/gh/frankie567/httpx-oauth)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=frankie567/httpx-oauth)](https://dependabot.com)
 [![PyPI version](https://badge.fury.io/py/httpx-oauth.svg)](https://badge.fury.io/py/httpx-oauth)
 
 ---
