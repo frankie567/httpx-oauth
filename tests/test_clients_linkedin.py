@@ -75,7 +75,9 @@ class TestLinkedInGetIdEmail:
             content={"error": "message"},
         )
         respx.get(
-            re.compile(f"^{EMAIL_ENDPOINT}"), status_code=200, content=email_response,
+            re.compile(f"^{EMAIL_ENDPOINT}"),
+            status_code=200,
+            content=email_response,
         )
 
         with pytest.raises(GetIdEmailError) as excinfo:

@@ -56,7 +56,9 @@ class TestGetLongLivedAccessToken:
     @respx.mock
     async def test_get_long_lived_access_token_error(self, load_mock):
         respx.post(
-            client.access_token_endpoint, status_code=400, content=load_mock("error"),
+            client.access_token_endpoint,
+            status_code=400,
+            content=load_mock("error"),
         )
 
         with pytest.raises(GetLongLivedAccessTokenError) as excinfo:
@@ -81,7 +83,7 @@ class TestFacebookGetIdEmail:
         user_id, user_email = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
 
-        assert "access_token=TOKEN" in url.query.decode('utf-8')
+        assert "access_token=TOKEN" in url.query.decode("utf-8")
         assert user_id == "424242"
         assert user_email == "arthur@camelot.bt"
 

@@ -79,21 +79,24 @@ class TestGetAuthorizationURL:
     @pytest.mark.asyncio
     async def test_get_authorization_url_with_state(self):
         authorization_url = await client.get_authorization_url(
-            REDIRECT_URI, state="STATE",
+            REDIRECT_URI,
+            state="STATE",
         )
         assert "state=STATE" in authorization_url
 
     @pytest.mark.asyncio
     async def test_get_authorization_url_with_scopes(self):
         authorization_url = await client.get_authorization_url(
-            REDIRECT_URI, scope=["SCOPE1", "SCOPE2", "SCOPE3"],
+            REDIRECT_URI,
+            scope=["SCOPE1", "SCOPE2", "SCOPE3"],
         )
         assert "scope=SCOPE1+SCOPE2+SCOPE3" in authorization_url
 
     @pytest.mark.asyncio
     async def test_get_authorization_url_with_extras_params(self):
         authorization_url = await client.get_authorization_url(
-            REDIRECT_URI, extras_params={"PARAM1": "VALUE1", "PARAM2": "VALUE2"},
+            REDIRECT_URI,
+            extras_params={"PARAM1": "VALUE1", "PARAM2": "VALUE2"},
         )
         assert "PARAM1=VALUE1" in authorization_url
         assert "PARAM2=VALUE2" in authorization_url
@@ -127,7 +130,9 @@ class TestGetAccessToken:
     @respx.mock
     async def test_get_access_token_error(self, load_mock):
         respx.post(
-            client.access_token_endpoint, status_code=400, content=load_mock("error"),
+            client.access_token_endpoint,
+            status_code=400,
+            content=load_mock("error"),
         )
 
         with pytest.raises(GetAccessTokenError) as excinfo:

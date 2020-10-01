@@ -48,7 +48,8 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
     async def get_id_email(self, token: str) -> Tuple[str, str]:
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                PROFILE_ENDPOINT, params={"fields": "id,email", "access_token": token},
+                PROFILE_ENDPOINT,
+                params={"fields": "id,email", "access_token": token},
             )
 
             if response.status_code >= 400:
