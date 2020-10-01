@@ -1,4 +1,5 @@
-import asynctest
+import asyncio
+
 import pytest
 from fastapi import Depends, FastAPI
 from starlette import status
@@ -63,22 +64,26 @@ class TestOAuth2AuthorizeCallback:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {"detail": "access_denied"}
 
-    def test_oauth2_authorize_without_state(self, route, expected_redirect_url):
-        with asynctest.patch.object(client, "get_access_token") as mock:
-            mock.return_value = "ACCESS_TOKEN"
-            response = test_client.get(route, params={"code": "CODE"})
+    def test_oauth2_authorize_without_state(self, mocker, route, expected_redirect_url):
+        future = asyncio.Future()
+        future.set_result("ACCESS_TOKEN")
+        mocker.patch.object(client, "get_access_token", return_value=future)
 
-        mock.assert_called()
-        mock.assert_awaited_once_with("CODE", expected_redirect_url)
+        response = test_client.get(route, params={"code": "CODE"})
+
+        client.get_access_token.assert_called()
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == ["ACCESS_TOKEN", None]
 
-    def test_oauth2_authorize_with_state(self, route, expected_redirect_url):
-        with asynctest.patch.object(client, "get_access_token") as mock:
-            mock.return_value = "ACCESS_TOKEN"
-            response = test_client.get(route, params={"code": "CODE", "state": "STATE"})
+    def test_oauth2_authorize_with_state(self, mocker, route, expected_redirect_url):
+        future = asyncio.Future()
+        future.set_result("ACCESS_TOKEN")
+        mocker.patch.object(client, "get_access_token", return_value=future)
 
-        mock.assert_called()
-        mock.assert_awaited_once_with("CODE", expected_redirect_url)
+        response = test_client.get(route, params={"code": "CODE", "state": "STATE"})
+
+        client.get_access_token.assert_called()
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == ["ACCESS_TOKEN", "STATE"]

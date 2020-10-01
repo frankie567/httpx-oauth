@@ -4,7 +4,6 @@ from typing import Any, Dict, Tuple
 
 import pytest
 import httpx
-from respx import HTTPXMock
 
 
 @pytest.fixture()
@@ -20,7 +19,7 @@ def load_mock():
 @pytest.fixture()
 def get_respx_call_args():
     async def _get_respx_call_args(
-        mock: HTTPXMock,
+        mock,
     ) -> Tuple[httpx.URL, httpx.Headers, str]:
         request_call = mock.calls[0][0]
 

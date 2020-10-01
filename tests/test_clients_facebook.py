@@ -81,7 +81,7 @@ class TestFacebookGetIdEmail:
         user_id, user_email = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
 
-        assert "access_token=TOKEN" in url.query
+        assert "access_token=TOKEN" in url.query.decode('utf-8')
         assert user_id == "424242"
         assert user_email == "arthur@camelot.bt"
 
