@@ -1,12 +1,14 @@
+import asyncio
 import json
 import os
+import sys
 from typing import Any, Dict, Tuple
 
 import pytest
 import httpx
 
 
-@pytest.fixture()
+@pytest.fixture
 def load_mock():
     def _load_mock(name: str) -> Dict[Any, Any]:
         mock_path = os.path.join(os.path.dirname(__file__), "mock", f"{name}.json")
@@ -16,7 +18,7 @@ def load_mock():
     return _load_mock
 
 
-@pytest.fixture()
+@pytest.fixture
 def get_respx_call_args():
     async def _get_respx_call_args(
         mock,
@@ -30,3 +32,22 @@ def get_respx_call_args():
         return request_call.url, request_call.headers, content
 
     return _get_respx_call_args
+
+
+@pytest.fixture
+def patch_async_method(mocker):
+    minor_version = sys.version_info.minor
+
+    def _patch_async_method(instance, method: str, return_value: Any):
+        if minor_version < 8:
+            future: Any = asyncio.Future()
+            future.set_result(return_value)
+            mocker.patch.object(instance, method, return_value=future)
+        else:
+            from unittest.mock import AsyncMock
+
+            async_mock = AsyncMock()
+            async_mock.return_value = return_value
+            mocker.patch.object(instance, method, side_effect=async_mock)
+
+    return _patch_async_method

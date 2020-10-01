@@ -1,5 +1,3 @@
-import asyncio
-
 import pytest
 from fastapi import Depends, FastAPI
 from starlette import status
@@ -64,10 +62,10 @@ class TestOAuth2AuthorizeCallback:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {"detail": "access_denied"}
 
-    def test_oauth2_authorize_without_state(self, mocker, route, expected_redirect_url):
-        future = asyncio.Future()
-        future.set_result("ACCESS_TOKEN")
-        mocker.patch.object(client, "get_access_token", return_value=future)
+    def test_oauth2_authorize_without_state(
+        self, patch_async_method, route, expected_redirect_url
+    ):
+        patch_async_method(client, "get_access_token", return_value="ACCESS_TOKEN")
 
         response = test_client.get(route, params={"code": "CODE"})
 
@@ -76,10 +74,10 @@ class TestOAuth2AuthorizeCallback:
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == ["ACCESS_TOKEN", None]
 
-    def test_oauth2_authorize_with_state(self, mocker, route, expected_redirect_url):
-        future = asyncio.Future()
-        future.set_result("ACCESS_TOKEN")
-        mocker.patch.object(client, "get_access_token", return_value=future)
+    def test_oauth2_authorize_with_state(
+        self, patch_async_method, route, expected_redirect_url
+    ):
+        patch_async_method(client, "get_access_token", return_value="ACCESS_TOKEN")
 
         response = test_client.get(route, params={"code": "CODE", "state": "STATE"})
 
