@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.1">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.2">
     
     
       
@@ -201,7 +201,7 @@
         <span class="md-nav__icon md-icon"></span>
       </label>
     
-    <a href="." title="About" class="md-nav__link md-nav__link--active">
+    <a href="." class="md-nav__link md-nav__link--active">
       About
     </a>
     
@@ -300,7 +300,7 @@
 
 
   <li class="md-nav__item">
-    <a href="oauth2/" title="OAuth2" class="md-nav__link">
+    <a href="oauth2/" class="md-nav__link">
       OAuth2
     </a>
   </li>
@@ -338,7 +338,7 @@
 
 
   <li class="md-nav__item">
-    <a href="fastapi/" title="FastAPI" class="md-nav__link">
+    <a href="fastapi/" class="md-nav__link">
       FastAPI
     </a>
   </li>
@@ -450,31 +450,25 @@
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>pip install httpx-oauth
 </code></pre></div>
-
 <h2 id="development">Development<a class="headerlink" href="#development" title="Permanent link">&para;</a></h2>
 <h3 id="setup-environement">Setup environement<a class="headerlink" href="#setup-environement" title="Permanent link">&para;</a></h3>
 <p>You should have <a href="https://pipenv.readthedocs.io/en/latest/">Pipenv</a> installed. Then, you can install the dependencies with:</p>
 <div class="highlight"><pre><span></span><code>pipenv install --dev
 </code></pre></div>
-
 <p>After that, activate the virtual environment:</p>
 <div class="highlight"><pre><span></span><code>pipenv shell
 </code></pre></div>
-
 <h3 id="run-unit-tests">Run unit tests<a class="headerlink" href="#run-unit-tests" title="Permanent link">&para;</a></h3>
 <p>You can run all the tests with:</p>
 <div class="highlight"><pre><span></span><code>make <span class="nb">test</span>
 </code></pre></div>
-
 <p>Alternatively, you can run <code>pytest</code> yourself:</p>
 <div class="highlight"><pre><span></span><code>pytest
 </code></pre></div>
-
 <h3 id="format-the-code">Format the code<a class="headerlink" href="#format-the-code" title="Permanent link">&para;</a></h3>
 <p>Execute the following command to apply <code>isort</code> and <code>black</code> formatting:</p>
 <div class="highlight"><pre><span></span><code>make format
 </code></pre></div>
-
 <h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
 <p>This project is licensed under the terms of the MIT license.</p>
                 
@@ -496,7 +490,7 @@
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
         
-          <a href="oauth2/" title="OAuth2" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="oauth2/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
@@ -530,7 +524,7 @@
     </div>
     
       <script src="assets/javascripts/vendor.77e55a48.min.js"></script>
-      <script src="assets/javascripts/bundle.aa3f9871.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="assets/javascripts/bundle.9554a270.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({

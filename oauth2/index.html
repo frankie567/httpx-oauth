@@ -11,7 +11,7 @@
       
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.1">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.2">
     
     
       
@@ -188,7 +188,7 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="About" class="md-nav__link">
+    <a href=".." class="md-nav__link">
       About
     </a>
   </li>
@@ -236,7 +236,7 @@
         <span class="md-nav__icon md-icon"></span>
       </label>
     
-    <a href="./" title="OAuth2" class="md-nav__link md-nav__link--active">
+    <a href="./" class="md-nav__link md-nav__link--active">
       OAuth2
     </a>
     
@@ -427,7 +427,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../fastapi/" title="FastAPI" class="md-nav__link">
+    <a href="../fastapi/" class="md-nav__link">
       FastAPI
     </a>
   </li>
@@ -623,7 +623,6 @@
     <span class="n">revoke_token_endpoint</span><span class="o">=</span><span class="s2">&quot;REVOKE_TOKEN_ENDPOINT&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
-
 <p>Note that <code>refresh_token_endpoint</code> and <code>revoke_token_endpoint</code> are optional since not every services propose to refresh and revoke tokens.</p>
 <h3 id="available-methods">Available methods<a class="headerlink" href="#available-methods" title="Permanent link">&para;</a></h3>
 <h4 id="get_authorization_url"><code>get_authorization_url</code><a class="headerlink" href="#get_authorization_url" title="Permanent link">&para;</a></h4>
@@ -643,7 +642,6 @@
     <span class="s2">&quot;https://www.tintagel.bt/oauth-callback&quot;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SCOPE1&quot;</span><span class="p">,</span> <span class="s2">&quot;SCOPE2&quot;</span><span class="p">,</span> <span class="s2">&quot;SCOPE3&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 </code></pre></div>
-
 </div>
 <h4 id="get_access_token"><code>get_access_token</code><a class="headerlink" href="#get_access_token" title="Permanent link">&para;</a></h4>
 <p>Returns an <a href="#oauth2token-class"><code>OAuth2Token</code> object</a> for the service given the authorization code passed in the redirection callback.</p>
@@ -659,7 +657,6 @@
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code><span class="n">access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_access_token</span><span class="p">(</span><span class="s2">&quot;CODE&quot;</span><span class="p">,</span> <span class="s2">&quot;https://www.tintagel.bt/oauth-callback&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 </div>
 <h4 id="refresh_token"><code>refresh_token</code><a class="headerlink" href="#refresh_token" title="Permanent link">&para;</a></h4>
 <p>Returns a fresh <a href="#oauth2token-class"><code>OAuth2Token</code> object</a> for the service given a refresh token.</p>
@@ -674,7 +671,6 @@
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code><span class="n">access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">(</span><span class="s2">&quot;REFRESH_TOKEN&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 </div>
 <h4 id="revoke_token"><code>revoke_token</code><a class="headerlink" href="#revoke_token" title="Permanent link">&para;</a></h4>
 <p>Revokes a token.</p>
@@ -690,7 +686,6 @@
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code><span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">revoke_token</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 </div>
 <h4 id="get_id_email"><code>get_id_email</code><a class="headerlink" href="#get_id_email" title="Permanent link">&para;</a></h4>
 <p>Returns the id and the email of the authenticated user from the API provider. <strong>It assumes you have asked for the required scopes</strong>.</p>
@@ -705,13 +700,11 @@
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code><span class="n">user_id</span><span class="p">,</span> <span class="n">user_email</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_id_email</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 </div>
 <h3 id="oauth2token-class"><code>OAuth2Token</code> class<a class="headerlink" href="#oauth2token-class" title="Permanent link">&para;</a></h3>
 <p>This class is a wrapper around a standard <code>Dict[str, Any]</code> that bears the response of <code>get_access_token</code>. Properties can vary greatly from a service to another but, usually, you can get access token like this:</p>
 <div class="highlight"><pre><span></span><code><span class="n">access_token</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
 </code></pre></div>
-
 <h4 id="is_expired"><code>is_expired</code><a class="headerlink" href="#is_expired" title="Permanent link">&para;</a></h4>
 <p>A utility method is provided to quickly determine if the token is still valid or needs to be refreshed.</p>
 <div class="admonition example">
@@ -723,7 +716,6 @@
 <span class="n">access_token</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="s2">&quot;access_token&quot;</span><span class="p">]</span>
 <span class="c1"># Do something useful with this access token</span>
 </code></pre></div>
-
 </div>
 <h2 id="provided-clients">Provided clients<a class="headerlink" href="#provided-clients" title="Permanent link">&para;</a></h2>
 <p>We provide several ready-to-use clients for widely used services with configured endpoints and specificites took into account.</p>
@@ -732,7 +724,6 @@
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">FacebookOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 <ul>
 <li>❌ <code>refresh_token</code></li>
 <li>❌ <code>revoke_token</code></li>
@@ -750,14 +741,12 @@
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code><span class="n">long_lived_access_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_long_lived_access_token</span><span class="p">(</span><span class="s2">&quot;TOKEN&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 </div>
 <h3 id="github">GitHub<a class="headerlink" href="#github" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.github</span> <span class="kn">import</span> <span class="n">GitHubOAuth2</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">GitHubOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 <ul>
 <li>❌ <code>refresh_token</code></li>
 <li>❌ <code>revoke_token</code></li>
@@ -767,7 +756,6 @@
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">GoogleOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 <ul>
 <li>✅ <code>refresh_token</code></li>
 <li>✅ <code>revoke_token</code></li>
@@ -777,7 +765,6 @@
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">LinkedInOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
 </code></pre></div>
-
 <ul>
 <li>✅ <code>refresh_token</code> (only for <a href="https://docs.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens">selected partners</a>)</li>
 <li>❌ <code>revoke_token</code></li>
@@ -800,7 +787,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href=".." title="About" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href=".." class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -815,7 +802,7 @@
           </a>
         
         
-          <a href="../fastapi/" title="FastAPI" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../fastapi/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
@@ -849,7 +836,7 @@
     </div>
     
       <script src="../assets/javascripts/vendor.77e55a48.min.js"></script>
-      <script src="../assets/javascripts/bundle.aa3f9871.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../assets/javascripts/bundle.9554a270.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
