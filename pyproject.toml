@@ -11,6 +11,7 @@ home-page = "https://github.com/frankie567/httpx-oauth"
 classifiers = [
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3 :: Only",
 ]
 description-file = "README.md"
