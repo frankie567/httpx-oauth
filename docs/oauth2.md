@@ -158,6 +158,9 @@ client = GitHubOAuth2("CLIENT_ID", "CLIENT_SECRET")
 * ❌ `refresh_token`
 * ❌ `revoke_token`
 
+!!! tip
+    You should enable **Email addresses** permission in the **Permissions & events** section of your GitHub app parameters. You can find it at [https://github.com/settings/apps/{YOUR_APP}/permissions](https://github.com/settings/apps/{YOUR_APP}/permissions).
+
 ### Google
 
 ```py

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Tuple, cast
+from typing import Any, Dict, List, Tuple, cast
 
 import httpx
 from typing_extensions import TypedDict
@@ -8,8 +8,9 @@ from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://github.com/login/oauth/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://github.com/login/oauth/access_token"
-BASE_SCOPES = ["user"]
+BASE_SCOPES = ["user", "user:email"]
 PROFILE_ENDPOINT = "https://api.github.com/user"
+EMAILS_ENDPOINT = "https://api.github.com/user/emails"
 
 
 class GitHubOAuth2AuthorizeParams(TypedDict, total=False):
@@ -29,15 +30,28 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, str]:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                PROFILE_ENDPOINT,
-                headers={**self.request_headers, "Authorization": f"token {token}"},
-            )
+        async with httpx.AsyncClient(
+            headers={**self.request_headers, "Authorization": f"token {token}"}
+        ) as client:
+            response = await client.get(PROFILE_ENDPOINT)
 
             if response.status_code >= 400:
                 raise GetIdEmailError(response.json())
 
             data = cast(Dict[str, Any], response.json())
 
-            return str(data["id"]), data["email"]
+            id = data["id"]
+            email = data["email"]
+
+            # No public email, make a separate call to /user/emails
+            if email is None:
+                response = await client.get(EMAILS_ENDPOINT)
+
+                if response.status_code >= 400:
+                    raise GetIdEmailError(response.json())
+
+                emails = cast(List[Dict[str, Any]], response.json())
+
+                email = emails[0]["email"]
+
+            return str(id), email
