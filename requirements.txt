@@ -1,2 +1,2 @@
-httpx >=0.15,<0.17
+httpx >=0.15,<0.18
 typing-extensions
