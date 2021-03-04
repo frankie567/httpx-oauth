@@ -2,6 +2,7 @@ import re
 
 import pytest
 import respx
+from httpx import Response
 
 from httpx_oauth.clients.microsoft import MicrosoftGraphOAuth2, PROFILE_ENDPOINT
 from httpx_oauth.errors import GetIdEmailError
@@ -63,10 +64,8 @@ class TestGoogleGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
-        request = respx.get(
-            re.compile(f"^{PROFILE_ENDPOINT}"),
-            status_code=200,
-            content=profile_response,
+        request = respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
+            return_value=Response(200, json=profile_response)
         )
 
         user_id, user_email = await client.get_id_email("TOKEN")
@@ -78,11 +77,9 @@ class TestGoogleGetIdEmail:
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_error(self, get_respx_call_args):
-        respx.get(
-            re.compile(f"^{PROFILE_ENDPOINT}"),
-            status_code=400,
-            content={"error": "message"},
+    async def test_error(self):
+        respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
+            return_value=Response(400, json={"error": "message"})
         )
 
         with pytest.raises(GetIdEmailError) as excinfo:

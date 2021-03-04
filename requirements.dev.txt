@@ -1,0 +1,21 @@
+-r requirements.txt
+
+flake8
+pytest
+isort
+flake8-docstrings
+mkdocs
+mkdocs-material
+black
+mypy
+codecov
+pytest-cov
+pytest-mock
+flit
+markdown-include
+pygments
+pymdown-extensions
+bumpversion
+pytest-asyncio
+respx
+fastapi

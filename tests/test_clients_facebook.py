@@ -2,6 +2,7 @@ import re
 
 import pytest
 import respx
+from httpx import Response
 
 from httpx_oauth.oauth2 import OAuth2Token
 from httpx_oauth.clients.facebook import (
@@ -34,9 +35,10 @@ class TestGetLongLivedAccessToken:
     @pytest.mark.asyncio
     @respx.mock
     async def test_get_long_lived_access_token(self, load_mock, get_respx_call_args):
-        request = respx.post(
-            client.access_token_endpoint,
-            content=load_mock("facebook_success_long_lived_access_token"),
+        request = respx.post(client.access_token_endpoint).mock(
+            return_value=Response(
+                200, json=load_mock("facebook_success_long_lived_access_token")
+            )
         )
         access_token = await client.get_long_lived_access_token("ACCESS_TOKEN")
 
@@ -55,10 +57,8 @@ class TestGetLongLivedAccessToken:
     @pytest.mark.asyncio
     @respx.mock
     async def test_get_long_lived_access_token_error(self, load_mock):
-        respx.post(
-            client.access_token_endpoint,
-            status_code=400,
-            content=load_mock("error"),
+        respx.post(client.access_token_endpoint).mock(
+            return_value=Response(400, json=load_mock("error"))
         )
 
         with pytest.raises(GetLongLivedAccessTokenError) as excinfo:
@@ -74,10 +74,8 @@ class TestFacebookGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
-        request = respx.get(
-            re.compile(f"^{PROFILE_ENDPOINT}"),
-            status_code=200,
-            content=profile_response,
+        request = respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
+            return_value=Response(200, json=profile_response)
         )
 
         user_id, user_email = await client.get_id_email("TOKEN")
@@ -89,11 +87,9 @@ class TestFacebookGetIdEmail:
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_error(self, get_respx_call_args):
-        respx.get(
-            re.compile(f"^{PROFILE_ENDPOINT}"),
-            status_code=400,
-            content={"error": "message"},
+    async def test_error(self):
+        respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
+            Response(400, json={"error": "message"})
         )
 
         with pytest.raises(GetIdEmailError) as excinfo:

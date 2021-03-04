@@ -2,6 +2,7 @@ import re
 
 import pytest
 import respx
+from httpx import Response
 
 from httpx_oauth.clients.linkedin import (
     EMAIL_ENDPOINT,
@@ -44,13 +45,11 @@ class TestLinkedInGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
-        profile_request = respx.get(
-            re.compile(f"^{PROFILE_ENDPOINT}"),
-            status_code=200,
-            content=profile_response,
+        profile_request = respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
+            return_value=Response(200, json=profile_response)
         )
-        email_request = respx.get(
-            re.compile(f"^{EMAIL_ENDPOINT}"), status_code=200, content=email_response
+        email_request = respx.get(re.compile(f"^{EMAIL_ENDPOINT}")).mock(
+            return_value=Response(200, json=email_response)
         )
 
         user_id, user_email = await client.get_id_email("TOKEN")
@@ -68,16 +67,12 @@ class TestLinkedInGetIdEmail:
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_profile_error(self, get_respx_call_args):
-        respx.get(
-            re.compile(f"^{PROFILE_ENDPOINT}"),
-            status_code=400,
-            content={"error": "message"},
+    async def test_profile_error(self):
+        respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
+            return_value=Response(400, json={"error": "message"})
         )
-        respx.get(
-            re.compile(f"^{EMAIL_ENDPOINT}"),
-            status_code=200,
-            content=email_response,
+        respx.get(re.compile(f"^{EMAIL_ENDPOINT}")).mock(
+            return_value=Response(200, json=email_response)
         )
 
         with pytest.raises(GetIdEmailError) as excinfo:
@@ -88,16 +83,12 @@ class TestLinkedInGetIdEmail:
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_email_error(self, get_respx_call_args):
-        respx.get(
-            re.compile(f"^{PROFILE_ENDPOINT}"),
-            status_code=200,
-            content=profile_response,
+    async def test_email_error(self):
+        respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
+            return_value=Response(200, json=profile_response)
         )
-        respx.get(
-            re.compile(f"^{EMAIL_ENDPOINT}"),
-            status_code=400,
-            content={"error": "message"},
+        respx.get(re.compile(f"^{EMAIL_ENDPOINT}")).mock(
+            return_value=Response(400, json={"error": "message"})
         )
 
         with pytest.raises(GetIdEmailError) as excinfo:
