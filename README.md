@@ -7,6 +7,7 @@
 [![build](https://github.com/frankie567/httpx-oauth/workflows/Build/badge.svg)](https://github.com/frankie567/httpx-oauth/actions)
 [![codecov](https://codecov.io/gh/frankie567/httpx-oauth/branch/master/graph/badge.svg)](https://codecov.io/gh/frankie567/httpx-oauth)
 [![PyPI version](https://badge.fury.io/py/httpx-oauth.svg)](https://badge.fury.io/py/httpx-oauth)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/frankie567?style=social)](https://github.com/sponsors/frankie567)
 
 ---
 
