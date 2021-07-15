@@ -17,6 +17,7 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
         client_id: str,
         client_secret: str,
         tenant: str = "common",
+        scopes: Optional[List[str]] = BASE_SCOPES,
         name: str = "microsoft",
     ):
         access_token_endpoint = ACCESS_TOKEN_ENDPOINT.format(tenant=tenant)
@@ -27,7 +28,7 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             access_token_endpoint,
             access_token_endpoint,
             name=name,
-            base_scopes=BASE_SCOPES,
+            base_scopes=scopes,
         )
 
     def get_authorization_url(

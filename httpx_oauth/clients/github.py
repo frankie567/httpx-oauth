@@ -19,14 +19,20 @@ class GitHubOAuth2AuthorizeParams(TypedDict, total=False):
 
 
 class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
-    def __init__(self, client_id: str, client_secret: str, name: str = "github"):
+    def __init__(
+        self,
+        client_id: str,
+        client_secret: str,
+        scopes: Optional[List[str]] = BASE_SCOPES,
+        name: str = "github",
+    ):
         super().__init__(
             client_id,
             client_secret,
             AUTHORIZE_ENDPOINT,
             ACCESS_TOKEN_ENDPOINT,
             name=name,
-            base_scopes=BASE_SCOPES,
+            base_scopes=scopes,
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, str]:
