@@ -17,7 +17,7 @@ classifiers = [
 description-file = "README.md"
 requires-python = ">=3.7"
 requires = [
-    "httpx >=0.18,<0.19",
+    "httpx >=0.18,<0.20",
     "typing-extensions",
 ]
 
