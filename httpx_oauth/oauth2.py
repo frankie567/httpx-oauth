@@ -102,8 +102,10 @@ class BaseOAuth2(Generic[T]):
         if state is not None:
             params["state"] = state
 
-        if scope is not None:
-            params["scope"] = " ".join(scope)
+        # Provide compatibility with current scope from the endpoint
+        _scope = scope or self.base_scopes
+        if _scope is not None:
+            params["scope"] = " ".join(_scope)
 
         if extras_params is not None:
             params = {**params, **extras_params}  # type: ignore

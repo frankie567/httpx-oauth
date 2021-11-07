@@ -1,4 +1,4 @@
-from typing import Any, Dict, Tuple, cast
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 import httpx
 
@@ -13,7 +13,13 @@ EMAIL_ENDPOINT = "https://api.linkedin.com/v2/emailAddress"
 
 
 class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
-    def __init__(self, client_id: str, client_secret: str, name: str = "linkedin"):
+    def __init__(
+        self,
+        client_id: str,
+        client_secret: str,
+        scopes: Optional[List[str]] = BASE_SCOPES,
+        name: str = "linkedin",
+    ):
         super().__init__(
             client_id,
             client_secret,
@@ -21,7 +27,7 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             ACCESS_TOKEN_ENDPOINT,
             ACCESS_TOKEN_ENDPOINT,
             name=name,
-            base_scopes=BASE_SCOPES,
+            base_scopes=scopes,
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, str]:

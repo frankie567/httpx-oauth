@@ -1,4 +1,4 @@
-from typing import Any, Dict, Tuple, cast
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 import httpx
 from typing_extensions import Literal, TypedDict
@@ -24,7 +24,13 @@ class GoogleOAuth2AuthorizeParams(TypedDict, total=False):
 
 
 class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
-    def __init__(self, client_id: str, client_secret: str, name="google"):
+    def __init__(
+        self,
+        client_id: str,
+        client_secret: str,
+        scope: Optional[List[str]] = BASE_SCOPES,
+        name="google",
+    ):
         super().__init__(
             client_id,
             client_secret,
@@ -33,7 +39,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             ACCESS_TOKEN_ENDPOINT,
             REVOKE_TOKEN_ENDPOINT,
             name=name,
-            base_scopes=BASE_SCOPES,
+            base_scopes=scope,
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, str]:
