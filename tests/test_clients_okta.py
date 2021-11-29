@@ -12,7 +12,7 @@ OKTA_BASE_URL = "test-okta-base-url.okta.com"
 client = OktaOAuth2("CLIENT_ID", "CLIENT_SECRET", OKTA_BASE_URL)
 
 
-def test_github_oauth2():
+def test_okta_oauth2():
     assert client.authorize_endpoint == f"https://{OKTA_BASE_URL}/oauth2/v1/authorize"
     assert client.access_token_endpoint == f"https://{OKTA_BASE_URL}/oauth2/v1/token"
     assert client.refresh_token_endpoint == f"https://{OKTA_BASE_URL}/oauth2/v1/token"
