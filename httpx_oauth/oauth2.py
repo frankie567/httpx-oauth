@@ -51,7 +51,6 @@ T = TypeVar("T")
 
 
 class BaseOAuth2(Generic[T]):
-
     name: str
     client_id: str
     client_secret: str
@@ -112,17 +111,22 @@ class BaseOAuth2(Generic[T]):
 
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
-    async def get_access_token(self, code: str, redirect_uri: str):
+    async def get_access_token(self, code: str, redirect_uri: str, code_verifier: str = None):
         async with httpx.AsyncClient() as client:
+            data = {
+                "grant_type": "authorization_code",
+                "code": code,
+                "redirect_uri": redirect_uri,
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+            }
+
+            if code_verifier:
+                data.update({"code_verifier": code_verifier})
+
             response = await client.post(
                 self.access_token_endpoint,
-                data={
-                    "grant_type": "authorization_code",
-                    "code": code,
-                    "redirect_uri": redirect_uri,
-                    "client_id": self.client_id,
-                    "client_secret": self.client_secret,
-                },
+                data=data,
                 headers=self.request_headers,
             )
 

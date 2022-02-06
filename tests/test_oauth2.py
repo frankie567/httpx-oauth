@@ -110,13 +110,14 @@ class TestGetAccessToken:
         request = respx.post(client.access_token_endpoint).mock(
             return_value=Response(200, json=load_mock("google_success_access_token"))
         )
-        access_token = await client.get_access_token("CODE", REDIRECT_URI)
+        access_token = await client.get_access_token("CODE", REDIRECT_URI, "CODE_VERIFIER")
 
         url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert headers["Accept"] == "application/json"
         assert "grant_type=authorization_code" in content
         assert "code=CODE" in content
+        assert "code_verifier=CODE_VERIFIER" in content
         assert "redirect_uri=https%3A%2F%2Fwww.tintagel.bt%2Foauth-callback" in content
         assert f"client_id={CLIENT_ID}" in content
         assert f"client_secret={CLIENT_SECRET}" in content

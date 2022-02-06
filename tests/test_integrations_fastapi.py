@@ -70,7 +70,19 @@ class TestOAuth2AuthorizeCallback:
         response = test_client.get(route, params={"code": "CODE"})
 
         client.get_access_token.assert_called()
-        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url)
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url, None)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == ["ACCESS_TOKEN", None]
+
+    def test_oauth2_authorize_code_verifier_without_state(
+        self, patch_async_method, route, expected_redirect_url
+    ):
+        patch_async_method(client, "get_access_token", return_value="ACCESS_TOKEN")
+
+        response = test_client.get(route, params={"code": "CODE", "code_verifier": "CODE_VERIFIER"})
+
+        client.get_access_token.assert_called()
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url, "CODE_VERIFIER")
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == ["ACCESS_TOKEN", None]
 
@@ -82,6 +94,18 @@ class TestOAuth2AuthorizeCallback:
         response = test_client.get(route, params={"code": "CODE", "state": "STATE"})
 
         client.get_access_token.assert_called()
-        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url)
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url, None)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json() == ["ACCESS_TOKEN", "STATE"]
+
+    def test_oauth2_authorize_with_state_and_code_verifier(
+        self, patch_async_method, route, expected_redirect_url
+    ):
+        patch_async_method(client, "get_access_token", return_value="ACCESS_TOKEN")
+
+        response = test_client.get(route, params={"code": "CODE", "state": "STATE", "code_verifier": "CODE_VERIFIER"})
+
+        client.get_access_token.assert_called()
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url, "CODE_VERIFIER")
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == ["ACCESS_TOKEN", "STATE"]
