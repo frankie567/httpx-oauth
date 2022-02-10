@@ -52,7 +52,7 @@ class TestLinkedInGetIdEmail:
             return_value=Response(200, json=email_response)
         )
 
-        user_id, user_email = await client.get_id_email("TOKEN")
+        user_id, user_email, extra_data = await client.get_id_email("TOKEN")
         profile_url, profile_headers, profile_content = await get_respx_call_args(
             profile_request
         )
@@ -64,6 +64,7 @@ class TestLinkedInGetIdEmail:
         assert email_headers["Authorization"] == "Bearer TOKEN"
         assert user_id == "424242"
         assert user_email == "arthur@camelot.bt"
+        assert extra_data == {}
 
     @pytest.mark.asyncio
     @respx.mock

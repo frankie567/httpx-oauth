@@ -4,19 +4,23 @@ import pytest
 import respx
 from httpx import Response
 
-from httpx_oauth.oauth2 import OAuth2Token
 from httpx_oauth.clients.facebook import (
     FacebookOAuth2,
     GetLongLivedAccessTokenError,
     PROFILE_ENDPOINT,
 )
 from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.oauth2 import OAuth2Token
 
 CLIENT_ID = "CLIENT_ID"
 CLIENT_SECRET = "CLIENT_SECRET"
 REDIRECT_URI = "https://www.tintagel.bt/oauth-callback"
 
-client = FacebookOAuth2("CLIENT_ID", "CLIENT_SECRET")
+client = FacebookOAuth2(
+    "CLIENT_ID",
+    "CLIENT_SECRET",
+    fields=["id", "email", "first_name", "last_name", "picture"],
+)
 
 
 def test_facebook_oauth2():
@@ -67,7 +71,20 @@ class TestGetLongLivedAccessToken:
         assert "error" in excinfo.value.args[0]
 
 
-profile_response = {"id": "424242", "email": "arthur@camelot.bt"}
+profile_response = {
+    "id": "424242",
+    "email": "arthur@camelot.bt",
+    "first_name": "John",
+    "last_name": "Doe",
+    "picture": {
+        "data": {
+            "height": 50,
+            "is_silhouette": True,
+            "url": "https://www.example.com/images/avatar.png",
+            "width": 50,
+        }
+    },
+}
 
 
 class TestFacebookGetIdEmail:
@@ -78,12 +95,20 @@ class TestFacebookGetIdEmail:
             return_value=Response(200, json=profile_response)
         )
 
-        user_id, user_email = await client.get_id_email("TOKEN")
+        user_id, user_email, extra_data = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
 
         assert "access_token=TOKEN" in url.query.decode("utf-8")
         assert user_id == "424242"
         assert user_email == "arthur@camelot.bt"
+        assert extra_data == {
+            "first_name": "John",
+            "last_name": "Doe",
+            "picture": {
+                "url": "https://www.example.com/images/avatar.png",
+                "default": True,
+            }
+        }
 
     @pytest.mark.asyncio
     @respx.mock

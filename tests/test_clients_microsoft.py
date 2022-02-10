@@ -68,12 +68,13 @@ class TestGoogleGetIdEmail:
             return_value=Response(200, json=profile_response)
         )
 
-        user_id, user_email = await client.get_id_email("TOKEN")
+        user_id, user_email, extra_data = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
 
         assert headers["Authorization"] == "Bearer TOKEN"
         assert user_id == "424242"
         assert user_email == "arthur@camelot.bt"
+        assert extra_data == {}
 
     @pytest.mark.asyncio
     @respx.mock

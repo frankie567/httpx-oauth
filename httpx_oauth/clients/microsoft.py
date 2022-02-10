@@ -41,7 +41,7 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             redirect_uri, state=state, scope=scope, extras_params=extras_params
         )
 
-    async def get_id_email(self, token: str) -> Tuple[str, str]:
+    async def get_id_email(self, token: str) -> Tuple[str, str, Dict]:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
@@ -53,4 +53,4 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
 
             data = cast(Dict[str, Any], response.json())
 
-            return data["id"], data["userPrincipalName"]
+            return data["id"], data["userPrincipalName"], {}

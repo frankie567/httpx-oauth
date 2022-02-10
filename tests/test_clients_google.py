@@ -7,7 +7,11 @@ from httpx import Response
 from httpx_oauth.clients.google import GoogleOAuth2, PROFILE_ENDPOINT
 from httpx_oauth.errors import GetIdEmailError
 
-client = GoogleOAuth2("CLIENT_ID", "CLIENT_SECRET")
+client = GoogleOAuth2(
+    "CLIENT_ID",
+    "CLIENT_SECRET",
+    fields=["id", "email", "first_name", "last_name", "picture"],
+)
 
 
 def test_google_oauth2():
@@ -28,6 +32,38 @@ profile_response = {
         {"metadata": {"primary": True, "verified": True}, "value": "arthur@camelot.bt"},
         {"metadata": {"primary": False, "verified": True}, "value": "arthur@graal.com"},
     ],
+    "names": [
+        {
+            "metadata": {
+                "primary": True,
+            },
+            "familyName": "Doe",
+            "givenName": "John",
+        },
+        {
+            "metadata": {
+                "primary": False,
+            },
+            "familyName": "Doe",
+            "givenName": "John S.",
+        },
+    ],
+    "photos": [
+        {
+            "metadata": {
+                "primary": True,
+            },
+            "url": "https://www.example.com/images/avatar.png",
+            "default": True,
+        },
+        {
+            "metadata": {
+                "primary": False,
+            },
+            "url": "https://www.example.com/images/avatar_32x32.png",
+            "default": True,
+        }
+    ],
 }
 
 
@@ -39,13 +75,21 @@ class TestGoogleGetIdEmail:
             return_value=Response(200, json=profile_response)
         )
 
-        user_id, user_email = await client.get_id_email("TOKEN")
+        user_id, user_email, extra_data = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
 
         assert "personFields=emailAddresses" in url.query.decode("utf-8")
         assert headers["Authorization"] == "Bearer TOKEN"
         assert user_id == "people/424242424242"
         assert user_email == "arthur@camelot.bt"
+        assert extra_data == {
+            "first_name": "John",
+            "last_name": "Doe",
+            "picture": {
+                "url": "https://www.example.com/images/avatar.png",
+                "default": True,
+            }
+        }
 
     @pytest.mark.asyncio
     @respx.mock

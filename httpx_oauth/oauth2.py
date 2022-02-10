@@ -71,6 +71,7 @@ class BaseOAuth2(Generic[T]):
         revoke_token_endpoint: Optional[str] = None,
         name: str = "oauth2",
         base_scopes: Optional[List[str]] = None,
+        base_fields: Optional[List[str]] = None,
     ):
         self.client_id = client_id
         self.client_secret = client_secret
@@ -80,6 +81,7 @@ class BaseOAuth2(Generic[T]):
         self.revoke_token_endpoint = revoke_token_endpoint
         self.name = name
         self.base_scopes = base_scopes
+        self.base_fields = base_fields
 
         self.request_headers = {
             "Accept": "application/json",
@@ -177,7 +179,7 @@ class BaseOAuth2(Generic[T]):
             if response.status_code == 400:
                 raise RevokeTokenError(response.json())
 
-    async def get_id_email(self, token: str) -> Tuple[str, str]:
+    async def get_id_email(self, token: str) -> Tuple[str, str, Dict]:
         raise NotImplementedError()
 
 

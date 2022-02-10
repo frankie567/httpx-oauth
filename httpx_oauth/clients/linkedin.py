@@ -30,7 +30,7 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             base_scopes=scopes,
         )
 
-    async def get_id_email(self, token: str) -> Tuple[str, str]:
+    async def get_id_email(self, token: str) -> Tuple[str, str, Dict]:
         async with httpx.AsyncClient() as client:
             profile_response = await client.get(
                 PROFILE_ENDPOINT,
@@ -56,4 +56,4 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             email_data = cast(Dict[str, Any], email_response.json())
             user_email = email_data["elements"][0]["handle~"]["emailAddress"]
 
-            return user_id, user_email
+            return user_id, user_email, {}
