@@ -85,21 +85,19 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
             extra_data = {}
 
             if "first_name" in fields:
-                extra_data.update({
-                    "first_name": data["first_name"]
-                })
+                extra_data.update({"first_name": data["first_name"]})
 
             if "last_name" in fields:
-                extra_data.update({
-                    "last_name": data["last_name"]
-                })
+                extra_data.update({"last_name": data["last_name"]})
 
             if "picture" in fields:
-                extra_data.update({
-                    "picture": {
-                        "url": data["picture"]["data"]["url"],
-                        "default": data["picture"]["data"]["is_silhouette"],
+                extra_data.update(
+                    {
+                        "picture": {
+                            "url": data["picture"]["data"]["url"],
+                            "default": data["picture"]["data"]["is_silhouette"],
+                        }
                     }
-                })
+                )
 
             return data["id"], data["email"], extra_data

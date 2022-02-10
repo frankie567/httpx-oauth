@@ -107,7 +107,7 @@ class TestFacebookGetIdEmail:
             "picture": {
                 "url": "https://www.example.com/images/avatar.png",
                 "default": True,
-            }
+            },
         }
 
     @pytest.mark.asyncio

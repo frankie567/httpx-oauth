@@ -110,7 +110,9 @@ class TestGetAccessToken:
         request = respx.post(client.access_token_endpoint).mock(
             return_value=Response(200, json=load_mock("google_success_access_token"))
         )
-        access_token = await client.get_access_token("CODE", REDIRECT_URI, "CODE_VERIFIER")
+        access_token = await client.get_access_token(
+            "CODE", REDIRECT_URI, "CODE_VERIFIER"
+        )
 
         url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"

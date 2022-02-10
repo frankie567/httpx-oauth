@@ -62,7 +62,7 @@ profile_response = {
             },
             "url": "https://www.example.com/images/avatar_32x32.png",
             "default": True,
-        }
+        },
     ],
 }
 
@@ -88,7 +88,7 @@ class TestGoogleGetIdEmail:
             "picture": {
                 "url": "https://www.example.com/images/avatar.png",
                 "default": True,
-            }
+            },
         }
 
     @pytest.mark.asyncio
