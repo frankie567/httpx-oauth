@@ -99,7 +99,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
                 extra_data.update(
                     {
                         "picture": next(
-                            {"url": photo["url"], "default": photo.get("default")}
+                            {"url": photo["url"], "default": photo.get("default", False)}
                             for photo in data["photos"]
                             if photo["metadata"]["primary"]
                         ),
