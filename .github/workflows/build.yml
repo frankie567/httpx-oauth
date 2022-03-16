@@ -47,4 +47,4 @@ jobs:
         FLIT_USERNAME: ${{ secrets.FLIT_USERNAME }}
         FLIT_PASSWORD: ${{ secrets.FLIT_PASSWORD }}
       run: |
-        flit publish
+        flit publish --setup-py
