@@ -414,6 +414,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#okta" class="md-nav__link">
+    Okta
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -638,6 +645,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#okta" class="md-nav__link">
+    Okta
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -820,6 +834,15 @@
 <ul>
 <li>✅ <code>refresh_token</code> (only for <a href="https://docs.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens">selected partners</a>)</li>
 <li>❌ <code>revoke_token</code></li>
+</ul>
+<h3 id="okta">Okta<a class="headerlink" href="#okta" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.okta</span> <span class="kn">import</span> <span class="n">OktaOAuth2</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">OktaOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">,</span> <span class="s2">&quot;OKTA_BASE_URL&quot;</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>✅ <code>refresh_token</code></li>
+<li>✅ <code>revoke_token</code></li>
 </ul>
 
               
