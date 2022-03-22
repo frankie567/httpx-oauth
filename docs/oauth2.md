@@ -182,3 +182,15 @@ client = LinkedInOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
 * ✅ `refresh_token` (only for [selected partners](https://docs.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens))
 * ❌ `revoke_token`
+
+
+### Okta
+
+```py
+from httpx_oauth.clients.okta import OktaOAuth2
+
+client = OktaOAuth2("CLIENT_ID", "CLIENT_SECRET", "OKTA_BASE_URL")
+```
+
+* ✅ `refresh_token`
+* ✅ `revoke_token`
