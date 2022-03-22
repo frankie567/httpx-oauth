@@ -111,7 +111,9 @@ class BaseOAuth2(Generic[T]):
 
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
-    async def get_access_token(self, code: str, redirect_uri: str, code_verifier: str = None):
+    async def get_access_token(
+        self, code: str, redirect_uri: str, code_verifier: str = None
+    ):
         async with httpx.AsyncClient() as client:
             data = {
                 "grant_type": "authorization_code",
