@@ -46,7 +46,8 @@ Raises a `GetAccessTokenError` if an error occurs.
 
 !!! abstract "Parameters"
     * `code: str`: The authorization code passed in the redirection callback.
-    * `redirect_uri: str `: The exact same `redirect_uri` you passed to the authorization URL.
+    * `redirect_uri: str`: The exact same `redirect_uri` you passed to the authorization URL.
+    * `code_verifier: Optional[str]`: Optional code verifier in a [PKCE context](https://datatracker.ietf.org/doc/html/rfc7636).
 
 !!! example
     ```py
