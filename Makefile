@@ -5,7 +5,7 @@ format: isort-src
 	black .
 
 test:
-	pytest --cov=httpx_oauth/
+	pytest --cov=httpx_oauth/ --cov-report=term-missing --cov-fail-under=100
 
 docs-serve:
 	mkdocs serve

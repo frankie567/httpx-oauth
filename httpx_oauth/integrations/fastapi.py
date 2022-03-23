@@ -24,7 +24,12 @@ class OAuth2AuthorizeCallback:
         self.redirect_url = redirect_url
 
     async def __call__(
-        self, request: Request, code: str = None, state: str = None, error: str = None
+        self,
+        request: Request,
+        code: str = None,
+        code_verifier: str = None,
+        state: str = None,
+        error: str = None,
     ) -> Tuple[OAuth2Token, Optional[str]]:
         if code is None or error is not None:
             raise HTTPException(
@@ -37,6 +42,8 @@ class OAuth2AuthorizeCallback:
         elif self.redirect_url:
             redirect_url = self.redirect_url
 
-        access_token = await self.client.get_access_token(code, redirect_url)
+        access_token = await self.client.get_access_token(
+            code, redirect_url, code_verifier
+        )
 
         return access_token, state
