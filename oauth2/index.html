@@ -421,6 +421,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#reddit" class="md-nav__link">
+    Reddit
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -652,6 +659,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#reddit" class="md-nav__link">
+    Reddit
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -845,6 +859,28 @@
 <li>✅ <code>refresh_token</code></li>
 <li>✅ <code>revoke_token</code></li>
 </ul>
+<h3 id="reddit">Reddit<a class="headerlink" href="#reddit" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.reddit</span> <span class="kn">import</span> <span class="n">RedditOAuth2</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">RedditOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>✅ <code>refresh_token</code></li>
+<li>✅ <code>revoke_token</code></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning about get_id_email()</p>
+<p><code>get_id_email()</code> normally returns a tuple, where the first element is the unique user identifier, and the second
+element is the user's e-mail address.</p>
+<p>As the unique user identifer, the username is returned.</p>
+<p>Reddit API does not return user's e-mail address. Because of this, and to maintain type compatibility with the
+parent class, the second element of the returned tuple is always an empty string.</p>
+<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">reddit_oauth</span> <span class="o">=</span> <span class="n">RedditOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
+<span class="c1"># Proceed to authenticate to receive an access token</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">reddit_oauth</span><span class="o">.</span><span class="n">get_id_email</span><span class="p">(</span><span class="n">access_token</span><span class="p">)</span>
+<span class="p">(</span><span class="s2">&quot;SomeArbitraryUsername&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+</code></pre></div>
+</div>
 
               
             </article>
