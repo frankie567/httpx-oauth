@@ -71,7 +71,6 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
                 auth=(self.client_id, self.client_secret),
                 headers=self.request_headers,
             )
-            print(response.request.content)
 
             data = cast(Dict[str, Any], response.json())
 
