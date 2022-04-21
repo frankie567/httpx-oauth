@@ -1,28 +1,63 @@
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
 [build-system]
-requires = ["flit_core >=2,<3"]
+requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
-[tool.flit.metadata]
-module = "httpx_oauth"
-dist-name = "httpx-oauth"
-author = "François Voron"
-author-email = "fvoron@gmail.com"
-home-page = "https://github.com/frankie567/httpx-oauth"
+[tool.flit.module]
+name = "httpx_oauth"
+
+[project]
+name = "httpx-oauth"
+authors = [
+  { name = "François Voron", email = "fvoron@gmail.com" }
+]
+description = "Async OAuth client using HTTPX"
+readme = "README.md"
+dynamic = ["version"]
 classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3 :: Only",
 ]
-description-file = "README.md"
 requires-python = ">=3.7"
-requires = [
+dependencies = [
     "httpx >=0.18,<0.23",
     "typing-extensions; python_version < '3.8'",
 ]
 
-[tool.flit.metadata.requires-extra]
+[project.optional-dependencies]
+dev = [
+    "flake8",
+    "pytest",
+    "isort",
+    "flake8-docstrings",
+    "mkdocs",
+    "mkdocs-material",
+    "black",
+    "mypy",
+    "codecov",
+    "pytest-cov",
+    "pytest-mock",
+    "flit",
+    "markdown-include",
+    "pygments",
+    "pymdown-extensions",
+    "bumpversion",
+    "pytest-asyncio",
+    "respx",
+    "fastapi",
+]
 
-[tool.flit.metadata.urls]
+[project.urls]
 Documentation = "https://frankie567.github.io/httpx-oauth/"

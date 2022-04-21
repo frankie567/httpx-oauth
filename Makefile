@@ -1,3 +1,8 @@
+install:
+	python -m pip install --upgrade pip
+	pip install flit
+	flit install --deps develop
+
 isort-src:
 	isort ./httpx_oauth
 
