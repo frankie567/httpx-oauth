@@ -195,3 +195,31 @@ client = OktaOAuth2("CLIENT_ID", "CLIENT_SECRET", "OKTA_BASE_URL")
 
 * ✅ `refresh_token`
 * ✅ `revoke_token`
+
+
+### Reddit
+
+```py
+from httpx_oauth.clients.reddit import RedditOAuth2
+
+client = RedditOAuth2("CLIENT_ID", "CLIENT_SECRET")
+```
+
+* ✅ `refresh_token`
+* ✅ `revoke_token`
+
+!!! warning "Warning about get_id_email()"
+    `get_id_email()` normally returns a tuple, where the first element is the unique user identifier, and the second
+    element is the user's e-mail address.
+
+    As the unique user identifer, the username is returned.
+
+    Reddit API does not return user's e-mail address. Because of this, and to maintain type compatibility with the
+    parent class, the second element of the returned tuple is always an empty string.
+
+    ```py
+    >>> reddit_oauth = RedditOAuth2("CLIENT_ID", "CLIENT_SECRET")
+    # Proceed to authenticate to receive an access token
+    >>> reddit_oauth.get_id_email(access_token)
+    ("SomeArbitraryUsername", "")
+    ```
