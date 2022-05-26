@@ -40,8 +40,10 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
         self.refresh_token_endpoint: str
         self.revoke_token_endpoint: str
 
-    async def get_access_token(self, code: str, redirect_uri: str) -> oauth.OAuth2Token:
-        async with httpx.AsyncClient() as client:  # type: httpx.AsyncClient
+    async def get_access_token(
+        self, code: str, redirect_uri: str, code_verifier: str = None
+    ) -> oauth.OAuth2Token:
+        async with self.get_httpx_client() as client:
             response = await client.post(
                 self.access_token_endpoint,
                 data={
@@ -61,7 +63,7 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
             return oauth.OAuth2Token(data)
 
     async def refresh_token(self, refresh_token: str) -> oauth.OAuth2Token:
-        async with httpx.AsyncClient() as client:  # type: httpx.AsyncClient
+        async with self.get_httpx_client() as client:
             response = await client.post(
                 self.refresh_token_endpoint,
                 data={
@@ -84,7 +86,7 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
         token: str,
         token_type_hint: Optional[str] = None,
     ) -> None:
-        async with httpx.AsyncClient() as client:  # type: httpx.AsyncClient
+        async with self.get_httpx_client() as client:
             data = {"token": token}
 
             if token_type_hint is not None:
@@ -104,7 +106,7 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
         # Reddit does not expose user's e-mail address via the API, e-mail will be
         # an empty string
 
-        async with httpx.AsyncClient() as client:  # type: httpx.AsyncClient
+        async with self.get_httpx_client() as client:
             headers = self.request_headers.copy()
             headers["Authorization"] = f"Bearer {token}"
 

@@ -43,7 +43,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, str]:
-        async with httpx.AsyncClient() as client:
+        async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
                 params={"personFields": "emailAddresses"},

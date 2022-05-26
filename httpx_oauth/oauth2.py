@@ -1,5 +1,15 @@
 import time
-from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, cast
+from typing import (
+    Any,
+    AsyncContextManager,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Tuple,
+    TypeVar,
+    cast,
+)
 from urllib.parse import urlencode
 
 import httpx
@@ -114,7 +124,7 @@ class BaseOAuth2(Generic[T]):
     async def get_access_token(
         self, code: str, redirect_uri: str, code_verifier: str = None
     ):
-        async with httpx.AsyncClient() as client:
+        async with self.get_httpx_client() as client:
             data = {
                 "grant_type": "authorization_code",
                 "code": code,
@@ -143,7 +153,7 @@ class BaseOAuth2(Generic[T]):
         if self.refresh_token_endpoint is None:
             raise RefreshTokenNotSupportedError()
 
-        async with httpx.AsyncClient() as client:
+        async with self.get_httpx_client() as client:
             response = await client.post(
                 self.refresh_token_endpoint,
                 data={
@@ -166,7 +176,7 @@ class BaseOAuth2(Generic[T]):
         if self.revoke_token_endpoint is None:
             raise RevokeTokenNotSupportedError()
 
-        async with httpx.AsyncClient() as client:
+        async with self.get_httpx_client() as client:
             data = {"token": token}
 
             if token_type_hint is not None:
@@ -181,6 +191,9 @@ class BaseOAuth2(Generic[T]):
 
     async def get_id_email(self, token: str) -> Tuple[str, str]:
         raise NotImplementedError()
+
+    def get_httpx_client(self) -> AsyncContextManager[httpx.AsyncClient]:
+        return httpx.AsyncClient()
 
 
 OAuth2 = BaseOAuth2[Dict[str, Any]]
