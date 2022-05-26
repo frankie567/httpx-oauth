@@ -223,3 +223,29 @@ client = RedditOAuth2("CLIENT_ID", "CLIENT_SECRET")
     >>> reddit_oauth.get_id_email(access_token)
     ("SomeArbitraryUsername", "")
     ```
+
+## Customize HTTPX client
+
+By default, requests are made using [`httpx.AsyncClient`](https://www.python-httpx.org/api/#asyncclient) with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do do by overloading the `get_httpx_client` method.
+
+```py
+from typing import AsyncContextManager
+
+import httpx
+from httpx_oauth.oauth2 import OAuth2
+
+
+class OAuth2CustomTimeout(OAuth2):
+    def get_httpx_client(self) -> AsyncContextManager[httpx.AsyncClient]:
+        return httpx.AsyncClient(timeout=10.0)  # Use a default 10s timeout everywhere.
+
+
+client = OAuth2CustomTimeout(
+    "CLIENT_ID",
+    "CLIENT_SECRET",
+    "AUTHORIZE_ENDPOINT",
+    "ACCESS_TOKEN_ENDPOINT",
+    refresh_token_endpoint="REFRESH_TOKEN_ENDPOINT",
+    revoke_token_endpoint="REVOKE_TOKEN_ENDPOINT",
+)
+```
