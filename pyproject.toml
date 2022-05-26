@@ -32,7 +32,7 @@ classifiers = [
 ]
 requires-python = ">=3.7"
 dependencies = [
-    "httpx >=0.18,<0.23",
+    "httpx >=0.18,<0.24",
     "typing-extensions; python_version < '3.8'",
 ]
 
