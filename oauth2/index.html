@@ -433,6 +433,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#customize-httpx-client" class="md-nav__link">
+    Customize HTTPX client
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -671,6 +678,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#customize-httpx-client" class="md-nav__link">
+    Customize HTTPX client
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -881,6 +895,28 @@ parent class, the second element of the returned tuple is always an empty string
 <span class="p">(</span><span class="s2">&quot;SomeArbitraryUsername&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 </code></pre></div>
 </div>
+<h2 id="customize-httpx-client">Customize HTTPX client<a class="headerlink" href="#customize-httpx-client" title="Permanent link">&para;</a></h2>
+<p>By default, requests are made using <a href="https://www.python-httpx.org/api/#asyncclient"><code>httpx.AsyncClient</code></a> with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do do by overloading the <code>get_httpx_client</code> method.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncContextManager</span>
+
+<span class="kn">import</span> <span class="nn">httpx</span>
+<span class="kn">from</span> <span class="nn">httpx_oauth.oauth2</span> <span class="kn">import</span> <span class="n">OAuth2</span>
+
+
+<span class="k">class</span> <span class="nc">OAuth2CustomTimeout</span><span class="p">(</span><span class="n">OAuth2</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_httpx_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncContextManager</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>  <span class="c1"># Use a default 10s timeout everywhere.</span>
+
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">OAuth2CustomTimeout</span><span class="p">(</span>
+    <span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AUTHORIZE_ENDPOINT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ACCESS_TOKEN_ENDPOINT&quot;</span><span class="p">,</span>
+    <span class="n">refresh_token_endpoint</span><span class="o">=</span><span class="s2">&quot;REFRESH_TOKEN_ENDPOINT&quot;</span><span class="p">,</span>
+    <span class="n">revoke_token_endpoint</span><span class="o">=</span><span class="s2">&quot;REVOKE_TOKEN_ENDPOINT&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
 
               
             </article>
