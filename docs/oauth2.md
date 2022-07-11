@@ -123,6 +123,23 @@ A utility method is provided to quickly determine if the token is still valid or
 
 We provide several ready-to-use clients for widely used services with configured endpoints and specificites took into account.
 
+### Discord
+
+Contributed by [William Hatcher](https://github.com/williamhatcher)
+
+```py
+from httpx_oauth.clients.discord import DiscordOAuth2
+
+client = DiscordOAuth2("CLIENT_ID", "CLIENT_SECRET")
+```
+
+* ✅ `refresh_token`
+* ✅ `revoke_token`
+
+!!! warning "Warning about get_id_email()"
+    Email is optional for Discord accounts. This method will error if the user does not have a verified email address.
+    Furthermore, you should always make sure to include `identify`, and `email` in your scopes. (This is the default)
+
 ### Facebook
 
 ```py
