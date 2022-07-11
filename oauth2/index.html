@@ -374,6 +374,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#discord" class="md-nav__link">
+    Discord
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#facebook" class="md-nav__link">
     Facebook
   </a>
@@ -619,6 +626,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#discord" class="md-nav__link">
+    Discord
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#facebook" class="md-nav__link">
     Facebook
   </a>
@@ -810,6 +824,21 @@
 </div>
 <h2 id="provided-clients">Provided clients<a class="headerlink" href="#provided-clients" title="Permanent link">&para;</a></h2>
 <p>We provide several ready-to-use clients for widely used services with configured endpoints and specificites took into account.</p>
+<h3 id="discord">Discord<a class="headerlink" href="#discord" title="Permanent link">&para;</a></h3>
+<p>Contributed by <a href="https://github.com/williamhatcher">William Hatcher</a></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.discord</span> <span class="kn">import</span> <span class="n">DiscordOAuth2</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">DiscordOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>✅ <code>refresh_token</code></li>
+<li>✅ <code>revoke_token</code></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning about get_id_email()</p>
+<p>Email is optional for Discord accounts. This method will error if the user does not have a verified email address.
+Furthermore, you should always make sure to include <code>identify</code>, and <code>email</code> in your scopes. (This is the default)</p>
+</div>
 <h3 id="facebook">Facebook<a class="headerlink" href="#facebook" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.facebook</span> <span class="kn">import</span> <span class="n">FacebookOAuth2</span>
 
