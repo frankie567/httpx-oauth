@@ -43,10 +43,12 @@ class DiscordOAuth2(BaseOAuth2[Dict[str, Any]]):
 
             user_id = data["id"]
 
-            if 'verified' not in data or 'email' not in data:  # No email on discord account
-                raise GetIdEmailError({'error': 'Email not provided'})
-            elif not data['verified']:  # Email present, but not verified
-                raise GetIdEmailError({'error': 'Email not verified'})
+            if (
+                "verified" not in data or "email" not in data
+            ):  # No email on discord account
+                raise GetIdEmailError({"error": "Email not provided"})
+            elif not data["verified"]:  # Email present, but not verified
+                raise GetIdEmailError({"error": "Email not verified"})
             else:
                 user_email = data["email"]
 

@@ -30,7 +30,7 @@ profile_verified_email_response = {
     "banner": "06c16474723fe537c283b8efa61a30c8",
     "accent_color": 16711680,
     "premium_type": 1,
-    "public_flags": 64
+    "public_flags": 64,
 }
 
 profile_no_email_response = {
@@ -42,7 +42,7 @@ profile_no_email_response = {
     "banner": "06c16474723fe537c283b8efa61a30c8",
     "accent_color": 16711680,
     "premium_type": 1,
-    "public_flags": 64
+    "public_flags": 64,
 }
 
 profile_not_verified_email_response = {
@@ -56,7 +56,7 @@ profile_not_verified_email_response = {
     "banner": "06c16474723fe537c283b8efa61a30c8",
     "accent_color": 16711680,
     "premium_type": 1,
-    "public_flags": 64
+    "public_flags": 64,
 }
 
 
