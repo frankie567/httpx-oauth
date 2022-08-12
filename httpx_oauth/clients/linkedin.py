@@ -1,7 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, cast
 
-import httpx
-
 from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
 
