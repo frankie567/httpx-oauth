@@ -144,7 +144,7 @@ class BaseOAuth2(Generic[T]):
 
             data = cast(Dict[str, Any], response.json())
 
-            if response.status_code == 400:
+            if response.status_code >= 400:
                 raise GetAccessTokenError(data)
 
             return OAuth2Token(data)
@@ -167,7 +167,7 @@ class BaseOAuth2(Generic[T]):
 
             data = cast(Dict[str, Any], response.json())
 
-            if response.status_code == 400:
+            if response.status_code >= 400:
                 raise RefreshTokenError(data)
 
             return OAuth2Token(data)
@@ -186,7 +186,7 @@ class BaseOAuth2(Generic[T]):
                 self.revoke_token_endpoint, data=data, headers=self.request_headers
             )
 
-            if response.status_code == 400:
+            if response.status_code >= 400:
                 raise RevokeTokenError(response.json())
 
     async def get_id_email(self, token: str) -> Tuple[str, str]:

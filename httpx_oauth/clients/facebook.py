@@ -46,7 +46,7 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
 
             data = cast(Dict[str, Any], response.json())
 
-            if response.status_code == 400:
+            if response.status_code >= 400:
                 raise GetLongLivedAccessTokenError(data)
 
             return OAuth2Token(data)
