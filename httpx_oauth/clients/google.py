@@ -15,7 +15,6 @@ PROFILE_ENDPOINT = "https://people.googleapis.com/v1/people/me"
 
 
 LOGO_SVG = """
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="256px" height="262px" viewBox="0 0 256 262" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
 	<g>
 		<path d="M255.878,133.451 C255.878,122.717 255.007,114.884 253.122,106.761 L130.55,106.761 L130.55,155.209 L202.497,155.209 C201.047,167.249 193.214,185.381 175.807,197.565 L175.563,199.187 L214.318,229.21 L217.003,229.478 C241.662,206.704 255.878,173.196 255.878,133.451" fill="#4285F4"></path>

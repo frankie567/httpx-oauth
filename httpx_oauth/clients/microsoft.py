@@ -10,7 +10,6 @@ PROFILE_ENDPOINT = "https://graph.microsoft.com/v1.0/me"
 
 
 LOGO_SVG = """
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="100%" height="100%" viewBox="0 0 110 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <rect x="0" y="0" width="51.927" height="51.927" style="fill:rgb(241,81,27);fill-rule:nonzero;"/>
     <rect x="57.334" y="0" width="51.926" height="51.927" style="fill:rgb(128,204,40);fill-rule:nonzero;"/>

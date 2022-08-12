@@ -10,7 +10,6 @@ PROFILE_ENDPOINT = "https://graph.facebook.com/v5.0/me"
 
 
 LOGO_SVG = """
-<?xml version="1.0" encoding="UTF-8"?>
 <svg width="256px" height="256px" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
     <title>Facebook</title>
     <g>
