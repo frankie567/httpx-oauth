@@ -6,7 +6,7 @@ from httpx_oauth.oauth2 import BaseOAuth2
 AUTHORIZE_ENDPOINT = "https://discord.com/api/oauth2/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://discord.com/api/oauth2/token"
 REVOKE_TOKEN_ENDPOINT = "https://discord.com/api/oauth2/token/revoke"
-BASE_SCOPES = ("identify", "email")
+BASE_SCOPES = ["identify", "email"]
 PROFILE_ENDPOINT = "https://discord.com/api/users/@me"
 
 

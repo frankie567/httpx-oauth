@@ -15,7 +15,7 @@ def test_discord_oauth2():
     assert client.access_token_endpoint == "https://discord.com/api/oauth2/token"
     assert client.refresh_token_endpoint == "https://discord.com/api/oauth2/token"
     assert client.revoke_token_endpoint == "https://discord.com/api/oauth2/token/revoke"
-    assert client.base_scopes == ("identify", "email")
+    assert client.base_scopes == ["identify", "email"]
     assert client.name == "discord"
 
 
