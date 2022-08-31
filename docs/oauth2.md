@@ -123,6 +123,19 @@ A utility method is provided to quickly determine if the token is still valid or
 
 We provide several ready-to-use clients for widely used services with configured endpoints and specificites took into account.
 
+### OpenID
+
+Generic client for providers following the [OpenID Connect protocol](https://openid.net/connect/). Besides the Client ID and the Client Secret, you'll have to provide the OpenID configuration endpoint, allowing the client to discover the required endpoints automatically. By convention, it's usually served under the path `.well-known/openid-configuration`.
+
+```py
+from httpx_oauth.clients.openid import OpenID
+
+client = OpenID("CLIENT_ID", "CLIENT_SECRET", "https://example.fief.dev/.well-known/openid-configuration")
+```
+
+* ❓ `refresh_token`: depends if the OpenID provider supports it
+* ❓ `revoke_token`: depends if the OpenID provider supports it
+
 ### Discord
 
 ```py
@@ -198,18 +211,18 @@ client = LinkedInOAuth2("CLIENT_ID", "CLIENT_SECRET")
 * ✅ `refresh_token` (only for [selected partners](https://docs.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens))
 * ❌ `revoke_token`
 
-
 ### Okta
+
+Based on the [OpenID client](#openid). You need to provide the domain of your Okta domain for automatically discovering the required endpoints.
 
 ```py
 from httpx_oauth.clients.okta import OktaOAuth2
 
-client = OktaOAuth2("CLIENT_ID", "CLIENT_SECRET", "OKTA_BASE_URL")
+client = OktaOAuth2("CLIENT_ID", "CLIENT_SECRET", "example.okta.com")
 ```
 
 * ✅ `refresh_token`
 * ✅ `revoke_token`
-
 
 ### Reddit
 
