@@ -102,10 +102,7 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
             if response.status_code >= httpx.codes.BAD_REQUEST:
                 raise oauth.RevokeTokenError()
 
-    async def get_id_email(self, token: str) -> Tuple[str, str]:
-        # Reddit does not expose user's e-mail address via the API, e-mail will be
-        # an empty string
-
+    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             headers = self.request_headers.copy()
             headers["Authorization"] = f"Bearer {token}"
@@ -121,4 +118,4 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
                 raise GetIdEmailError({"error": response.status_code})
 
             data = cast(Dict[str, Any], response.json())
-            return data["name"], ""
+            return data["name"], None

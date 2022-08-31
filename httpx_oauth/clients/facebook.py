@@ -63,7 +63,7 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
 
             return OAuth2Token(data)
 
-    async def get_id_email(self, token: str) -> Tuple[str, str]:
+    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,

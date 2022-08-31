@@ -6,8 +6,8 @@ install:
 isort-src:
 	isort ./httpx_oauth
 
-format: isort-src
-	black .
+lint:
+	isort ./httpx_oauth && black . && mypy ./httpx_oauth
 
 test:
 	pytest --cov=httpx_oauth/ --cov-report=term-missing --cov-fail-under=100

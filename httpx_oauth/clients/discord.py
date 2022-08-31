@@ -29,7 +29,7 @@ class DiscordOAuth2(BaseOAuth2[Dict[str, Any]]):
             base_scopes=scopes,
         )
 
-    async def get_id_email(self, token: str) -> Tuple[str, str]:
+    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
@@ -42,14 +42,9 @@ class DiscordOAuth2(BaseOAuth2[Dict[str, Any]]):
             data = cast(Dict[str, Any], response.json())
 
             user_id = data["id"]
+            user_email = data.get("email")
 
-            if (
-                "verified" not in data or "email" not in data
-            ):  # No email on discord account
-                raise GetIdEmailError({"error": "Email not provided"})
-            elif not data["verified"]:  # Email present, but not verified
-                raise GetIdEmailError({"error": "Email not verified"})
-            else:
-                user_email = data["email"]
+            if not data.get("verified", False):
+                user_email = None
 
             return user_id, user_email

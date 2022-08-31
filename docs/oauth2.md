@@ -85,12 +85,12 @@ Raises a `RevokeTokenNotSupportedError` if no `revoke_token_endpoint` was provid
 
 #### `get_id_email`
 
-Returns the id and the email of the authenticated user from the API provider. **It assumes you have asked for the required scopes**.
+Returns the id and the email (if available) of the authenticated user from the API provider. **It assumes you have asked for the required scopes**.
 
 Raises a `GetIdEmailError` if an error occurs.
 
 !!! abstract "Parameters"
-    * `token: str`: A token or refresh token to revoke.
+    * `token: str`: A valid access token.
 
 !!! example
     ```py
@@ -125,8 +125,6 @@ We provide several ready-to-use clients for widely used services with configured
 
 ### Discord
 
-Contributed by [William Hatcher](https://github.com/williamhatcher)
-
 ```py
 from httpx_oauth.clients.discord import DiscordOAuth2
 
@@ -136,9 +134,8 @@ client = DiscordOAuth2("CLIENT_ID", "CLIENT_SECRET")
 * ✅ `refresh_token`
 * ✅ `revoke_token`
 
-!!! warning "Warning about get_id_email()"
-    Email is optional for Discord accounts. This method will error if the user does not have a verified email address.
-    Furthermore, you should always make sure to include `identify`, and `email` in your scopes. (This is the default)
+!!! warning "Warning about `get_id_email`"
+    Email is optional for Discord accounts, so the email might be `None`.
 
 ### Facebook
 
@@ -225,20 +222,8 @@ client = RedditOAuth2("CLIENT_ID", "CLIENT_SECRET")
 * ✅ `refresh_token`
 * ✅ `revoke_token`
 
-!!! warning "Warning about get_id_email()"
-    `get_id_email()` normally returns a tuple, where the first element is the unique user identifier, and the second
-    element is the user's e-mail address.
-
-    As the unique user identifer, the username is returned.
-
-    Reddit API does not return user's e-mail address. Because of this, and to maintain type compatibility with the
-    parent class, the second element of the returned tuple is always an empty string.
-
-    ```py
-    >>> reddit_oauth = RedditOAuth2("CLIENT_ID", "CLIENT_SECRET")
-    # Proceed to authenticate to receive an access token
-    >>> reddit_oauth.get_id_email(access_token)
-    ("SomeArbitraryUsername", "")
+!!! warning "Warning about `get_id_email`"
+    Reddit API never return email addresses. Thus, e-mail will *always* be `None`.
     ```
 
 ## Customize HTTPX client

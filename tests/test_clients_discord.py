@@ -91,16 +91,15 @@ class TestDiscordGetIdEmail:
 
     @pytest.mark.asyncio
     @respx.mock
-    async def test_no_email_error(self):
+    async def test_no_email(self):
         respx.get(re.compile(f"^{PROFILE_ENDPOINT}$")).mock(
             return_value=Response(200, json=profile_no_email_response)
         )
 
-        with pytest.raises(GetIdEmailError) as excinfo:
-            await client.get_id_email("TOKEN")
+        user_id, user_email = await client.get_id_email("TOKEN")
 
-        assert type(excinfo.value.args[0]) == dict
-        assert excinfo.value.args[0] == {"error": "Email not provided"}
+        assert user_id == "80351110224678912"
+        assert user_email is None
 
     @pytest.mark.asyncio
     @respx.mock
@@ -109,8 +108,7 @@ class TestDiscordGetIdEmail:
             return_value=Response(200, json=profile_not_verified_email_response)
         )
 
-        with pytest.raises(GetIdEmailError) as excinfo:
-            await client.get_id_email("TOKEN")
+        user_id, user_email = await client.get_id_email("TOKEN")
 
-        assert type(excinfo.value.args[0]) == dict
-        assert excinfo.value.args[0] == {"error": "Email not verified"}
+        assert user_id == "80351110224678912"
+        assert user_email is None

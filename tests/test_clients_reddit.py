@@ -245,7 +245,7 @@ class TestRedditGetIdEmail:
 
         assert headers["Authorization"] == f"Bearer {FAKE_ACCESS_TOKEN}"
         assert user_id == "TheQuickBrownCatJumpsOverTheLazyDog"
-        assert user_email == ""
+        assert user_email is None
 
     @pytest.mark.asyncio
     @respx.mock

@@ -60,12 +60,12 @@ Alternatively, you can run `pytest` yourself:
 pytest
 ```
 
-### Format the code
+### Lint the code
 
-Execute the following command to apply `isort` and `black` formatting:
+Execute the following command to apply `isort` and `black` formatting and run typecheck:
 
 ```bash
-make format
+make lint
 ```
 
 ## License

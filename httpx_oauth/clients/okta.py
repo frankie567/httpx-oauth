@@ -29,7 +29,7 @@ class OktaOAuth2(BaseOAuth2[BaseOAuth2[Dict[str, Any]]]):
         )
         self.profile = f"https://{okta_base_url}/oauth2/v1/userinfo"
 
-    async def get_id_email(self, token: str) -> Tuple[str, str]:
+    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with httpx.AsyncClient(
             headers={**self.request_headers, "Authorization": f"Bearer {token}"}
         ) as client:
