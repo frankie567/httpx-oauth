@@ -374,6 +374,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#openid" class="md-nav__link">
+    OpenID
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#discord" class="md-nav__link">
     Discord
   </a>
@@ -626,6 +633,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#openid" class="md-nav__link">
+    OpenID
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#discord" class="md-nav__link">
     Discord
   </a>
@@ -793,12 +807,12 @@
 </code></pre></div>
 </div>
 <h4 id="get_id_email"><code>get_id_email</code><a class="headerlink" href="#get_id_email" title="Permanent link">&para;</a></h4>
-<p>Returns the id and the email of the authenticated user from the API provider. <strong>It assumes you have asked for the required scopes</strong>.</p>
+<p>Returns the id and the email (if available) of the authenticated user from the API provider. <strong>It assumes you have asked for the required scopes</strong>.</p>
 <p>Raises a <code>GetIdEmailError</code> if an error occurs.</p>
 <div class="admonition abstract">
 <p class="admonition-title">Parameters</p>
 <ul>
-<li><code>token: str</code>: A token or refresh token to revoke.</li>
+<li><code>token: str</code>: A valid access token.</li>
 </ul>
 </div>
 <div class="admonition example">
@@ -824,8 +838,17 @@
 </div>
 <h2 id="provided-clients">Provided clients<a class="headerlink" href="#provided-clients" title="Permanent link">&para;</a></h2>
 <p>We provide several ready-to-use clients for widely used services with configured endpoints and specificites took into account.</p>
+<h3 id="openid">OpenID<a class="headerlink" href="#openid" title="Permanent link">&para;</a></h3>
+<p>Generic client for providers following the <a href="https://openid.net/connect/">OpenID Connect protocol</a>. Besides the Client ID and the Client Secret, you'll have to provide the OpenID configuration endpoint, allowing the client to discover the required endpoints automatically. By convention, it's usually served under the path <code>.well-known/openid-configuration</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.openid</span> <span class="kn">import</span> <span class="n">OpenID</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">OpenID</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">,</span> <span class="s2">&quot;https://example.fief.dev/.well-known/openid-configuration&quot;</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li>❓ <code>refresh_token</code>: depends if the OpenID provider supports it</li>
+<li>❓ <code>revoke_token</code>: depends if the OpenID provider supports it</li>
+</ul>
 <h3 id="discord">Discord<a class="headerlink" href="#discord" title="Permanent link">&para;</a></h3>
-<p>Contributed by <a href="https://github.com/williamhatcher">William Hatcher</a></p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.discord</span> <span class="kn">import</span> <span class="n">DiscordOAuth2</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">DiscordOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
@@ -835,9 +858,8 @@
 <li>✅ <code>revoke_token</code></li>
 </ul>
 <div class="admonition warning">
-<p class="admonition-title">Warning about get_id_email()</p>
-<p>Email is optional for Discord accounts. This method will error if the user does not have a verified email address.
-Furthermore, you should always make sure to include <code>identify</code>, and <code>email</code> in your scopes. (This is the default)</p>
+<p class="admonition-title">Warning about <code>get_id_email</code></p>
+<p>Email is optional for Discord accounts, so the email might be <code>None</code>.</p>
 </div>
 <h3 id="facebook">Facebook<a class="headerlink" href="#facebook" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.facebook</span> <span class="kn">import</span> <span class="n">FacebookOAuth2</span>
@@ -894,9 +916,10 @@ Furthermore, you should always make sure to include <code>identify</code>, and <
 <li>❌ <code>revoke_token</code></li>
 </ul>
 <h3 id="okta">Okta<a class="headerlink" href="#okta" title="Permanent link">&para;</a></h3>
+<p>Based on the <a href="#openid">OpenID client</a>. You need to provide the domain of your Okta domain for automatically discovering the required endpoints.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.okta</span> <span class="kn">import</span> <span class="n">OktaOAuth2</span>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">OktaOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">,</span> <span class="s2">&quot;OKTA_BASE_URL&quot;</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">OktaOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">,</span> <span class="s2">&quot;example.okta.com&quot;</span><span class="p">)</span>
 </code></pre></div>
 <ul>
 <li>✅ <code>refresh_token</code></li>
@@ -912,17 +935,9 @@ Furthermore, you should always make sure to include <code>identify</code>, and <
 <li>✅ <code>revoke_token</code></li>
 </ul>
 <div class="admonition warning">
-<p class="admonition-title">Warning about get_id_email()</p>
-<p><code>get_id_email()</code> normally returns a tuple, where the first element is the unique user identifier, and the second
-element is the user's e-mail address.</p>
-<p>As the unique user identifer, the username is returned.</p>
-<p>Reddit API does not return user's e-mail address. Because of this, and to maintain type compatibility with the
-parent class, the second element of the returned tuple is always an empty string.</p>
-<div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">reddit_oauth</span> <span class="o">=</span> <span class="n">RedditOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
-<span class="c1"># Proceed to authenticate to receive an access token</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">reddit_oauth</span><span class="o">.</span><span class="n">get_id_email</span><span class="p">(</span><span class="n">access_token</span><span class="p">)</span>
-<span class="p">(</span><span class="s2">&quot;SomeArbitraryUsername&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-</code></pre></div>
+<p class="admonition-title">Warning about <code>get_id_email</code></p>
+<p>Reddit API never return email addresses. Thus, e-mail will <em>always</em> be <code>None</code>.
+```</p>
 </div>
 <h2 id="customize-httpx-client">Customize HTTPX client<a class="headerlink" href="#customize-httpx-client" title="Permanent link">&para;</a></h2>
 <p>By default, requests are made using <a href="https://www.python-httpx.org/api/#asyncclient"><code>httpx.AsyncClient</code></a> with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do do by overloading the <code>get_httpx_client</code> method.</p>
