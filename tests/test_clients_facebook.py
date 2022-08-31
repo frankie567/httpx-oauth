@@ -68,6 +68,7 @@ class TestGetLongLivedAccessToken:
 
 
 profile_response = {"id": "424242", "email": "arthur@camelot.bt"}
+profile_response_no_email = {"id": "424242"}
 
 
 class TestFacebookGetIdEmail:
@@ -84,6 +85,20 @@ class TestFacebookGetIdEmail:
         assert "access_token=TOKEN" in url.query.decode("utf-8")
         assert user_id == "424242"
         assert user_email == "arthur@camelot.bt"
+
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_success_no_email(self, get_respx_call_args):
+        request = respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
+            return_value=Response(200, json=profile_response_no_email)
+        )
+
+        user_id, user_email = await client.get_id_email("TOKEN")
+        url, headers, content = await get_respx_call_args(request)
+
+        assert "access_token=TOKEN" in url.query.decode("utf-8")
+        assert user_id == "424242"
+        assert user_email is None
 
     @pytest.mark.asyncio
     @respx.mock

@@ -75,4 +75,4 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
 
             data = cast(Dict[str, Any], response.json())
 
-            return data["id"], data["email"]
+            return data["id"], data.get("email")
