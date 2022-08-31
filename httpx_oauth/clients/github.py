@@ -59,7 +59,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             data = cast(Dict[str, Any], response.json())
 
             id = data["id"]
-            email = data["email"]
+            email = data.get("email")
 
             # No public email, make a separate call to /user/emails
             if email is None:
