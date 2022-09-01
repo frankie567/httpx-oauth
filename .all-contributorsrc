@@ -49,6 +49,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Forst",
+      "name": "Foster Snowhill",
+      "avatar_url": "https://avatars.githubusercontent.com/u/369699?v=4",
+      "profile": "https://github.com/Forst",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
