@@ -1,6 +1,6 @@
 # HTTPX OAuth
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <p align="center">
@@ -90,6 +90,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.kentonparton.com"><img src="https://avatars.githubusercontent.com/u/20202312?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kenton Parton</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=KentonParton" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/stepan-chatalyan"><img src="https://avatars.githubusercontent.com/u/78931407?v=4?s=100" width="100px;" alt=""/><br /><sub><b>stepan-chatalyan</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=stepan-chatalyan" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Forst"><img src="https://avatars.githubusercontent.com/u/369699?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Foster Snowhill</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=Forst" title="Code">💻</a></td>
+    <td align="center"><a href="https://hatcher.work"><img src="https://avatars.githubusercontent.com/u/24600763?v=4?s=100" width="100px;" alt=""/><br /><sub><b>William Hatcher</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=williamhatcher" title="Code">💻</a></td>
   </tr>
 </table>
 
