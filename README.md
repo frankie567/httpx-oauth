@@ -1,6 +1,6 @@
 # HTTPX OAuth
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <p align="center">
@@ -87,6 +87,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://francoisvoron.com"><img src="https://avatars.githubusercontent.com/u/1144727?v=4?s=100" width="100px;" alt=""/><br /><sub><b>François Voron</b></sub></a><br /><a href="#maintenance-frankie567" title="Maintenance">🚧</a></td>
     <td align="center"><a href="http://xaviertorello.cat"><img src="https://avatars.githubusercontent.com/u/8709244?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Xavi Torelló</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=XaviTorello" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/fullonic"><img src="https://avatars.githubusercontent.com/u/13336073?v=4?s=100" width="100px;" alt=""/><br /><sub><b>dbf</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=fullonic" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.kentonparton.com"><img src="https://avatars.githubusercontent.com/u/20202312?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kenton Parton</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=KentonParton" title="Code">💻</a></td>
   </tr>
 </table>
 
