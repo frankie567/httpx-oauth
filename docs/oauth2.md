@@ -211,6 +211,17 @@ client = LinkedInOAuth2("CLIENT_ID", "CLIENT_SECRET")
 * ✅ `refresh_token` (only for [selected partners](https://docs.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens))
 * ❌ `revoke_token`
 
+### NAVER
+
+```py
+from httpx_oauth.clients.naver import NaverOAuth2
+
+client = NaverOAuth2("CLIENT_ID", "CLIENT_SECRET")
+```
+
+* ✅ `refresh_token`
+* ✅ `revoke_token`
+
 ### Okta
 
 Based on the [OpenID client](#openid). You need to provide the domain of your Okta domain for automatically discovering the required endpoints.
