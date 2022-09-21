@@ -56,8 +56,4 @@ class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
             account_info = cast(Dict[str, Any], response.json())
             account_id = str(account_info.get('id'))
             kakao_account = account_info.get('kakao_account')
-
-            try:
-                return account_id, kakao_account.get('email')
-            except:
-                return account_id, None
+            return account_id, kakao_account.get('email')
