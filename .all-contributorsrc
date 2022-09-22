@@ -85,6 +85,15 @@
       "contributions": [
         "platform"
       ]
+    },
+    {
+      "login": "joonas-yoon",
+      "name": "Joona Yoon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9527681?v=4",
+      "profile": "joonas.io",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
