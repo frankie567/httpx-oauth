@@ -200,6 +200,17 @@ client = GoogleOAuth2("CLIENT_ID", "CLIENT_SECRET")
 * ✅ `refresh_token`
 * ✅ `revoke_token`
 
+### Kakao
+
+```py
+from httpx_oauth.clients.kakao import KakaoOAuth2
+
+client = KakaoOAuth2("CLIENT_ID", "CLIENT_SECRET")
+```
+
+* ✅ `refresh_token`
+* ✅ `revoke_token`
+
 ### LinkedIn
 
 ```py
