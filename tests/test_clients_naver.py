@@ -4,8 +4,9 @@ import pytest
 import respx
 from httpx import Response
 
-from httpx_oauth.clients.naver import NaverOAuth2, PROFILE_ENDPOINT
+from httpx_oauth.clients.naver import PROFILE_ENDPOINT, NaverOAuth2
 from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.oauth2 import RevokeTokenError
 
 client = NaverOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
@@ -37,7 +38,7 @@ profile_no_email_response = {
 }
 
 
-class TestDiscordGetIdEmail:
+class TestNaverdGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
@@ -77,3 +78,29 @@ class TestDiscordGetIdEmail:
 
         assert user_id == "424242424242424242424242"
         assert user_email is None
+
+
+class TestRevokeToken:
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_revoke_token(self, get_respx_call_args):
+        request = respx.post(client.revoke_token_endpoint).mock(
+            return_value=Response(200)
+        )
+        await client.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
+
+        url, headers, content = await get_respx_call_args(request)
+        assert headers["Content-Type"] == "application/x-www-form-urlencoded"
+        assert headers["Accept"] == "application/json"
+        assert "token=TOKEN" in content
+        assert "token_type_hint=TOKEN_TYPE_HINT" in content
+
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_revoke_token_error(self):
+        respx.post(client.revoke_token_endpoint).mock(
+            return_value=Response(400, json={"error": "message"})
+        )
+
+        with pytest.raises(RevokeTokenError):
+            await client.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
