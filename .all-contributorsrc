@@ -94,6 +94,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "LindezaGrey",
+      "name": "LindezaGrey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39629455?v=4",
+      "profile": "http://vibrix.net",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -101,5 +110,6 @@
   "projectOwner": "frankie567",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }
