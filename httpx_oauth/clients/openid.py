@@ -28,8 +28,8 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
             self.openid_configuration: Dict[str, Any] = response.json()
 
         token_endpoint = self.openid_configuration["token_endpoint"]
-        refresh_token_supported = (
-            "refresh_token" in self.openid_configuration["grant_types_supported"]
+        refresh_token_supported = "refresh_token" in self.openid_configuration.get(
+            "grant_types_supported", []
         )
 
         super().__init__(
