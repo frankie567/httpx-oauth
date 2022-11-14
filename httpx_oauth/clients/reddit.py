@@ -54,7 +54,7 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
         self.revoke_token_endpoint: str
 
     async def get_access_token(
-        self, code: str, redirect_uri: str, code_verifier: str = None
+        self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
     ) -> oauth.OAuth2Token:
         async with self.get_httpx_client() as client:
             response = await client.post(

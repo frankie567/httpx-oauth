@@ -14,7 +14,10 @@ class OAuth2AuthorizeCallback:
     redirect_url: Optional[str]
 
     def __init__(
-        self, client: BaseOAuth2, route_name: str = None, redirect_url: str = None
+        self,
+        client: BaseOAuth2,
+        route_name: Optional[str] = None,
+        redirect_url: Optional[str] = None,
     ):
         assert (route_name is not None and redirect_url is None) or (
             route_name is None and redirect_url is not None
@@ -26,10 +29,10 @@ class OAuth2AuthorizeCallback:
     async def __call__(
         self,
         request: Request,
-        code: str = None,
-        code_verifier: str = None,
-        state: str = None,
-        error: str = None,
+        code: Optional[str] = None,
+        code_verifier: Optional[str] = None,
+        state: Optional[str] = None,
+        error: Optional[str] = None,
     ) -> Tuple[OAuth2Token, Optional[str]]:
         if code is None or error is not None:
             raise HTTPException(

@@ -98,7 +98,7 @@ class BaseOAuth2(Generic[T]):
     async def get_authorization_url(
         self,
         redirect_uri: str,
-        state: str = None,
+        state: Optional[str] = None,
         scope: Optional[List[str]] = None,
         extras_params: Optional[T] = None,
     ) -> str:
@@ -122,7 +122,7 @@ class BaseOAuth2(Generic[T]):
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
     async def get_access_token(
-        self, code: str, redirect_uri: str, code_verifier: str = None
+        self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
     ):
         async with self.get_httpx_client() as client:
             data = {
@@ -172,7 +172,7 @@ class BaseOAuth2(Generic[T]):
 
             return OAuth2Token(data)
 
-    async def revoke_token(self, token: str, token_type_hint: str = None):
+    async def revoke_token(self, token: str, token_type_hint: Optional[str] = None):
         if self.revoke_token_endpoint is None:
             raise RevokeTokenNotSupportedError()
 

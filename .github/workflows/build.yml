@@ -8,25 +8,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python_version: [3.7, 3.8, 3.9, '3.10']
+        python_version: [3.7, 3.8, 3.9, '3.10', '3.11']
 
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python_version }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flit
-        flit install --deps develop
-    - name: Test with pytest
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        pip install hatch
+        hatch env create
+    - name: Lint and typecheck
       run: |
-        pytest --cov=httpx_oauth/
-        codecov
+        hatch run lint-check
+    - name: Test
+      run: |
+        hatch run test-cov-xml
+    - uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true
+        verbose: true
 
   release:
     runs-on: ubuntu-latest
@@ -36,17 +41,25 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: 3.7
     - name: Install dependencies
+      shell: bash
       run: |
         python -m pip install --upgrade pip
-        pip install flit
-        flit install --deps develop
-    - name: Release on PyPI
+        pip install hatch
+    - name: Build and publish on PyPI
       env:
-        FLIT_USERNAME: ${{ secrets.FLIT_USERNAME }}
-        FLIT_PASSWORD: ${{ secrets.FLIT_PASSWORD }}
+        HATCH_INDEX_USER: ${{ secrets.HATCH_INDEX_USER }}
+        HATCH_INDEX_AUTH: ${{ secrets.HATCH_INDEX_AUTH }}
       run: |
-        flit publish --setup-py
+        hatch build
+        hatch publish
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+        draft: true
+        body: ${{ github.event.head_commit.message }}
+        artifacts: dist/*.whl,dist/*.tar.gz
+        token: ${{ secrets.GITHUB_TOKEN }}

@@ -2,14 +2,59 @@
 profile = "black"
 
 [tool.pytest.ini_options]
+addopts = "--cov=httpx_oauth/ --cov-report=term-missing --cov-fail-under=100"
 asyncio_mode = "auto"
 
-[build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+[tool.hatch]
 
-[tool.flit.module]
-name = "httpx_oauth"
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+source = "regex_commit"
+commit_extra_args = ["-e"]
+path = "httpx_oauth/__init__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+    "pytest",
+    "isort",
+    "mkdocs",
+    "mkdocs-material",
+    "black",
+    "mypy",
+    "pytest-cov",
+    "pytest-mock",
+    "markdown-include",
+    "pygments",
+    "pymdown-extensions",
+    "bumpversion",
+    "pytest-asyncio",
+    "respx",
+    "fastapi",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest"
+test-cov-xml = "pytest --cov-report=xml"
+lint = [
+  "isort ./httpx_oauth",
+  "black .",
+  "mypy httpx_oauth/",
+]
+lint-check = [
+  "isort --check-only ./httpx_oauth ./tests",
+  "black --check .",
+  "mypy httpx_oauth/",
+]
+docs = "mkdocs serve"
+
+[tool.hatch.build.targets.sdist]
+support-legacy = true  # Create setup.py
+
+[build-system]
+requires = ["hatchling", "hatch-regex-commit"]
+build-backend = "hatchling.build"
 
 [project]
 name = "httpx-oauth"
@@ -36,28 +81,6 @@ dependencies = [
     "typing-extensions; python_version < '3.8'",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "flake8",
-    "pytest",
-    "isort",
-    "flake8-docstrings",
-    "mkdocs",
-    "mkdocs-material",
-    "black",
-    "mypy",
-    "codecov",
-    "pytest-cov",
-    "pytest-mock",
-    "flit",
-    "markdown-include",
-    "pygments",
-    "pymdown-extensions",
-    "bumpversion",
-    "pytest-asyncio",
-    "respx",
-    "fastapi",
-]
-
 [project.urls]
 Documentation = "https://frankie567.github.io/httpx-oauth/"
+Source = "https://github.com/frankie567/httpx-oauth"
