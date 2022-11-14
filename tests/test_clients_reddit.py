@@ -7,10 +7,9 @@ import httpx
 import pytest
 import respx
 
-import httpx_oauth.oauth2 as oauth
 import httpx_oauth.clients.reddit as reddit
+import httpx_oauth.oauth2 as oauth
 from httpx_oauth.errors import GetIdEmailError
-
 
 FAKE_CLIENT_ID = "fake-client-id-1234567"
 FAKE_CLIENT_SECRET = "fake-client-secret-12345678901"

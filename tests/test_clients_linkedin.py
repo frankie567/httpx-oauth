@@ -6,8 +6,8 @@ from httpx import Response
 
 from httpx_oauth.clients.linkedin import (
     EMAIL_ENDPOINT,
-    LinkedInOAuth2,
     PROFILE_ENDPOINT,
+    LinkedInOAuth2,
 )
 from httpx_oauth.errors import GetIdEmailError
 

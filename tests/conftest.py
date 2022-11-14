@@ -4,8 +4,8 @@ import os
 import sys
 from typing import Any, Dict, Tuple
 
-import pytest
 import httpx
+import pytest
 
 
 @pytest.fixture

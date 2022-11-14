@@ -4,13 +4,13 @@ import pytest
 import respx
 from httpx import Response
 
-from httpx_oauth.oauth2 import OAuth2Token
 from httpx_oauth.clients.facebook import (
+    PROFILE_ENDPOINT,
     FacebookOAuth2,
     GetLongLivedAccessTokenError,
-    PROFILE_ENDPOINT,
 )
 from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.oauth2 import OAuth2Token
 
 CLIENT_ID = "CLIENT_ID"
 CLIENT_SECRET = "CLIENT_SECRET"

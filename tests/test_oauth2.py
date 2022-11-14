@@ -8,8 +8,8 @@ from httpx_oauth.oauth2 import (
     GetAccessTokenError,
     OAuth2,
     OAuth2Token,
-    RefreshTokenNotSupportedError,
     RefreshTokenError,
+    RefreshTokenNotSupportedError,
     RevokeTokenError,
     RevokeTokenNotSupportedError,
 )

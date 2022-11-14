@@ -4,7 +4,7 @@ import pytest
 import respx
 from httpx import Response
 
-from httpx_oauth.clients.github import GitHubOAuth2, PROFILE_ENDPOINT, EMAILS_ENDPOINT
+from httpx_oauth.clients.github import EMAILS_ENDPOINT, PROFILE_ENDPOINT, GitHubOAuth2
 from httpx_oauth.errors import GetIdEmailError
 
 client = GitHubOAuth2("CLIENT_ID", "CLIENT_SECRET")

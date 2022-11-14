@@ -38,7 +38,7 @@ dependencies = [
 test = "pytest"
 test-cov-xml = "pytest --cov-report=xml"
 lint = [
-  "isort ./httpx_oauth",
+  "isort ./httpx_oauth ./tests",
   "black .",
   "mypy httpx_oauth/",
 ]
