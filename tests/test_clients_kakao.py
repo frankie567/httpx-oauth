@@ -19,18 +19,9 @@ def test_kakao_oauth2():
     assert client.name == "kakao"
 
 
-profile_response = {
-    "id": 4242424242,
-    "kakao_account": {
-        "email": "arthur@camelot.bt"
-    }
-}
+profile_response = {"id": 4242424242, "kakao_account": {"email": "arthur@camelot.bt"}}
 
-profile_no_email_response = {
-    "id": 4242424242,
-    "kakao_account": {
-    }
-}
+profile_no_email_response = {"id": 4242424242, "kakao_account": {}}
 
 
 class TestKakaoGetIdEmail:

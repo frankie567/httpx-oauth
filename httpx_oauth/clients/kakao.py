@@ -1,6 +1,6 @@
+import json
 from typing import Any, Dict, List, Optional, Tuple, cast
 
-import json
 from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
 
@@ -46,14 +46,13 @@ class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
             response = await client.post(
                 PROFILE_ENDPOINT,
                 params={"property_keys": json.dumps(PROFILE_PROPERTIES)},
-                headers={**self.request_headers,
-                         "Authorization": f"Bearer {token}"},
+                headers={**self.request_headers, "Authorization": f"Bearer {token}"},
             )
 
             if response.status_code >= 400:
                 raise GetIdEmailError(response.json())
 
-            account_info = cast(Dict[str, Any], response.json())
-            account_id = str(account_info.get('id'))
-            kakao_account = account_info.get('kakao_account')
-            return account_id, kakao_account.get('email')
+            payload = cast(Dict[str, Any], response.json())
+            account_id = str(payload["id"])
+            email = payload["kakao_account"].get("email")
+            return account_id, email

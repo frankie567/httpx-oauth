@@ -26,7 +26,7 @@ profile_response = {
     "response": {
         "id": "424242424242424242424242",
         "email": "example@naver.com",
-    }
+    },
 }
 
 profile_no_email_response = {
@@ -34,7 +34,7 @@ profile_no_email_response = {
     "message": "success",
     "response": {
         "id": "424242424242424242424242",
-    }
+    },
 }
 
 

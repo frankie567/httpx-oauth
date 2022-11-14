@@ -4,13 +4,12 @@ import httpx_oauth.oauth2 as oauth
 from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
 
-
 AUTHORIZE_ENDPOINT = "https://nid.naver.com/oauth2.0/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://nid.naver.com/oauth2.0/token"
 REFRESH_TOKEN_ENDPOINT = ACCESS_TOKEN_ENDPOINT
 REVOKE_TOKEN_ENDPOINT = ACCESS_TOKEN_ENDPOINT
 PROFILE_ENDPOINT = "https://openapi.naver.com/v1/nid/me"
-BASE_SCOPES = []
+BASE_SCOPES: List[str] = []
 
 LOGO_SVG = """
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" version="1.1" xml:space="preserve" width="40" height="40" viewBox="0 0 40 40">
@@ -22,6 +21,7 @@ LOGO_SVG = """
   </g>
 </svg>
 """
+
 
 class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
     display_name = "Naver"
@@ -45,38 +45,40 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
             base_scopes=scopes,
         )
 
-    async def revoke_token(self, token: str, token_type_hint: str = None) -> None:
+    async def revoke_token(
+        self, token: str, token_type_hint: Optional[str] = None
+    ) -> None:
         async with self.get_httpx_client() as client:
             data = {
                 "grant_type": "delete",
                 "client_id": self.client_id,
                 "client_secret": self.client_secret,
                 "access_token": token,
-                "service_provider": "NAVER"
+                "service_provider": "NAVER",
             }
 
             if token_type_hint is not None:
                 data["token_type_hint"] = token_type_hint
 
             response = await client.post(
-                self.revoke_token_endpoint, data=data, headers=self.request_headers
+                cast(str, self.revoke_token_endpoint),
+                data=data,
+                headers=self.request_headers,
             )
 
             if response.status_code >= 400:
                 raise oauth.RevokeTokenError()
 
-
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.post(
                 PROFILE_ENDPOINT,
-                headers={**self.request_headers,
-                         "Authorization": f"Bearer {token}"},
+                headers={**self.request_headers, "Authorization": f"Bearer {token}"},
             )
 
             if response.status_code >= 400:
                 raise GetIdEmailError(response.json())
 
-            account_info = cast(Dict[str, Any], response.json())
-            account_info = account_info.get('response')
-            return account_info.get('id'), account_info.get('email')
+            json = cast(Dict[str, Any], response.json())
+            account_info: Dict[str, Any] = json["response"]
+            return account_info["id"], account_info.get("email")
