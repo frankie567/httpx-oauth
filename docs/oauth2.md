@@ -260,7 +260,6 @@ client = RedditOAuth2("CLIENT_ID", "CLIENT_SECRET")
 !!! warning "Warning about `get_id_email`"
     Reddit API never return email addresses. Thus, e-mail will *always* be `None`.
 
-
 ### Twitch
 
 ```py
