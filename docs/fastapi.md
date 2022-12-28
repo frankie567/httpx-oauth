@@ -15,6 +15,7 @@ Dependency callable to handle the authorization callback. It reads the query par
     You should either set `route_name`, which will automatically reverse the URL, or `redirect_url`, which is an arbitrary URL you set.
 
 ```py
+from fastapi import Depends, FastAPI
 from httpx_oauth.integrations.fastapi import OAuth2AuthorizeCallback
 from httpx_oauth.oauth2 import OAuth2
 
