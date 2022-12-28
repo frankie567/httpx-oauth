@@ -259,7 +259,21 @@ client = RedditOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
 !!! warning "Warning about `get_id_email`"
     Reddit API never return email addresses. Thus, e-mail will *always* be `None`.
-    ```
+
+
+### Twitch
+
+```py
+from httpx_oauth.clients.twitch import TwitchOAuth2
+
+client = TwitchOAuth2("CLIENT_ID", "CLIENT_SECRET")
+```
+
+* ✅ `refresh_token`
+* ✅ `revoke_token`
+
+!!! tip
+        To include the user’s verified email address in the response, you must use a user access token that includes the `user:read:email` scope (see [Twitch API documentation](https://dev.twitch.tv/docs/api/reference#get-users)), otherwise it will be `None`.
 
 ## Customize HTTPX client
 
