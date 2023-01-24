@@ -9,7 +9,7 @@
 [![PyPI version](https://badge.fury.io/py/httpx-oauth.svg)](https://badge.fury.io/py/httpx-oauth)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <p align="center">
@@ -41,19 +41,20 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tbody>
     <tr>
-      <td align="center"><a href="http://francoisvoron.com"><img src="https://avatars.githubusercontent.com/u/1144727?v=4?s=100" width="100px;" alt="François Voron"/><br /><sub><b>François Voron</b></sub></a><br /><a href="#maintenance-frankie567" title="Maintenance">🚧</a></td>
-      <td align="center"><a href="http://xaviertorello.cat"><img src="https://avatars.githubusercontent.com/u/8709244?v=4?s=100" width="100px;" alt="Xavi Torelló"/><br /><sub><b>Xavi Torelló</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=XaviTorello" title="Code">💻</a></td>
-      <td align="center"><a href="https://github.com/fullonic"><img src="https://avatars.githubusercontent.com/u/13336073?v=4?s=100" width="100px;" alt="dbf"/><br /><sub><b>dbf</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=fullonic" title="Code">💻</a></td>
-      <td align="center"><a href="http://www.kentonparton.com"><img src="https://avatars.githubusercontent.com/u/20202312?v=4?s=100" width="100px;" alt="Kenton Parton"/><br /><sub><b>Kenton Parton</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=KentonParton" title="Code">💻</a></td>
-      <td align="center"><a href="https://github.com/stepan-chatalyan"><img src="https://avatars.githubusercontent.com/u/78931407?v=4?s=100" width="100px;" alt="stepan-chatalyan"/><br /><sub><b>stepan-chatalyan</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=stepan-chatalyan" title="Code">💻</a></td>
-      <td align="center"><a href="https://github.com/Forst"><img src="https://avatars.githubusercontent.com/u/369699?v=4?s=100" width="100px;" alt="Foster Snowhill"/><br /><sub><b>Foster Snowhill</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=Forst" title="Code">💻</a></td>
-      <td align="center"><a href="https://hatcher.work"><img src="https://avatars.githubusercontent.com/u/24600763?v=4?s=100" width="100px;" alt="William Hatcher"/><br /><sub><b>William Hatcher</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=williamhatcher" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://francoisvoron.com"><img src="https://avatars.githubusercontent.com/u/1144727?v=4?s=100" width="100px;" alt="François Voron"/><br /><sub><b>François Voron</b></sub></a><br /><a href="#maintenance-frankie567" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://xaviertorello.cat"><img src="https://avatars.githubusercontent.com/u/8709244?v=4?s=100" width="100px;" alt="Xavi Torelló"/><br /><sub><b>Xavi Torelló</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=XaviTorello" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/fullonic"><img src="https://avatars.githubusercontent.com/u/13336073?v=4?s=100" width="100px;" alt="dbf"/><br /><sub><b>dbf</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=fullonic" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.kentonparton.com"><img src="https://avatars.githubusercontent.com/u/20202312?v=4?s=100" width="100px;" alt="Kenton Parton"/><br /><sub><b>Kenton Parton</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=KentonParton" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/stepan-chatalyan"><img src="https://avatars.githubusercontent.com/u/78931407?v=4?s=100" width="100px;" alt="stepan-chatalyan"/><br /><sub><b>stepan-chatalyan</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=stepan-chatalyan" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Forst"><img src="https://avatars.githubusercontent.com/u/369699?v=4?s=100" width="100px;" alt="Foster Snowhill"/><br /><sub><b>Foster Snowhill</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=Forst" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://hatcher.work"><img src="https://avatars.githubusercontent.com/u/24600763?v=4?s=100" width="100px;" alt="William Hatcher"/><br /><sub><b>William Hatcher</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=williamhatcher" title="Code">💻</a></td>
     </tr>
     <tr>
-      <td align="center"><a href="https://github.com/thewchan"><img src="https://avatars.githubusercontent.com/u/49702524?v=4?s=100" width="100px;" alt="Matt Chan"/><br /><sub><b>Matt Chan</b></sub></a><br /><a href="#platform-thewchan" title="Packaging/porting to new platform">📦</a></td>
-      <td align="center"><a href="http://meka.rs"><img src="https://avatars.githubusercontent.com/u/610855?v=4?s=100" width="100px;" alt="Goran Mekić"/><br /><sub><b>Goran Mekić</b></sub></a><br /><a href="#platform-mekanix" title="Packaging/porting to new platform">📦</a></td>
-      <td align="center"><a href="joonas.io"><img src="https://avatars.githubusercontent.com/u/9527681?v=4?s=100" width="100px;" alt="Joona Yoon"/><br /><sub><b>Joona Yoon</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=joonas-yoon" title="Code">💻</a></td>
-      <td align="center"><a href="http://vibrix.net"><img src="https://avatars.githubusercontent.com/u/39629455?v=4?s=100" width="100px;" alt="LindezaGrey"/><br /><sub><b>LindezaGrey</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=LindezaGrey" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/thewchan"><img src="https://avatars.githubusercontent.com/u/49702524?v=4?s=100" width="100px;" alt="Matt Chan"/><br /><sub><b>Matt Chan</b></sub></a><br /><a href="#platform-thewchan" title="Packaging/porting to new platform">📦</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://meka.rs"><img src="https://avatars.githubusercontent.com/u/610855?v=4?s=100" width="100px;" alt="Goran Mekić"/><br /><sub><b>Goran Mekić</b></sub></a><br /><a href="#platform-mekanix" title="Packaging/porting to new platform">📦</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="joonas.io"><img src="https://avatars.githubusercontent.com/u/9527681?v=4?s=100" width="100px;" alt="Joona Yoon"/><br /><sub><b>Joona Yoon</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=joonas-yoon" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://vibrix.net"><img src="https://avatars.githubusercontent.com/u/39629455?v=4?s=100" width="100px;" alt="LindezaGrey"/><br /><sub><b>LindezaGrey</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=LindezaGrey" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Gr3atWh173"><img src="https://avatars.githubusercontent.com/u/11838184?v=4?s=100" width="100px;" alt="R. Singh"/><br /><sub><b>R. Singh</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/issues?q=author%3AGr3atWh173" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
