@@ -41,7 +41,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
         self,
         client_id: str,
         client_secret: str,
-        scope: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[List[str]] = BASE_SCOPES,
         name="google",
     ):
         super().__init__(
@@ -52,7 +52,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             ACCESS_TOKEN_ENDPOINT,
             REVOKE_TOKEN_ENDPOINT,
             name=name,
-            base_scopes=scope,
+            base_scopes=scopes,
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
