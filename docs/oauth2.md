@@ -263,7 +263,7 @@ client = RedditOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
 ## Customize HTTPX client
 
-By default, requests are made using [`httpx.AsyncClient`](https://www.python-httpx.org/api/#asyncclient) with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do do by overloading the `get_httpx_client` method.
+By default, requests are made using [`httpx.AsyncClient`](https://www.python-httpx.org/api/#asyncclient) with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do this by overloading the `get_httpx_client` method.
 
 ```py
 from typing import AsyncContextManager
