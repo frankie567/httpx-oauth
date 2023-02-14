@@ -15,7 +15,6 @@ client = LinkedInOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
 
 def test_linkedin_oauth2():
-
     assert (
         client.authorize_endpoint == "https://www.linkedin.com/oauth/v2/authorization"
     )

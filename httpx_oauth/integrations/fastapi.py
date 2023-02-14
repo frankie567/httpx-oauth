@@ -8,7 +8,6 @@ from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token
 
 
 class OAuth2AuthorizeCallback:
-
     client: BaseOAuth2
     route_name: Optional[str]
     redirect_url: Optional[str]

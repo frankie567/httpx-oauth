@@ -11,7 +11,6 @@ client = MicrosoftGraphOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
 
 def test_microsoft_graph_oauth2_default_tenant():
-
     assert (
         client.authorize_endpoint
         == "https://login.microsoftonline.com/common/oauth2/v2.0/authorize"
