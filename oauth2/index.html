@@ -990,8 +990,7 @@
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning about <code>get_id_email</code></p>
-<p>Reddit API never return email addresses. Thus, e-mail will <em>always</em> be <code>None</code>.
-```</p>
+<p>Reddit API never return email addresses. Thus, e-mail will <em>always</em> be <code>None</code>.</p>
 </div>
 <h2 id="customize-httpx-client">Customize HTTPX client<a class="headerlink" href="#customize-httpx-client" title="Permanent link">&para;</a></h2>
 <p>By default, requests are made using <a href="https://www.python-httpx.org/api/#asyncclient"><code>httpx.AsyncClient</code></a> with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do this by overloading the <code>get_httpx_client</code> method.</p>
