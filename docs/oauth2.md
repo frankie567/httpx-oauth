@@ -260,6 +260,26 @@ client = RedditOAuth2("CLIENT_ID", "CLIENT_SECRET")
 !!! warning "Warning about `get_id_email`"
     Reddit API never return email addresses. Thus, e-mail will *always* be `None`.
 
+### FranceConnect
+
+```py
+from httpx_oauth.clients.franceconnect import FranceConnectOAuth2
+
+client = FranceConnectOAuth2("CLIENT_ID", "CLIENT_SECRET")
+```
+
+* ❌ `refresh_token`
+* ❌ `revoke_token`
+
+!!! tip "Integration server"
+    Since you need to go through a [heavy validation process](https://partenaires.franceconnect.gouv.fr/monprojet/cadrage) before getting your client ID and secret, you can use during development the [integration server with demo credentials](https://partenaires.franceconnect.gouv.fr/fcp/fournisseur-service). You can enable this mode by setting the `integration` flag to `True`.
+
+    ```py
+    from httpx_oauth.clients.franceconnect import FranceConnectOAuth2
+
+    client = FranceConnectOAuth2("CLIENT_ID", "CLIENT_SECRET", integration=True)
+    ```
+
 ## Customize HTTPX client
 
 By default, requests are made using [`httpx.AsyncClient`](https://www.python-httpx.org/api/#asyncclient) with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do this by overloading the `get_httpx_client` method.
