@@ -40,7 +40,7 @@ class OAuth2AuthorizeCallback:
             )
 
         if self.route_name:
-            redirect_url = request.url_for(self.route_name)
+            redirect_url = str(request.url_for(self.route_name))
         elif self.redirect_url:
             redirect_url = self.redirect_url
 
