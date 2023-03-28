@@ -1,7 +1,9 @@
+import secrets
 from typing import Any, Dict, List, Optional, Tuple
 
 from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
+from httpx_oauth.typing import TypedDict
 
 ENDPOINTS = {
     "integration": {
@@ -23,7 +25,11 @@ LOGO_SVG = """
 """
 
 
-class FranceConnectOAuth2(BaseOAuth2[Dict[str, Any]]):
+class FranceConnectOAuth2AuthorizeParams(TypedDict, total=False):
+    nonce: str
+
+
+class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
     display_name = "FranceConnect"
     logo_svg = LOGO_SVG
 
@@ -47,6 +53,23 @@ class FranceConnectOAuth2(BaseOAuth2[Dict[str, Any]]):
             base_scopes=scopes,
         )
         self.profile_endpoint = endpoints["profile"]
+
+    async def get_authorization_url(
+        self,
+        redirect_uri: str,
+        state: Optional[str] = None,
+        scope: Optional[List[str]] = None,
+        extras_params: Optional[FranceConnectOAuth2AuthorizeParams] = None,
+    ) -> str:
+        _extras_params = extras_params or {}
+
+        # nonce is required for FranceConnect
+        if _extras_params.get("nonce") is None:
+            _extras_params["nonce"] = secrets.token_urlsafe()
+
+        return await super().get_authorization_url(
+            redirect_uri, state, scope, _extras_params
+        )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:

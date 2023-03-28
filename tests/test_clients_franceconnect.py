@@ -44,6 +44,13 @@ def client(request: pytest.FixtureRequest) -> FranceConnectOAuth2:
     return FranceConnectOAuth2("CLIENT_ID", "CLIENT_SECRET", integration=request.param)
 
 
+class TestFranceConnectGetAuthorizationURL:
+    @pytest.mark.asyncio
+    async def test_get_authorization_url(self, client: FranceConnectOAuth2):
+        authorization_url = await client.get_authorization_url("REDIRECT_URI")
+        assert "nonce=" in authorization_url
+
+
 class TestFranceConnectGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
