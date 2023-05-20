@@ -77,7 +77,7 @@ classifiers = [
 ]
 requires-python = ">=3.7"
 dependencies = [
-    "httpx >=0.18,<0.24",
+    "httpx >=0.18,<0.25",
     "typing-extensions; python_version < '3.8'",
 ]
 
