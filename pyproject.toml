@@ -1,5 +1,8 @@
-[tool.isort]
-profile = "black"
+[tool.ruff]
+extend-select = ["I", "TRY"]
+ignore = ["E501"]
+typing-modules = ["httpx_oauth.typing"]
+
 
 [tool.pytest.ini_options]
 addopts = "--cov=httpx_oauth/ --cov-report=term-missing --cov-fail-under=100"
@@ -18,7 +21,7 @@ path = "httpx_oauth/__init__.py"
 [tool.hatch.envs.default]
 dependencies = [
     "pytest",
-    "isort",
+    "ruff",
     "mkdocs",
     "mkdocs-material",
     "black",
@@ -28,7 +31,6 @@ dependencies = [
     "markdown-include",
     "pygments",
     "pymdown-extensions",
-    "bumpversion",
     "pytest-asyncio",
     "respx",
     "fastapi",
@@ -38,13 +40,13 @@ dependencies = [
 test = "pytest"
 test-cov-xml = "pytest --cov-report=xml"
 lint = [
-  "isort ./httpx_oauth ./tests",
   "black .",
+  "ruff --fix .",
   "mypy httpx_oauth/",
 ]
 lint-check = [
-  "isort --check-only ./httpx_oauth ./tests",
   "black --check .",
+  "ruff .",
   "mypy httpx_oauth/",
 ]
 docs = "mkdocs serve"

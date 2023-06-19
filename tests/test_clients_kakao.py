@@ -4,7 +4,7 @@ import pytest
 import respx
 from httpx import Response
 
-from httpx_oauth.clients.kakao import PROFILE_ENDPOINT, PROFILE_PROPERTIES, KakaoOAuth2
+from httpx_oauth.clients.kakao import PROFILE_ENDPOINT, KakaoOAuth2
 from httpx_oauth.errors import GetIdEmailError
 
 client = KakaoOAuth2("CLIENT_ID", "CLIENT_SECRET")

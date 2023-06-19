@@ -59,7 +59,7 @@ async def test_microsoft_graph_oauth2_authorization_url():
 profile_response = {"id": "424242", "userPrincipalName": "arthur@camelot.bt"}
 
 
-class TestGoogleGetIdEmail:
+class TestMicrosoftGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
