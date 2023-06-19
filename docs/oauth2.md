@@ -280,6 +280,22 @@ client = FranceConnectOAuth2("CLIENT_ID", "CLIENT_SECRET")
     client = FranceConnectOAuth2("CLIENT_ID", "CLIENT_SECRET", integration=True)
     ```
 
+### Shopify
+
+The OAuth2 client for Shopify allows you to authenticate shop owners so your app can make calls to the [Shopify Admin API](https://shopify.dev/docs/api/admin). Besides the Client ID and Secret, you'll need the **shop subdomain** of the shop you need to access.
+
+```py
+from httpx_oauth.clients.shopify import ShopifyOAuth2
+
+client = ShopifyOAuth2("CLIENT_ID", "CLIENT_SECRET", "my-shop")
+```
+
+* ❌ `refresh_token`
+* ❌ `revoke_token`
+
+!!! warning "`get_id_email` is based on the `Shop` resource"
+    The implementation of `get_id_email` calls the [Get Shop endpoint](https://shopify.dev/docs/api/admin-rest/2023-04/resources/shop#get-shop) of the Shopify Admin API. It means that it'll return you the **ID of the shop** and the **email of the shop owner**.
+
 ## Customize HTTPX client
 
 By default, requests are made using [`httpx.AsyncClient`](https://www.python-httpx.org/api/#asyncclient) with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do this by overloading the `get_httpx_client` method.
