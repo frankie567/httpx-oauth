@@ -1,9 +1,8 @@
 import secrets
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, TypedDict
 
 from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
-from httpx_oauth.typing import TypedDict
 
 ENDPOINTS = {
     "integration": {

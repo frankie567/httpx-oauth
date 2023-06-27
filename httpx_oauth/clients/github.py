@@ -1,10 +1,9 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Dict, List, Optional, Tuple, TypedDict, cast
 
 import httpx
 
 from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
-from httpx_oauth.typing import TypedDict
 
 AUTHORIZE_ENDPOINT = "https://github.com/login/oauth/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://github.com/login/oauth/access_token"

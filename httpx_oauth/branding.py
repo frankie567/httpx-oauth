@@ -1,4 +1,4 @@
-from httpx_oauth.typing import Protocol
+from typing import Protocol
 
 
 class BrandingProtocol(Protocol):

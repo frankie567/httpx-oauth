@@ -1,8 +1,7 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict, cast
 
 from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
-from httpx_oauth.typing import Literal, TypedDict
 
 AUTHORIZE_ENDPOINT = "https://{shop}.myshopify.com/admin/oauth/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://{shop}.myshopify.com/admin/oauth/access_token"
