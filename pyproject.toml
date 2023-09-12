@@ -77,7 +77,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "httpx >=0.18,<0.25",
+    "httpx >=0.18,<0.26",
 ]
 
 [project.urls]
