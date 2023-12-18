@@ -77,5 +77,5 @@ class TestFranceConnectGetIdEmail:
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
 
-        assert type(excinfo.value.args[0]) == dict
+        assert isinstance(excinfo.value.args[0], dict)
         assert excinfo.value.args[0] == {"error": "message"}

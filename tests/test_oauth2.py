@@ -138,7 +138,7 @@ class TestGetAccessToken:
 
         with pytest.raises(GetAccessTokenError) as excinfo:
             await client.get_access_token("CODE", REDIRECT_URI)
-        assert type(excinfo.value.args[0]) == dict
+        assert isinstance(excinfo.value.args[0], dict)
         assert "error" in excinfo.value.args[0]
 
 
@@ -179,7 +179,7 @@ class TestRefreshToken:
 
         with pytest.raises(RefreshTokenError) as excinfo:
             await client_refresh.refresh_token("REFRESH_TOKEN")
-        assert type(excinfo.value.args[0]) == dict
+        assert isinstance(excinfo.value.args[0], dict)
         assert "error" in excinfo.value.args[0]
 
 
@@ -213,7 +213,7 @@ class TestRevokeToken:
 
         with pytest.raises(RevokeTokenError) as excinfo:
             await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
-        assert type(excinfo.value.args[0]) == dict
+        assert isinstance(excinfo.value.args[0], dict)
         assert "error" in excinfo.value.args[0]
 
 

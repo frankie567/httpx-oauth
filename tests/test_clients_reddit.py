@@ -91,7 +91,7 @@ class TestRedditGetAccessToken:
                 FAKE_AUTHORIZATION_CODE, FAKE_REDIRECT_URI
             )
 
-        assert type(e.value.args[0]) == dict
+        assert isinstance(e.value.args[0], dict)
         assert e.value.args[0] == response_unauthorized.json()
 
     @pytest.mark.asyncio
@@ -126,7 +126,7 @@ class TestRedditGetAccessToken:
                 "INVALID_AUTHORIZATION_CODE", FAKE_REDIRECT_URI
             )
 
-        assert type(e.value.args[0]) == dict
+        assert isinstance(e.value.args[0], dict)
         assert e.value.args[0] == self.response_error.json()
 
 
@@ -164,7 +164,7 @@ class TestRedditRefreshToken:
         with pytest.raises(oauth.RefreshTokenError) as e:
             await invalid_client.refresh_token(FAKE_REFRESH_TOKEN)
 
-        assert type(e.value.args[0]) == dict
+        assert isinstance(e.value.args[0], dict)
         assert e.value.args[0] == response_unauthorized.json()
 
     @pytest.mark.asyncio
@@ -194,7 +194,7 @@ class TestRedditRefreshToken:
         with pytest.raises(oauth.RefreshTokenError) as e:
             await client.refresh_token("INVALID_REFRESH_TOKEN")
 
-        assert type(e.value.args[0]) == dict
+        assert isinstance(e.value.args[0], dict)
         assert e.value.args[0] == self.response_error.json()
 
 
@@ -257,5 +257,5 @@ class TestRedditGetIdEmail:
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email(FAKE_ACCESS_TOKEN)
 
-        assert type(excinfo.value.args[0]) == dict
+        assert isinstance(excinfo.value.args[0], dict)
         assert excinfo.value.args[0] == {"error": httpx.codes.BAD_REQUEST}

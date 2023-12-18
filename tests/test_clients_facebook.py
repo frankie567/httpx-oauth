@@ -63,7 +63,7 @@ class TestGetLongLivedAccessToken:
 
         with pytest.raises(GetLongLivedAccessTokenError) as excinfo:
             await client.get_long_lived_access_token("ACCESS_TOKEN")
-        assert type(excinfo.value.args[0]) == dict
+        assert isinstance(excinfo.value.args[0], dict)
         assert "error" in excinfo.value.args[0]
 
 
@@ -110,5 +110,5 @@ class TestFacebookGetIdEmail:
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
 
-        assert type(excinfo.value.args[0]) == dict
+        assert isinstance(excinfo.value.args[0], dict)
         assert excinfo.value.args[0] == {"error": "message"}
