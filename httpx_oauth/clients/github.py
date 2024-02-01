@@ -70,6 +70,8 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
                 emails = cast(List[Dict[str, Any]], response.json())
 
                 # Use the primary email if it exists, otherwise the first
-                email = next((e["email"] for e in emails if e.get("primary")), emails[0]["email"])
+                email = next(
+                    (e["email"] for e in emails if e.get("primary")), emails[0]["email"]
+                )
 
             return str(id), email
