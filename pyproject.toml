@@ -2,7 +2,6 @@
 extend-select = ["I", "TRY"]
 ignore = ["E501"]
 
-
 [tool.pytest.ini_options]
 addopts = "--cov=httpx_oauth/ --cov-report=term-missing --cov-fail-under=100"
 asyncio_mode = "auto"
@@ -72,11 +71,12 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "httpx >=0.18,<0.26",
+    "httpx >=0.18,<0.27",
 ]
 
 [project.urls]
