@@ -94,6 +94,16 @@ class TestGetAuthorizationURL:
         assert "scope=SCOPE1+SCOPE2+SCOPE3" in authorization_url
 
     @pytest.mark.asyncio
+    async def test_get_authorization_url_with_plain_code_challenge(self):
+        authorization_url = await client.get_authorization_url(
+            REDIRECT_URI,
+            code_challenge="CODE_CHALLENGE",
+            code_challenge_method="plain",
+        )
+        assert "code_challenge=CODE_CHALLENGE" in authorization_url
+        assert "code_challenge_method=plain" in authorization_url
+
+    @pytest.mark.asyncio
     async def test_get_authorization_url_with_extras_params(self):
         authorization_url = await client.get_authorization_url(
             REDIRECT_URI,
