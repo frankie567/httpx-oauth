@@ -100,6 +100,8 @@ class BaseOAuth2(Generic[T]):
         redirect_uri: str,
         state: Optional[str] = None,
         scope: Optional[List[str]] = None,
+        code_challenge: Optional[str] = None,
+        code_challenge_method: Optional[str] = None,
         extras_params: Optional[T] = None,
     ) -> str:
         params = {
@@ -115,6 +117,12 @@ class BaseOAuth2(Generic[T]):
         _scope = scope or self.base_scopes
         if _scope is not None:
             params["scope"] = " ".join(_scope)
+
+        if code_challenge is not None:
+            params["code_challenge"] = code_challenge
+
+        if code_challenge_method is not None:
+            params["code_challenge_method"] = code_challenge_method
 
         if extras_params is not None:
             params = {**params, **extras_params}  # type: ignore

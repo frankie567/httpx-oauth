@@ -67,7 +67,7 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
             _extras_params["nonce"] = secrets.token_urlsafe()
 
         return await super().get_authorization_url(
-            redirect_uri, state, scope, _extras_params
+            redirect_uri, state, scope, extras_params=_extras_params
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
