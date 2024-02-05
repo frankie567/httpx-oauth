@@ -1,5 +1,5 @@
 import secrets
-from typing import Any, Dict, List, Optional, Tuple, TypedDict
+from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict
 
 from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
@@ -58,6 +58,8 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
         redirect_uri: str,
         state: Optional[str] = None,
         scope: Optional[List[str]] = None,
+        code_challenge: Optional[str] = None,
+        code_challenge_method: Optional[Literal["plain", "S256"]] = None,
         extras_params: Optional[FranceConnectOAuth2AuthorizeParams] = None,
     ) -> str:
         _extras_params = extras_params or {}

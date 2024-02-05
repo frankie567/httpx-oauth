@@ -5,6 +5,7 @@ from typing import (
     Dict,
     Generic,
     List,
+    Literal,
     Optional,
     Tuple,
     TypeVar,
@@ -101,7 +102,7 @@ class BaseOAuth2(Generic[T]):
         state: Optional[str] = None,
         scope: Optional[List[str]] = None,
         code_challenge: Optional[str] = None,
-        code_challenge_method: Optional[str] = None,
+        code_challenge_method: Optional[Literal["plain", "S256"]] = None,
         extras_params: Optional[T] = None,
     ) -> str:
         params = {
