@@ -30,7 +30,7 @@ Returns the authorization URL where you should redirect the user to ask for thei
     * `state: str = None`: Optional string that will be returned back in the callback parameters to allow you to retrieve state information.
     * `scope: Optional[List[str]] = None`: Optional list of scopes to ask for.
     * `code_challenge: Optional[str] = None`: Optional code_challenge in a [PKCE context](https://datatracker.ietf.org/doc/html/rfc7636).
-    * `code_challenge_method: ptional[str] = None`: Optional code_challenge_method in a [PKCE context](https://datatracker.ietf.org/doc/html/rfc7636).
+    * `code_challenge_method: Optional[Literal["plain", "S256"]] = None`: Optional code_challenge_method in a [PKCE context](https://datatracker.ietf.org/doc/html/rfc7636).
     * `extras_params: Optional[Dict[str, Any]] = None`: Optional dictionary containing parameters specific to the service.
 
 !!! example
