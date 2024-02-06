@@ -122,6 +122,15 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "king-jam",
+      "name": "James King",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8225465?v=4",
+      "profile": "https://github.com/king-jam",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
