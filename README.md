@@ -9,7 +9,7 @@
 [![PyPI version](https://badge.fury.io/py/httpx-oauth.svg)](https://badge.fury.io/py/httpx-oauth)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <p align="center">
@@ -56,6 +56,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://vibrix.net"><img src="https://avatars.githubusercontent.com/u/39629455?v=4?s=100" width="100px;" alt="LindezaGrey"/><br /><sub><b>LindezaGrey</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=LindezaGrey" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Gr3atWh173"><img src="https://avatars.githubusercontent.com/u/11838184?v=4?s=100" width="100px;" alt="R. Singh"/><br /><sub><b>R. Singh</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/issues?q=author%3AGr3atWh173" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/lloesche"><img src="https://avatars.githubusercontent.com/u/2124094?v=4?s=100" width="100px;" alt="Lukas Lösche"/><br /><sub><b>Lukas Lösche</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/issues?q=author%3Alloesche" title="Bug reports">🐛</a> <a href="https://github.com/frankie567/httpx-oauth/commits?author=lloesche" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/king-jam"><img src="https://avatars.githubusercontent.com/u/8225465?v=4?s=100" width="100px;" alt="James King"/><br /><sub><b>James King</b></sub></a><br /><a href="https://github.com/frankie567/httpx-oauth/commits?author=king-jam" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
