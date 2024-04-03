@@ -1,4 +1,4 @@
-[tool.ruff]
+[tool.ruff.lint]
 extend-select = ["I", "TRY"]
 ignore = ["E501"]
 
@@ -38,12 +38,12 @@ test = "pytest"
 test-cov-xml = "pytest --cov-report=xml"
 lint = [
   "ruff format .",
-  "ruff --fix .",
+  "ruff check --fix .",
   "mypy httpx_oauth/",
 ]
 lint-check = [
   "ruff format --check .",
-  "ruff .",
+  "ruff check .",
   "mypy httpx_oauth/",
 ]
 docs = "mkdocs serve"
