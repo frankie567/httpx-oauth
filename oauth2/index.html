@@ -1104,12 +1104,16 @@
 <span class="n">client</span> <span class="o">=</span> <span class="n">GitHubOAuth2</span><span class="p">(</span><span class="s2">&quot;CLIENT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;CLIENT_SECRET&quot;</span><span class="p">)</span>
 </code></pre></div>
 <ul>
-<li>❌ <code>refresh_token</code></li>
+<li>✅ <code>refresh_token</code></li>
 <li>❌ <code>revoke_token</code></li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>You should enable <strong>Email addresses</strong> permission in the <strong>Permissions &amp; events</strong> section of your GitHub app parameters. You can find it at <a href="https://github.com/settings/apps/{YOUR_APP}/permissions">https://github.com/settings/apps/{YOUR_APP}/permissions</a>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Refresh tokens are not enabled by default</p>
+<p>Refresh tokens are currently an optional feature you need to enable in your GitHub app parameters. <a href="https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/refreshing-user-access-tokens">Read more</a>.</p>
 </div>
 <h3 id="google">Google<a class="headerlink" href="#google" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">httpx_oauth.clients.google</span> <span class="kn">import</span> <span class="n">GoogleOAuth2</span>
