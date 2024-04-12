@@ -185,11 +185,14 @@ from httpx_oauth.clients.github import GitHubOAuth2
 client = GitHubOAuth2("CLIENT_ID", "CLIENT_SECRET")
 ```
 
-* ❌ `refresh_token`
+* ✅ `refresh_token`
 * ❌ `revoke_token`
 
 !!! tip
     You should enable **Email addresses** permission in the **Permissions & events** section of your GitHub app parameters. You can find it at [https://github.com/settings/apps/{YOUR_APP}/permissions](https://github.com/settings/apps/{YOUR_APP}/permissions).
+
+!!! warning "Refresh tokens are not enabled by default"
+    Refresh tokens are currently an optional feature you need to enable in your GitHub app parameters. [Read more](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/refreshing-user-access-tokens).
 
 ### Google
 

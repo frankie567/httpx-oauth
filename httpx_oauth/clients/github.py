@@ -42,6 +42,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             client_secret,
             AUTHORIZE_ENDPOINT,
             ACCESS_TOKEN_ENDPOINT,
+            ACCESS_TOKEN_ENDPOINT,
             name=name,
             base_scopes=scopes,
         )
