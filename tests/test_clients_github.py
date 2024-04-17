@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlencode
 
 import pytest
 import respx
@@ -6,6 +7,7 @@ from httpx import Response
 
 from httpx_oauth.clients.github import EMAILS_ENDPOINT, PROFILE_ENDPOINT, GitHubOAuth2
 from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.oauth2 import OAuth2Token, RefreshTokenError
 
 client = GitHubOAuth2("CLIENT_ID", "CLIENT_SECRET")
 
@@ -24,6 +26,52 @@ def test_github_oauth2():
 profile_response = {"id": 42, "email": "arthur@camelot.bt"}
 profile_response_no_public_email = {"id": 42, "email": None}
 emails_response = [{"email": "arthur@camelot.bt"}]
+
+
+class TestGitHubRefreshToken:
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_refresh_token(self, load_mock, get_respx_call_args):
+        request = respx.post(client.refresh_token_endpoint).mock(
+            return_value=Response(200, json=load_mock("github_success_refresh_token"))
+        )
+        access_token = await client.refresh_token("REFRESH_TOKEN")
+
+        url, headers, content = await get_respx_call_args(request)
+        assert headers["Content-Type"] == "application/x-www-form-urlencoded"
+        assert headers["Accept"] == "application/json"
+        assert "grant_type=refresh_token" in content
+        assert "refresh_token=REFRESH_TOKEN" in content
+        assert "client_id=CLIENT_ID" in content
+        assert "client_secret=CLIENT_SECRET" in content
+
+        assert type(access_token) == OAuth2Token
+        assert "access_token" in access_token
+        assert "token_type" in access_token
+        assert access_token.is_expired() is False
+
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_refresh_token_error(self, load_mock):
+        error_response = {
+            "error": "bad_refresh_token",
+            "error_description": "The refresh token passed is incorrect or expired.",
+            "error_uri": "https://docs.github.com",
+        }
+        error_response_encoded = urlencode(error_response)
+
+        respx.post(client.refresh_token_endpoint).mock(
+            return_value=Response(
+                200,
+                headers={"content-type": "application/x-www-form-urlencoded"},
+                content=error_response_encoded,
+            )
+        )
+
+        with pytest.raises(RefreshTokenError) as excinfo:
+            await client.refresh_token("REFRESH_TOKEN")
+        assert isinstance(excinfo.value.args[0], dict)
+        assert "error" in excinfo.value.args[0]
 
 
 class TestGitHubGetIdEmail:

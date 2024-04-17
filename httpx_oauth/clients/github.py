@@ -1,9 +1,10 @@
+import urllib.parse
 from typing import Any, Dict, List, Optional, Tuple, TypedDict, cast
 
 import httpx
 
 from httpx_oauth.errors import GetIdEmailError
-from httpx_oauth.oauth2 import BaseOAuth2
+from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token, RefreshTokenError
 
 AUTHORIZE_ENDPOINT = "https://github.com/login/oauth/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://github.com/login/oauth/access_token"
@@ -46,6 +47,33 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             name=name,
             base_scopes=scopes,
         )
+
+    async def refresh_token(self, refresh_token: str):
+        assert self.refresh_token_endpoint is not None
+        async with self.get_httpx_client() as client:
+            response = await client.post(
+                self.refresh_token_endpoint,
+                data={
+                    "grant_type": "refresh_token",
+                    "refresh_token": refresh_token,
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
+                },
+                headers=self.request_headers,
+            )
+
+            content_type = response.headers.get("content-type", "")
+            if content_type.startswith("application/json"):
+                data = response.json()
+            # GitHub sends errors with a 200 status code
+            # and a form-urlencoded content type 😕
+            elif content_type.startswith("application/x-www-form-urlencoded"):
+                data = urllib.parse.parse_qs(response.text)
+
+            if response.status_code >= 400 or "error" in data:
+                raise RefreshTokenError(data)
+
+            return OAuth2Token(data)
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with httpx.AsyncClient(
