@@ -72,7 +72,7 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             access_token = await client.refresh_token("REFRESH_TOKEN")
             ```
         """
-        return await super().refresh_token(refresh_token)
+        return await super().refresh_token(refresh_token)  # pragma: no cover
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
