@@ -6,7 +6,7 @@ import respx
 from httpx import HTTPError, Response
 
 from httpx_oauth.clients.github import EMAILS_ENDPOINT, PROFILE_ENDPOINT, GitHubOAuth2
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import OAuth2Token, RefreshTokenError
 
 client = GitHubOAuth2("CLIENT_ID", "CLIENT_SECRET")

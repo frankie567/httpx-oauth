@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional, Tuple, cast
 
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://discord.com/api/oauth2/authorize"

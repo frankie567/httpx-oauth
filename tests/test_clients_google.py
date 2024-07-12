@@ -5,7 +5,7 @@ import respx
 from httpx import Response
 
 from httpx_oauth.clients.google import PROFILE_ENDPOINT, GoogleOAuth2
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 
 client = GoogleOAuth2("CLIENT_ID", "CLIENT_SECRET")
 

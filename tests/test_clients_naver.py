@@ -5,7 +5,7 @@ import respx
 from httpx import HTTPError, Response
 
 from httpx_oauth.clients.naver import PROFILE_ENDPOINT, NaverOAuth2
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import RevokeTokenError
 
 client = NaverOAuth2("CLIENT_ID", "CLIENT_SECRET")

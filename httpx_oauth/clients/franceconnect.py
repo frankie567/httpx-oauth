@@ -1,7 +1,7 @@
 import secrets
 from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict
 
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 ENDPOINTS = {

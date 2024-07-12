@@ -3,7 +3,7 @@ import respx
 from httpx import Response
 
 from httpx_oauth.clients.franceconnect import FranceConnectOAuth2
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 
 
 @pytest.mark.parametrize(

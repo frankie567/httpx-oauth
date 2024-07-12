@@ -5,7 +5,7 @@ import respx
 from httpx import Response
 
 from httpx_oauth.clients.openid import OpenID, OpenIDConfigurationError
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 
 openid_configuration_response = {
     "issuer": "https://example.fief.dev",

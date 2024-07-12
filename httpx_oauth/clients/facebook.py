@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional, Tuple, cast
 
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2RequestError, OAuth2Token
 
 AUTHORIZE_ENDPOINT = "https://www.facebook.com/v5.0/dialog/oauth"
