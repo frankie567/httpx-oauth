@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional, Tuple, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
-from httpx_oauth.oauth2 import BaseOAuth2
+from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token
 
 AUTHORIZE_ENDPOINT = "https://www.linkedin.com/oauth/v2/authorization"
 ACCESS_TOKEN_ENDPOINT = "https://www.linkedin.com/oauth/v2/accessToken"
@@ -20,6 +20,8 @@ LOGO_SVG = """
 
 
 class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
+    """OAuth2 client for LinkedIn."""
+
     display_name = "LinkedIn"
     logo_svg = LOGO_SVG
 
@@ -30,6 +32,13 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
         scopes: Optional[List[str]] = BASE_SCOPES,
         name: str = "linkedin",
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            scopes: The default scopes to be used in the authorization URL.
+            name: A unique name for the OAuth2 client.
+        """
         super().__init__(
             client_id,
             client_secret,
@@ -40,6 +49,28 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             base_scopes=scopes,
             token_endpoint_auth_method="client_secret_post",
         )
+
+    async def refresh_token(self, refresh_token: str) -> OAuth2Token:
+        """
+        Requests a new access token using a refresh token.
+
+        !!! warning
+            Only available for [selected partners](https://docs.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens).
+
+        Args:
+            refresh_token: The refresh token.
+
+        Returns:
+            An access token response dictionary.
+
+        Raises:
+            RefreshTokenError: An error occurred while refreshing the token.
+            RefreshTokenNotSupportedError: The provider does not support token refresh.
+
+        Examples:
+            >>> access_token = await client.refresh_token("REFRESH_TOKEN")
+        """
+        return await super().refresh_token(refresh_token)
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:

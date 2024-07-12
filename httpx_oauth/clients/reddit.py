@@ -29,6 +29,8 @@ LOGO_SVG = """
 
 
 class RedditOAuth2(BaseOAuth2[Dict[str, Any]]):
+    """OAuth2 client for Reddit."""
+
     display_name = "Reddit"
     logo_svg = LOGO_SVG
 
@@ -39,6 +41,13 @@ class RedditOAuth2(BaseOAuth2[Dict[str, Any]]):
         scopes: Optional[List[str]] = None,
         name: str = "reddit",
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            scopes: The default scopes to be used in the authorization URL.
+            name: A unique name for the OAuth2 client.
+        """
         if scopes is None:
             scopes = BASE_SCOPES
 

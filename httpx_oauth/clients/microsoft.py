@@ -20,6 +20,8 @@ LOGO_SVG = """
 
 
 class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
+    """OAuth2 client for Microsoft Graph API."""
+
     display_name = "Microsoft"
     logo_svg = LOGO_SVG
 
@@ -31,6 +33,14 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
         scopes: Optional[List[str]] = BASE_SCOPES,
         name: str = "microsoft",
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            tenant: The tenant to use for the authorization URL.
+            scopes: The default scopes to be used in the authorization URL.
+            name: A unique name for the OAuth2 client.
+        """
         access_token_endpoint = ACCESS_TOKEN_ENDPOINT.format(tenant=tenant)
         super().__init__(
             client_id,

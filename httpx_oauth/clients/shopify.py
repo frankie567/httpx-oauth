@@ -25,6 +25,13 @@ class ShopifyOAuth2AuthorizeParams(TypedDict, total=False):
 
 
 class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
+    """
+    OAuth2 client for Shopify.
+
+    The OAuth2 client for Shopify authenticates shop owners to allow making calls
+    to the [Shopify Admin API](https://shopify.dev/docs/api/admin).
+    """
+
     display_name = "Shopify"
     logo_svg = LOGO_SVG
 
@@ -37,6 +44,15 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
         api_version: str = "2023-04",
         name: str = "shopify",
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            shop: The shop subdomain.
+            scopes: The default scopes to be used in the authorization URL.
+            api_version: The version of the Shopify Admin API.
+            name: A unique name for the OAuth2 client.
+        """
         authorize_endpoint = AUTHORIZE_ENDPOINT.format(shop=shop)
         access_token_endpoint = ACCESS_TOKEN_ENDPOINT.format(shop=shop)
         self.profile_endpoint = PROFILE_ENDPOINT.format(
@@ -53,6 +69,29 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+        """
+        Returns the id and the email (if available) of the authenticated user
+        from the API provider.
+
+        !!! warning "`get_id_email` is based on the `Shop` resource"
+            The implementation of `get_id_email` calls the [Get Shop endpoint](https://shopify.dev/docs/api/admin-rest/2023-04/resources/shop#get-shop) of the Shopify Admin API.
+            It means that it'll return you the **ID of the shop** and the **email of the shop owner**.
+
+        Args:
+            token: The access token.
+
+        Returns:
+            A tuple with the id and the email of the authenticated user.
+
+
+        Raises:
+            httpx_oauth.exceptions.GetIdEmailError:
+                An error occurred while getting the id and email.
+
+        Examples:
+            >>> user_id, user_email = await client.get_id_email("TOKEN")
+
+        """
         async with self.get_httpx_client() as client:
             response = await client.get(
                 self.profile_endpoint,

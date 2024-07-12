@@ -30,26 +30,44 @@ class OAuth2Error(HTTPXOAuthError):
 
 
 class NotSupportedAuthMethodError(OAuth2Error):
+    """Error raised when an unsupported authentication method is used."""
+
     def __init__(self, auth_method: str):
         super().__init__(f"Auth method {auth_method} is not supported.")
 
 
 class MissingRevokeTokenAuthMethodError(OAuth2Error):
+    """Error raised when the revocation endpoint auth method is missing."""
+
     def __init__(self):
         super().__init__("Missing revocation endpoint auth method.")
 
 
 class RefreshTokenNotSupportedError(OAuth2Error):
+    """
+    Error raised when trying to refresh a token
+    on a provider that does not support it.
+    """
+
     def __init__(self):
         super().__init__("Refresh token is not supported by this provider.")
 
 
 class RevokeTokenNotSupportedError(OAuth2Error):
+    """
+    Error raised when trying to revole a token
+    on a provider that does not support it.
+    """
+
     def __init__(self):
         super().__init__("Revoke token is not supported by this provider.")
 
 
 class OAuth2RequestError(OAuth2Error):
+    """
+    Base exception class for OAuth2 request errors.
+    """
+
     def __init__(
         self, message: str, response: Union[httpx.Response, None] = None
     ) -> None:
@@ -57,16 +75,20 @@ class OAuth2RequestError(OAuth2Error):
         super().__init__(message)
 
 
-class GetAccessTokenError(OAuth2RequestError): ...
+class GetAccessTokenError(OAuth2RequestError):
+    """Error raised when an error occurs while getting an access token."""
 
 
-class RefreshTokenError(OAuth2RequestError): ...
+class RefreshTokenError(OAuth2RequestError):
+    """Error raised when an error occurs while refreshing a token."""
 
 
-class RevokeTokenError(OAuth2RequestError): ...
+class RevokeTokenError(OAuth2RequestError):
+    """Error raised when an error occurs while revoking a token."""
 
 
 OAuth2ClientAuthMethod = Literal["client_secret_basic", "client_secret_post"]
+"""Supported OAuth2 client authentication methods."""
 
 
 def _check_valid_auth_method(auth_method: str) -> None:
@@ -75,6 +97,17 @@ def _check_valid_auth_method(auth_method: str) -> None:
 
 
 class OAuth2Token(Dict[str, Any]):
+    """
+    Wrapper around a standard `Dict[str, Any]` that bears the response
+    of a successful token request.
+
+    Properties can vary greatly from a service to another but, usually,
+    you can get access token like this:
+
+    Examples:
+        >>> access_token = token["access_token"]
+    """
+
     def __init__(self, token_dict: Dict[str, Any]):
         if "expires_at" in token_dict:
             token_dict["expires_at"] = int(token_dict["expires_at"])
@@ -82,7 +115,13 @@ class OAuth2Token(Dict[str, Any]):
             token_dict["expires_at"] = int(time.time()) + int(token_dict["expires_in"])
         super().__init__(token_dict)
 
-    def is_expired(self):
+    def is_expired(self) -> bool:
+        """
+        Checks if the token is expired.
+
+        Returns:
+            True if the token is expired, False otherwise
+        """
         if "expires_at" not in self:
             return False
         return time.time() > self["expires_at"]
@@ -92,6 +131,12 @@ T = TypeVar("T")
 
 
 class BaseOAuth2(Generic[T]):
+    """
+    Base OAuth2 client.
+
+    This class provides a base implementation for OAuth2 clients. If you need to use a generic client, use [OAuth2][httpx_oauth.oauth2.OAuth2] instead.
+    """
+
     name: str
     client_id: str
     client_secret: str
@@ -118,6 +163,28 @@ class BaseOAuth2(Generic[T]):
         token_endpoint_auth_method: OAuth2ClientAuthMethod = "client_secret_post",
         revocation_endpoint_auth_method: Optional[OAuth2ClientAuthMethod] = None,
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            authorize_endpoint: The authorization endpoint URL.
+            access_token_endpoint: The access token endpoint URL.
+            refresh_token_endpoint: The refresh token endpoint URL.
+            If not supported, set it to `None`.
+            revoke_token_endpoint: The revoke token endpoint URL.
+            If not supported, set it to `None`.
+            name: A unique name for the OAuth2 client.
+            base_scopes: The base scopes to be used in the authorization URL.
+            token_endpoint_auth_method: The authentication method to be used in the token endpoint.
+            revocation_endpoint_auth_method: The authentication method to be used in the revocation endpoint.
+            If the revocation endpoint is not supported, set it to `None`.
+
+        Raises:
+            NotSupportedAuthMethodError:
+                The provided authentication method is not supported.
+            MissingRevokeTokenAuthMethodError:
+                The revocation endpoint auth method is missing.
+        """
         _check_valid_auth_method(token_endpoint_auth_method)
         if revocation_endpoint_auth_method is not None:
             _check_valid_auth_method(revocation_endpoint_auth_method)
@@ -151,6 +218,31 @@ class BaseOAuth2(Generic[T]):
         code_challenge_method: Optional[Literal["plain", "S256"]] = None,
         extras_params: Optional[T] = None,
     ) -> str:
+        """
+        Builds the authorization URL
+        where the user should be redirected to authorize the application.
+
+        Args:
+            redirect_uri: The URL where the user will be redirected after authorization.
+            state: An opaque value used by the client to maintain state
+            between the request and the callback.
+            scope: The scopes to be requested.
+                If not provided, `base_scopes` will be used.
+            code_challenge: Optional
+                [PKCE]((https://datatracker.ietf.org/doc/html/rfc7636)) code challenge.
+            code_challenge_method: Optional
+                [PKCE]((https://datatracker.ietf.org/doc/html/rfc7636)) code challenge
+                method.
+            extras_params: Optional extra parameters specific to the service.
+
+        Returns:
+            The authorization URL.
+
+        Examples:
+            >>> authorization_url = await client.get_authorization_url(
+                "https://www.tintagel.bt/oauth-callback", scope=["SCOPE1", "SCOPE2", "SCOPE3"],
+            )
+        """
         params = {
             "response_type": "code",
             "client_id": self.client_id,
@@ -178,7 +270,26 @@ class BaseOAuth2(Generic[T]):
 
     async def get_access_token(
         self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
-    ):
+    ) -> OAuth2Token:
+        """
+        Requests an access token using the authorization code obtained
+        after the user has authorized the application.
+
+        Args:
+            code: The authorization code.
+            redirect_uri: The URL where the user was redirected after authorization.
+            code_verifier: Optional code verifier used
+                in the [PKCE]((https://datatracker.ietf.org/doc/html/rfc7636)) flow.
+
+        Returns:
+            An access token response dictionary.
+
+        Raises:
+            GetAccessTokenError: An error occurred while getting the access token.
+
+        Examples:
+            >>> access_token = await client.get_access_token("CODE", "https://www.tintagel.bt/oauth-callback")
+        """
         async with self.get_httpx_client() as client:
             data = {
                 "grant_type": "authorization_code",
@@ -202,7 +313,23 @@ class BaseOAuth2(Generic[T]):
             data = self.get_json(response, exc_class=GetAccessTokenError)
             return OAuth2Token(data)
 
-    async def refresh_token(self, refresh_token: str):
+    async def refresh_token(self, refresh_token: str) -> OAuth2Token:
+        """
+        Requests a new access token using a refresh token.
+
+        Args:
+            refresh_token: The refresh token.
+
+        Returns:
+            An access token response dictionary.
+
+        Raises:
+            RefreshTokenError: An error occurred while refreshing the token.
+            RefreshTokenNotSupportedError: The provider does not support token refresh.
+
+        Examples:
+            >>> access_token = await client.refresh_token("REFRESH_TOKEN")
+        """
         if self.refresh_token_endpoint is None:
             raise RefreshTokenNotSupportedError()
 
@@ -226,6 +353,22 @@ class BaseOAuth2(Generic[T]):
     async def revoke_token(
         self, token: str, token_type_hint: Optional[str] = None
     ) -> None:
+        """
+        Revokes a token.
+
+        Args:
+            token: A token or refresh token to revoke.
+            token_type_hint: Optional hint for the service to help it determine
+                if it's a token or refresh token.
+                Usually either `token` or `refresh_token`.
+
+        Returns:
+            None
+
+        Raises:
+            RevokeTokenError: An error occurred while revoking the token.
+            RevokeTokenNotSupportedError: The provider does not support token revoke.
+        """
         if self.revoke_token_endpoint is None:
             raise RevokeTokenNotSupportedError()
 
@@ -247,6 +390,26 @@ class BaseOAuth2(Generic[T]):
         return None
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+        """
+        Returns the id and the email (if available) of the authenticated user
+        from the API provider.
+
+        **It assumes you have asked for the required scopes**.
+
+        Args:
+            token: The access token.
+
+        Returns:
+            A tuple with the id and the email of the authenticated user.
+
+
+        Raises:
+            httpx_oauth.exceptions.GetIdEmailError:
+                An error occurred while getting the id and email.
+
+        Examples:
+            >>> user_id, user_email = await client.get_id_email("TOKEN")
+        """
         raise NotImplementedError()
 
     def get_httpx_client(self) -> AsyncContextManager[httpx.AsyncClient]:
@@ -316,6 +479,7 @@ class BaseOAuth2(Generic[T]):
 
 
 OAuth2 = BaseOAuth2[Dict[str, Any]]
+"""Generic OAuth2 client."""
 
 __all__ = [
     "BaseOAuth2",

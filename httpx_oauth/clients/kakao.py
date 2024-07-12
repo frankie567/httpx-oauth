@@ -20,6 +20,8 @@ LOGO_SVG = """
 
 
 class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
+    """OAuth2 client for Kakao."""
+
     display_name = "Kakao"
     logo_svg = LOGO_SVG
 
@@ -30,6 +32,13 @@ class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
         scopes: Optional[List[str]] = BASE_SCOPES,
         name: str = "kakao",
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            scopes: The default scopes to be used in the authorization URL.
+            name: A unique name for the OAuth2 client.
+        """
         super().__init__(
             client_id,
             client_secret,

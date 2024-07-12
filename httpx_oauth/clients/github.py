@@ -28,6 +28,8 @@ class GitHubOAuth2AuthorizeParams(TypedDict, total=False):
 
 
 class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
+    """OAuth2 client for GitHub."""
+
     display_name = "GitHub"
     logo_svg = LOGO_SVG
 
@@ -38,6 +40,13 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
         scopes: Optional[List[str]] = BASE_SCOPES,
         name: str = "github",
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            scopes: The default scopes to be used in the authorization URL.
+            name: A unique name for the OAuth2 client.
+        """
         super().__init__(
             client_id,
             client_secret,
@@ -50,6 +59,26 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
         )
 
     async def refresh_token(self, refresh_token: str):
+        """
+        Requests a new access token using a refresh token.
+
+        !!! warning "Refresh tokens are not enabled by default"
+            Refresh tokens are currently an optional feature you need to enable in your GitHub app parameters.
+            [Read more](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/refreshing-user-access-tokens).
+
+        Args:
+            refresh_token: The refresh token.
+
+        Returns:
+            An access token response dictionary.
+
+        Raises:
+            RefreshTokenError: An error occurred while refreshing the token.
+            RefreshTokenNotSupportedError: The provider does not support token refresh.
+
+        Examples:
+            >>> access_token = await client.refresh_token("REFRESH_TOKEN")
+        """
         assert self.refresh_token_endpoint is not None
         async with self.get_httpx_client() as client:
             request, auth = self.build_request(
@@ -79,6 +108,29 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             return OAuth2Token(data)
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+        """
+        Returns the id and the email (if available) of the authenticated user
+        from the API provider.
+
+        !!! tip
+            You should enable **Email addresses** permission
+            in the **Permissions & events** section of your GitHub app parameters.
+            You can find it at [https://github.com/settings/apps/{YOUR_APP}/permissions](https://github.com/settings/apps/{YOUR_APP}/permissions).
+
+        Args:
+            token: The access token.
+
+        Returns:
+            A tuple with the id and the email of the authenticated user.
+
+
+        Raises:
+            httpx_oauth.exceptions.GetIdEmailError:
+                An error occurred while getting the id and email.
+
+        Examples:
+            >>> user_id, user_email = await client.get_id_email("TOKEN")
+        """
         async with httpx.AsyncClient(
             headers={**self.request_headers, "Authorization": f"token {token}"}
         ) as client:

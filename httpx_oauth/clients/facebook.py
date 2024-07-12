@@ -24,6 +24,8 @@ class GetLongLivedAccessTokenError(OAuth2RequestError): ...
 
 
 class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
+    """OAuth2 client for Facebook."""
+
     display_name = "Facebook"
     logo_svg = LOGO_SVG
 
@@ -34,6 +36,13 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
         scopes: Optional[List[str]] = BASE_SCOPES,
         name: str = "facebook",
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            scopes: The default scopes to be used in the authorization URL.
+            name: A unique name for the OAuth2 client.
+        """
         super().__init__(
             client_id,
             client_secret,
@@ -43,7 +52,24 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
             base_scopes=scopes,
         )
 
-    async def get_long_lived_access_token(self, token: str):
+    async def get_long_lived_access_token(self, token: str) -> OAuth2Token:
+        """
+        Request a [long-lived access token](https://developers.facebook.com/docs/facebook-login/access-tokens/refreshing/)
+        given a short-lived access token.
+
+        Args:
+            token: The short-lived access token.
+
+        Returns:
+            An access token response dictionary.
+
+        Raises:
+            GetLongLivedAccessTokenError: An error occurred while requesting
+            the long-lived access token.
+
+        Examples:
+            >>> long_lived_access_token = await client.get_long_lived_access_token("TOKEN")
+        """
         async with self.get_httpx_client() as client:
             request, auth = self.build_request(
                 client,
