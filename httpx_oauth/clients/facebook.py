@@ -65,7 +65,7 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
 
         Raises:
             GetLongLivedAccessTokenError: An error occurred while requesting
-            the long-lived access token.
+                the long-lived access token.
 
         Examples:
             ```py

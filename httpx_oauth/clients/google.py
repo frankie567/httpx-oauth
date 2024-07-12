@@ -43,7 +43,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
         client_id: str,
         client_secret: str,
         scopes: Optional[List[str]] = BASE_SCOPES,
-        name="google",
+        name: str = "google",
     ):
         """
         Args:

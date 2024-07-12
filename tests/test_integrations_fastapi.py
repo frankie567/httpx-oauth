@@ -1,10 +1,11 @@
 import pytest
 from fastapi import Depends, FastAPI
+from pytest_mock import MockerFixture
 from starlette import status
 from starlette.testclient import TestClient
 
 from httpx_oauth.integrations.fastapi import OAuth2AuthorizeCallback
-from httpx_oauth.oauth2 import OAuth2
+from httpx_oauth.oauth2 import GetAccessTokenError, OAuth2
 
 CLIENT_ID = "CLIENT_ID"
 CLIENT_SECRET = "CLIENT_SECRET"
@@ -61,6 +62,21 @@ class TestOAuth2AuthorizeCallback:
         response = test_client.get(route, params={"error": "access_denied"})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {"detail": "access_denied"}
+
+    def test_oauth2_authorize_get_access_token_error(
+        self, mocker: MockerFixture, route, expected_redirect_url
+    ):
+        get_access_token_mock = mocker.patch.object(
+            client, "get_access_token", side_effect=GetAccessTokenError("ERROR")
+        )
+
+        response = test_client.get(route, params={"code": "CODE"})
+
+        get_access_token_mock.assert_called_once_with(
+            "CODE", expected_redirect_url, None
+        )
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.json() == {"detail": "ERROR"}
 
     def test_oauth2_authorize_without_state(
         self, patch_async_method, route, expected_redirect_url
