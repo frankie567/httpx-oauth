@@ -80,7 +80,7 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response.json())
+                raise GetIdEmailError(response=response)
 
             data: Dict[str, Any] = response.json()
 

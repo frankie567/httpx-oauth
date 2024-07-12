@@ -1,3 +1,4 @@
+import json
 import urllib.parse
 from typing import Any, Dict, List, Optional, Tuple, TypedDict, cast
 
@@ -46,32 +47,42 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             ACCESS_TOKEN_ENDPOINT,
             name=name,
             base_scopes=scopes,
+            token_endpoint_auth_method="client_secret_post",
         )
 
     async def refresh_token(self, refresh_token: str):
         assert self.refresh_token_endpoint is not None
         async with self.get_httpx_client() as client:
-            response = await client.post(
-                self.refresh_token_endpoint,
-                data={
-                    "grant_type": "refresh_token",
-                    "refresh_token": refresh_token,
-                    "client_id": self.client_id,
-                    "client_secret": self.client_secret,
-                },
-                headers=self.request_headers,
-            )
+            try:
+                response = await client.post(
+                    self.refresh_token_endpoint,
+                    data={
+                        "grant_type": "refresh_token",
+                        "refresh_token": refresh_token,
+                        "client_id": self.client_id,
+                        "client_secret": self.client_secret,
+                    },
+                    headers=self.request_headers,
+                )
+                response.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                raise RefreshTokenError(str(e), e.response) from e
+            except httpx.HTTPError as e:
+                raise RefreshTokenError(str(e)) from e
 
             content_type = response.headers.get("content-type", "")
-            if content_type.startswith("application/json"):
-                data = response.json()
+
             # GitHub sends errors with a 200 status code
             # and a form-urlencoded content type 😕
-            elif content_type.startswith("application/x-www-form-urlencoded"):
+            if content_type.startswith("application/x-www-form-urlencoded"):
                 data = urllib.parse.parse_qs(response.text)
+                raise RefreshTokenError(cast(str, data["error"]), response)
 
-            if response.status_code >= 400 or "error" in data:
-                raise RefreshTokenError(data)
+            try:
+                data = cast(Dict[str, Any], response.json())
+            except json.decoder.JSONDecodeError as e:
+                message = "Invalid JSON content"
+                raise RefreshTokenError(message, response) from e
 
             return OAuth2Token(data)
 
@@ -82,7 +93,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             response = await client.get(PROFILE_ENDPOINT)
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response.json())
+                raise GetIdEmailError(response=response)
 
             data = cast(Dict[str, Any], response.json())
 
@@ -94,7 +105,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
                 response = await client.get(EMAILS_ENDPOINT)
 
                 if response.status_code >= 400:
-                    raise GetIdEmailError(response.json())
+                    raise GetIdEmailError(response=response)
 
                 emails = cast(List[Dict[str, Any]], response.json())
 

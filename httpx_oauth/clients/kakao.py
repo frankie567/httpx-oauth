@@ -39,6 +39,8 @@ class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
             revoke_token_endpoint=REVOKE_TOKEN_ENDPOINT,
             name=name,
             base_scopes=scopes,
+            token_endpoint_auth_method="client_secret_post",
+            revocation_endpoint_auth_method="client_secret_post",
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
@@ -50,7 +52,7 @@ class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response.json())
+                raise GetIdEmailError(response=response)
 
             payload = cast(Dict[str, Any], response.json())
             account_id = str(payload["id"])

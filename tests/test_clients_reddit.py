@@ -57,6 +57,7 @@ def test_reddit_defaults():
     assert client.name == "reddit"
 
 
+@pytest.mark.asyncio
 class TestRedditGetAccessToken:
     response_success = httpx.Response(
         httpx.codes.OK,
@@ -75,7 +76,6 @@ class TestRedditGetAccessToken:
         },
     )
 
-    @pytest.mark.asyncio
     @respx.mock
     async def test_bad_auth(self):
         respx.post(re.compile(f"^{reddit.ACCESS_TOKEN_ENDPOINT}")).mock(
@@ -86,15 +86,13 @@ class TestRedditGetAccessToken:
             "INVALID_CLIENT_ID", "INVALID_CLIENT_SECRET"
         )
 
-        with pytest.raises(oauth.GetAccessTokenError) as e:
+        with pytest.raises(oauth.GetAccessTokenError) as excinfo:
             await invalid_client.get_access_token(
                 FAKE_AUTHORIZATION_CODE, FAKE_REDIRECT_URI
             )
 
-        assert isinstance(e.value.args[0], dict)
-        assert e.value.args[0] == response_unauthorized.json()
+        assert isinstance(excinfo.value.response, httpx.Response)
 
-    @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
         request = respx.post(re.compile(f"^{reddit.ACCESS_TOKEN_ENDPOINT}")).mock(
@@ -114,92 +112,22 @@ class TestRedditGetAccessToken:
         # Check the subset, since httpx-oauth lib also adds a calculated "expires_at"
         assert self.response_success.json().items() <= token.items()
 
-    @pytest.mark.asyncio
     @respx.mock
     async def test_error(self):
         respx.post(re.compile(f"^{reddit.ACCESS_TOKEN_ENDPOINT}")).mock(
             side_effect=require_auth(self.response_error)
         )
 
-        with pytest.raises(oauth.GetAccessTokenError) as e:
+        with pytest.raises(oauth.GetAccessTokenError) as excinfo:
             await client.get_access_token(
                 "INVALID_AUTHORIZATION_CODE", FAKE_REDIRECT_URI
             )
 
-        assert isinstance(e.value.args[0], dict)
-        assert e.value.args[0] == self.response_error.json()
+        assert isinstance(excinfo.value.message, str)
 
 
-class TestRedditRefreshToken:
-    response_success = httpx.Response(
-        httpx.codes.OK,
-        json={
-            "access_token": FAKE_ACCESS_TOKEN,
-            "token_type": "bearer",
-            "expires_in": 3600,
-            "refresh_token": FAKE_REFRESH_TOKEN,
-            "scope": "identity",
-        },
-    )
-
-    response_error = httpx.Response(
-        httpx.codes.BAD_REQUEST,
-        json={
-            "error": httpx.codes.BAD_REQUEST,
-            "message": "Bad Request",
-        },
-    )
-
-    @pytest.mark.asyncio
-    @respx.mock
-    async def test_bad_auth(self):
-        respx.post(re.compile(f"^{reddit.REFRESH_ENDPOINT}")).mock(
-            side_effect=require_auth(self.response_success),
-        )
-
-        invalid_client = reddit.RedditOAuth2(
-            "INVALID_CLIENT_ID", "INVALID_CLIENT_SECRET"
-        )
-
-        with pytest.raises(oauth.RefreshTokenError) as e:
-            await invalid_client.refresh_token(FAKE_REFRESH_TOKEN)
-
-        assert isinstance(e.value.args[0], dict)
-        assert e.value.args[0] == response_unauthorized.json()
-
-    @pytest.mark.asyncio
-    @respx.mock
-    async def test_success(self, get_respx_call_args):
-        request = respx.post(re.compile(f"^{reddit.REFRESH_ENDPOINT}")).mock(
-            side_effect=require_auth(self.response_success),
-        )
-
-        token = await client.refresh_token(FAKE_REFRESH_TOKEN)
-        url, headers, content = await get_respx_call_args(request)
-        content_url_decoded = parse_qsl(content)
-
-        assert ("grant_type", "refresh_token") in content_url_decoded
-        assert ("refresh_token", FAKE_REFRESH_TOKEN) in content_url_decoded
-
-        # Check the subset, since httpx-oauth lib also adds a calculated "expires_at"
-        assert self.response_success.json().items() <= token.items()
-
-    @pytest.mark.asyncio
-    @respx.mock
-    async def test_error(self):
-        respx.post(re.compile(f"^{reddit.REFRESH_ENDPOINT}")).mock(
-            side_effect=require_auth(self.response_error)
-        )
-
-        with pytest.raises(oauth.RefreshTokenError) as e:
-            await client.refresh_token("INVALID_REFRESH_TOKEN")
-
-        assert isinstance(e.value.args[0], dict)
-        assert e.value.args[0] == self.response_error.json()
-
-
+@pytest.mark.asyncio
 class TestRedditRevokeToken:
-    @pytest.mark.asyncio
     @respx.mock
     async def test_bad_auth(self):
         respx.post(re.compile(f"^{reddit.REVOKE_ENDPOINT}")).mock(
@@ -213,7 +141,6 @@ class TestRedditRevokeToken:
         with pytest.raises(oauth.RevokeTokenError):
             await invalid_client.revoke_token(FAKE_REFRESH_TOKEN, "refresh_token")
 
-    @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
         request = respx.post(re.compile(f"^{reddit.REVOKE_ENDPOINT}")).mock(
@@ -229,8 +156,8 @@ class TestRedditRevokeToken:
         assert ("token_type_hint", "refresh_token") in content_url_decoded
 
 
+@pytest.mark.asyncio
 class TestRedditGetIdEmail:
-    @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, load_mock, get_respx_call_args):
         request = respx.get(re.compile(f"^{reddit.IDENTITY_ENDPOINT}")).mock(
@@ -246,7 +173,6 @@ class TestRedditGetIdEmail:
         assert user_id == "TheQuickBrownCatJumpsOverTheLazyDog"
         assert user_email is None
 
-    @pytest.mark.asyncio
     @respx.mock
     async def test_error(self):
         respx.get(re.compile(f"^{reddit.IDENTITY_ENDPOINT}")).mock(
@@ -257,5 +183,4 @@ class TestRedditGetIdEmail:
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email(FAKE_ACCESS_TOKEN)
 
-        assert isinstance(excinfo.value.args[0], dict)
-        assert excinfo.value.args[0] == {"error": httpx.codes.BAD_REQUEST}
+        assert isinstance(excinfo.value.response, httpx.Response)

@@ -49,6 +49,7 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
             access_token_endpoint,
             name=name,
             base_scopes=scopes,
+            token_endpoint_auth_method="client_secret_post",
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
@@ -59,7 +60,7 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response.json())
+                raise GetIdEmailError(response=response)
 
             data = cast(Dict[str, Any], response.json())
             shop = data["shop"]

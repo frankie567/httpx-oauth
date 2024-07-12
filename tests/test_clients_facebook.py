@@ -2,7 +2,7 @@ import re
 
 import pytest
 import respx
-from httpx import Response
+from httpx import HTTPError, Response
 
 from httpx_oauth.clients.facebook import (
     PROFILE_ENDPOINT,
@@ -31,8 +31,8 @@ def test_facebook_oauth2():
     assert client.name == "facebook"
 
 
+@pytest.mark.asyncio
 class TestGetLongLivedAccessToken:
-    @pytest.mark.asyncio
     @respx.mock
     async def test_get_long_lived_access_token(self, load_mock, get_respx_call_args):
         request = respx.post(client.access_token_endpoint).mock(
@@ -54,7 +54,6 @@ class TestGetLongLivedAccessToken:
         assert "token_type" in access_token
         assert access_token.is_expired() is False
 
-    @pytest.mark.asyncio
     @respx.mock
     async def test_get_long_lived_access_token_error(self, load_mock):
         respx.post(client.access_token_endpoint).mock(
@@ -63,8 +62,25 @@ class TestGetLongLivedAccessToken:
 
         with pytest.raises(GetLongLivedAccessTokenError) as excinfo:
             await client.get_long_lived_access_token("ACCESS_TOKEN")
-        assert isinstance(excinfo.value.args[0], dict)
-        assert "error" in excinfo.value.args[0]
+        assert isinstance(excinfo.value.response, Response)
+
+    @respx.mock
+    async def test_get_long_lived_access_token_http_error(self):
+        respx.post(client.access_token_endpoint).mock(side_effect=HTTPError("ERROR"))
+
+        with pytest.raises(GetLongLivedAccessTokenError) as excinfo:
+            await client.get_long_lived_access_token("ACCESS_TOKEN")
+        assert excinfo.value.response is None
+
+    @respx.mock
+    async def test_get_long_lived_access_token_json_error(self):
+        respx.post(client.access_token_endpoint).mock(
+            return_value=Response(200, text="NOT JSON")
+        )
+
+        with pytest.raises(GetLongLivedAccessTokenError) as excinfo:
+            await client.get_long_lived_access_token("ACCESS_TOKEN")
+        assert isinstance(excinfo.value.response, Response)
 
 
 profile_response = {"id": "424242", "email": "arthur@camelot.bt"}
@@ -110,5 +126,4 @@ class TestFacebookGetIdEmail:
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
 
-        assert isinstance(excinfo.value.args[0], dict)
-        assert excinfo.value.args[0] == {"error": "message"}
+        assert isinstance(excinfo.value.response, Response)

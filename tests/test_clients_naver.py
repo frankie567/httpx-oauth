@@ -2,7 +2,7 @@ import re
 
 import pytest
 import respx
-from httpx import Response
+from httpx import HTTPError, Response
 
 from httpx_oauth.clients.naver import PROFILE_ENDPOINT, NaverOAuth2
 from httpx_oauth.errors import GetIdEmailError
@@ -64,8 +64,7 @@ class TestNaverdGetIdEmail:
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
 
-        assert isinstance(excinfo.value.args[0], dict)
-        assert excinfo.value.args[0] == {"error": "message"}
+        assert isinstance(excinfo.value.response, Response)
 
     @pytest.mark.asyncio
     @respx.mock
@@ -102,5 +101,15 @@ class TestRevokeToken:
             return_value=Response(400, json={"error": "message"})
         )
 
-        with pytest.raises(RevokeTokenError):
+        with pytest.raises(RevokeTokenError) as excinfo:
             await client.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
+        assert isinstance(excinfo.value.response, Response)
+
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_revoke_token_http_error(self):
+        respx.post(client.revoke_token_endpoint).mock(side_effect=HTTPError("ERROR"))
+
+        with pytest.raises(RevokeTokenError) as excinfo:
+            await client.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
+        assert excinfo.value.response is None
