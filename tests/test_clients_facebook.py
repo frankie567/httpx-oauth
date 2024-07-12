@@ -9,7 +9,7 @@ from httpx_oauth.clients.facebook import (
     FacebookOAuth2,
     GetLongLivedAccessTokenError,
 )
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import OAuth2Token
 
 CLIENT_ID = "CLIENT_ID"

@@ -5,7 +5,7 @@ import respx
 from httpx import Response
 
 from httpx_oauth.clients.discord import PROFILE_ENDPOINT, DiscordOAuth2
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 
 client = DiscordOAuth2("CLIENT_ID", "CLIENT_SECRET")
 

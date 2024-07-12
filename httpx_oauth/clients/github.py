@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple, TypedDict, cast
 
 import httpx
 
-from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token, RefreshTokenError
 
 AUTHORIZE_ENDPOINT = "https://github.com/login/oauth/authorize"

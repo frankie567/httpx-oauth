@@ -20,7 +20,7 @@ from urllib.parse import urlencode
 
 import httpx
 
-from httpx_oauth.errors import HTTPXOAuthError
+from httpx_oauth.exceptions import HTTPXOAuthError
 
 
 class OAuth2Error(HTTPXOAuthError):
@@ -316,3 +316,7 @@ class BaseOAuth2(Generic[T]):
 
 
 OAuth2 = BaseOAuth2[Dict[str, Any]]
+
+__all__ = [
+    "BaseOAuth2",
+]
