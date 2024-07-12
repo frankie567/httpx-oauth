@@ -42,8 +42,11 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
                 An error occurred while fetching the OpenID configuration.
 
         Examples:
-            >>> from httpx_oauth.clients.openid import OpenID
-            >>> client = OpenID("CLIENT_ID", "CLIENT_SECRET", "https://example.fief.dev/.well-known/openid-configuration")
+            ```py
+            from httpx_oauth.clients.openid import OpenID
+
+            client = OpenID("CLIENT_ID", "CLIENT_SECRET", "https://example.fief.dev/.well-known/openid-configuration")
+            ``
         """
         with httpx.Client() as client:
             try:

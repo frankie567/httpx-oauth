@@ -68,7 +68,9 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             RefreshTokenNotSupportedError: The provider does not support token refresh.
 
         Examples:
-            >>> access_token = await client.refresh_token("REFRESH_TOKEN")
+            ```py
+            access_token = await client.refresh_token("REFRESH_TOKEN")
+            ```
         """
         return await super().refresh_token(refresh_token)
 

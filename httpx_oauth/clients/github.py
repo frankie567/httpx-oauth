@@ -77,7 +77,9 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             RefreshTokenNotSupportedError: The provider does not support token refresh.
 
         Examples:
-            >>> access_token = await client.refresh_token("REFRESH_TOKEN")
+            ```py
+            access_token = await client.refresh_token("REFRESH_TOKEN")
+            ```
         """
         assert self.refresh_token_endpoint is not None
         async with self.get_httpx_client() as client:
@@ -129,7 +131,9 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
                 An error occurred while getting the id and email.
 
         Examples:
-            >>> user_id, user_email = await client.get_id_email("TOKEN")
+            ```py
+            user_id, user_email = await client.get_id_email("TOKEN")
+            ```
         """
         async with httpx.AsyncClient(
             headers={**self.request_headers, "Authorization": f"token {token}"}

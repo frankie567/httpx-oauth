@@ -105,7 +105,9 @@ class OAuth2Token(Dict[str, Any]):
     you can get access token like this:
 
     Examples:
-        >>> access_token = token["access_token"]
+        ```py
+        access_token = token["access_token"]
+        ```
     """
 
     def __init__(self, token_dict: Dict[str, Any]):
@@ -239,9 +241,11 @@ class BaseOAuth2(Generic[T]):
             The authorization URL.
 
         Examples:
-            >>> authorization_url = await client.get_authorization_url(
+            ```py
+            authorization_url = await client.get_authorization_url(
                 "https://www.tintagel.bt/oauth-callback", scope=["SCOPE1", "SCOPE2", "SCOPE3"],
             )
+            ```py
         """
         params = {
             "response_type": "code",
@@ -288,7 +292,9 @@ class BaseOAuth2(Generic[T]):
             GetAccessTokenError: An error occurred while getting the access token.
 
         Examples:
-            >>> access_token = await client.get_access_token("CODE", "https://www.tintagel.bt/oauth-callback")
+            ```py
+            access_token = await client.get_access_token("CODE", "https://www.tintagel.bt/oauth-callback")
+            ```
         """
         async with self.get_httpx_client() as client:
             data = {
@@ -328,7 +334,9 @@ class BaseOAuth2(Generic[T]):
             RefreshTokenNotSupportedError: The provider does not support token refresh.
 
         Examples:
-            >>> access_token = await client.refresh_token("REFRESH_TOKEN")
+            ```py
+            access_token = await client.refresh_token("REFRESH_TOKEN")
+            ```
         """
         if self.refresh_token_endpoint is None:
             raise RefreshTokenNotSupportedError()
@@ -408,7 +416,9 @@ class BaseOAuth2(Generic[T]):
                 An error occurred while getting the id and email.
 
         Examples:
-            >>> user_id, user_email = await client.get_id_email("TOKEN")
+            ```py
+            user_id, user_email = await client.get_id_email("TOKEN")
+            ```
         """
         raise NotImplementedError()
 
@@ -479,7 +489,23 @@ class BaseOAuth2(Generic[T]):
 
 
 OAuth2 = BaseOAuth2[Dict[str, Any]]
-"""Generic OAuth2 client."""
+"""
+Generic OAuth2 client.
+
+Examples:
+    ```py
+    from httpx_oauth.oauth2 import OAuth2
+
+    client = OAuth2(
+        "CLIENT_ID",
+        "CLIENT_SECRET",
+        "AUTHORIZE_ENDPOINT",
+        "ACCESS_TOKEN_ENDPOINT",
+        refresh_token_endpoint="REFRESH_TOKEN_ENDPOINT",
+        revoke_token_endpoint="REVOKE_TOKEN_ENDPOINT",
+    )
+    ```
+"""
 
 __all__ = [
     "BaseOAuth2",
