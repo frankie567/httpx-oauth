@@ -89,8 +89,9 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
                 An error occurred while getting the id and email.
 
         Examples:
-            >>> user_id, user_email = await client.get_id_email("TOKEN")
-
+            ```py
+            user_id, user_email = await client.get_id_email("TOKEN")
+            ```
         """
         async with self.get_httpx_client() as client:
             response = await client.get(

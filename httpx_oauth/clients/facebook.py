@@ -68,7 +68,9 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
             the long-lived access token.
 
         Examples:
-            >>> long_lived_access_token = await client.get_long_lived_access_token("TOKEN")
+            ```py
+            long_lived_access_token = await client.get_long_lived_access_token("TOKEN")
+            ```
         """
         async with self.get_httpx_client() as client:
             request, auth = self.build_request(
