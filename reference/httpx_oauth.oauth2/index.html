@@ -14,7 +14,7 @@
         <link rel="prev" href="../httpx_oauth.clients/">
       
       
-        <link rel="next" href="../httpx_oauth.exceptions/">
+        <link rel="next" href="../httpx_oauth.integrations.fastapi/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -690,6 +690,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../httpx_oauth.integrations.fastapi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    httpx_oauth.integrations.fastapi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../httpx_oauth.exceptions/" class="md-nav__link">
         
   
@@ -1149,7 +1170,8 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The refresh token endpoint URL.</p>
+                <p>The refresh token endpoint URL.
+If not supported, set it to <code>None</code>.</p>
               </div>
             </td>
             <td>
@@ -1163,7 +1185,8 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The revoke token endpoint URL.</p>
+                <p>The revoke token endpoint URL.
+If not supported, set it to <code>None</code>.</p>
               </div>
             </td>
             <td>
@@ -1219,7 +1242,8 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The authentication method to be used in the revocation endpoint.</p>
+                <p>The authentication method to be used in the revocation endpoint.
+If the revocation endpoint is not supported, set it to <code>None</code>.</p>
               </div>
             </td>
             <td>
@@ -1332,7 +1356,7 @@ after the user has authorized the application.</p>
             <td>
               <div class="doc-md-description">
                 <p>Optional code verifier used
-in the <a href="(https://datatracker.ietf.org/doc/html/rfc7636)">PKCE</a> flow.</p>
+in the <a href="https://datatracker.ietf.org/doc/html/rfc7636">PKCE</a>) flow.</p>
               </div>
             </td>
             <td>
@@ -1448,7 +1472,8 @@ where the user should be redirected to authorize the application.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>An opaque value used by the client to maintain state</p>
+                <p>An opaque value used by the client to maintain state
+between the request and the callback.</p>
               </div>
             </td>
             <td>
@@ -1478,7 +1503,7 @@ If not provided, <code>base_scopes</code> will be used.</p>
             <td>
               <div class="doc-md-description">
                 <p>Optional
-<a href="(https://datatracker.ietf.org/doc/html/rfc7636)">PKCE</a> code challenge.</p>
+<a href="https://datatracker.ietf.org/doc/html/rfc7636">PKCE</a>) code challenge.</p>
               </div>
             </td>
             <td>
@@ -1493,7 +1518,7 @@ If not provided, <code>base_scopes</code> will be used.</p>
             <td>
               <div class="doc-md-description">
                 <p>Optional
-<a href="(https://datatracker.ietf.org/doc/html/rfc7636)">PKCE</a> code challenge
+<a href="https://datatracker.ietf.org/doc/html/rfc7636">PKCE</a>) code challenge
 method.</p>
               </div>
             </td>
