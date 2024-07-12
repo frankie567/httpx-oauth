@@ -172,14 +172,14 @@ class BaseOAuth2(Generic[T]):
             authorize_endpoint: The authorization endpoint URL.
             access_token_endpoint: The access token endpoint URL.
             refresh_token_endpoint: The refresh token endpoint URL.
-            If not supported, set it to `None`.
+                If not supported, set it to `None`.
             revoke_token_endpoint: The revoke token endpoint URL.
-            If not supported, set it to `None`.
+                If not supported, set it to `None`.
             name: A unique name for the OAuth2 client.
             base_scopes: The base scopes to be used in the authorization URL.
             token_endpoint_auth_method: The authentication method to be used in the token endpoint.
             revocation_endpoint_auth_method: The authentication method to be used in the revocation endpoint.
-            If the revocation endpoint is not supported, set it to `None`.
+                If the revocation endpoint is not supported, set it to `None`.
 
         Raises:
             NotSupportedAuthMethodError:
@@ -227,13 +227,13 @@ class BaseOAuth2(Generic[T]):
         Args:
             redirect_uri: The URL where the user will be redirected after authorization.
             state: An opaque value used by the client to maintain state
-            between the request and the callback.
+                between the request and the callback.
             scope: The scopes to be requested.
                 If not provided, `base_scopes` will be used.
             code_challenge: Optional
-                [PKCE]((https://datatracker.ietf.org/doc/html/rfc7636)) code challenge.
+                [PKCE](https://datatracker.ietf.org/doc/html/rfc7636)) code challenge.
             code_challenge_method: Optional
-                [PKCE]((https://datatracker.ietf.org/doc/html/rfc7636)) code challenge
+                [PKCE](https://datatracker.ietf.org/doc/html/rfc7636)) code challenge
                 method.
             extras_params: Optional extra parameters specific to the service.
 
@@ -283,7 +283,7 @@ class BaseOAuth2(Generic[T]):
             code: The authorization code.
             redirect_uri: The URL where the user was redirected after authorization.
             code_verifier: Optional code verifier used
-                in the [PKCE]((https://datatracker.ietf.org/doc/html/rfc7636)) flow.
+                in the [PKCE](https://datatracker.ietf.org/doc/html/rfc7636)) flow.
 
         Returns:
             An access token response dictionary.

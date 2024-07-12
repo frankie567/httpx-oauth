@@ -58,7 +58,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             token_endpoint_auth_method="client_secret_post",
         )
 
-    async def refresh_token(self, refresh_token: str):
+    async def refresh_token(self, refresh_token: str) -> OAuth2Token:
         """
         Requests a new access token using a refresh token.
 

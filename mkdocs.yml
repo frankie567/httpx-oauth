@@ -60,6 +60,7 @@ plugins:
             python:
                 import:
                     - https://docs.python.org/3.8/objects.inv
+                    - https://fastapi.tiangolo.com/objects.inv
                 options:
                     docstring_style: google
                     extensions:
@@ -77,4 +78,5 @@ nav:
   - Reference:
       - httpx_oauth.clients: reference/httpx_oauth.clients.md
       - httpx_oauth.oauth2: reference/httpx_oauth.oauth2.md
+      - httpx_oauth.integrations.fastapi: reference/httpx_oauth.integrations.fastapi.md
       - httpx_oauth.exceptions: reference/httpx_oauth.exceptions.md
