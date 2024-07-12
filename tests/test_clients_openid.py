@@ -2,7 +2,7 @@ import re
 
 import pytest
 import respx
-from httpx import Response
+from httpx import HTTPError, Response
 
 from httpx_oauth.clients.openid import OpenID, OpenIDConfigurationError
 from httpx_oauth.exceptions import GetIdEmailError
@@ -57,6 +57,19 @@ def test_openid_configuration_error():
     respx.get(
         re.compile("https://example.fief.dev/.well-known/openid-configuration")
     ).mock(return_value=Response(400, json={"error": "message"}))
+    with pytest.raises(OpenIDConfigurationError):
+        OpenID(
+            "CLIENT_ID",
+            "CLIENT_SECRET",
+            "https://example.fief.dev/.well-known/openid-configuration",
+        )
+
+
+@respx.mock
+def test_openid_configuration_http_error():
+    respx.get(
+        re.compile("https://example.fief.dev/.well-known/openid-configuration")
+    ).mock(side_effect=HTTPError("ERROR"))
     with pytest.raises(OpenIDConfigurationError):
         OpenID(
             "CLIENT_ID",
