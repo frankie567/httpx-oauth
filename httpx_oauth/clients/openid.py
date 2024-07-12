@@ -31,16 +31,29 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
         refresh_token_supported = "refresh_token" in self.openid_configuration.get(
             "grant_types_supported", []
         )
+        revocation_endpoint = self.openid_configuration.get("revocation_endpoint")
+        token_endpoint_auth_methods_supported = self.openid_configuration.get(
+            "token_endpoint_auth_methods_supported", ["client_secret_basic"]
+        )
+        revocation_endpoint_auth_methods_supported = self.openid_configuration.get(
+            "revocation_endpoint_auth_methods_supported", ["client_secret_basic"]
+        )
 
         super().__init__(
             client_id,
             client_secret,
             self.openid_configuration["authorization_endpoint"],
-            self.openid_configuration["token_endpoint"],
+            token_endpoint,
             token_endpoint if refresh_token_supported else None,
-            self.openid_configuration.get("revocation_endpoint"),
-            name,
-            base_scopes,
+            revocation_endpoint,
+            name=name,
+            base_scopes=base_scopes,
+            token_endpoint_auth_method=token_endpoint_auth_methods_supported[0],
+            revocation_endpoint_auth_method=revocation_endpoint_auth_methods_supported[
+                0
+            ]
+            if revocation_endpoint
+            else None,
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
@@ -51,7 +64,7 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response.json())
+                raise GetIdEmailError(response=response)
 
             data: Dict[str, Any] = response.json()
 

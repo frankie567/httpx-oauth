@@ -1,8 +1,9 @@
 from typing import Any, Dict, List, Optional, Tuple, cast
 
-import httpx_oauth.oauth2 as oauth
+import httpx
+
 from httpx_oauth.errors import GetIdEmailError
-from httpx_oauth.oauth2 import BaseOAuth2
+from httpx_oauth.oauth2 import BaseOAuth2, RevokeTokenError
 
 AUTHORIZE_ENDPOINT = "https://nid.naver.com/oauth2.0/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://nid.naver.com/oauth2.0/token"
@@ -43,11 +44,14 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
             revoke_token_endpoint=REVOKE_TOKEN_ENDPOINT,
             name=name,
             base_scopes=scopes,
+            token_endpoint_auth_method="client_secret_post",
+            revocation_endpoint_auth_method="client_secret_post",
         )
 
     async def revoke_token(
         self, token: str, token_type_hint: Optional[str] = None
     ) -> None:
+        assert self.revoke_token_endpoint is not None
         async with self.get_httpx_client() as client:
             data = {
                 "grant_type": "delete",
@@ -60,14 +64,19 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
             if token_type_hint is not None:
                 data["token_type_hint"] = token_type_hint
 
-            response = await client.post(
-                cast(str, self.revoke_token_endpoint),
-                data=data,
-                headers=self.request_headers,
-            )
+            try:
+                response = await client.post(
+                    self.revoke_token_endpoint,
+                    data=data,
+                    headers=self.request_headers,
+                )
+                response.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                raise RevokeTokenError(str(e), e.response) from e
+            except httpx.HTTPError as e:
+                raise RevokeTokenError(str(e)) from e
 
-            if response.status_code >= 400:
-                raise oauth.RevokeTokenError()
+        return None
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
@@ -77,7 +86,7 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response.json())
+                raise GetIdEmailError(response=response)
 
             json = cast(Dict[str, Any], response.json())
             account_info: Dict[str, Any] = json["response"]

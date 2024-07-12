@@ -38,6 +38,7 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             ACCESS_TOKEN_ENDPOINT,
             name=name,
             base_scopes=scopes,
+            token_endpoint_auth_method="client_secret_post",
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
@@ -49,7 +50,7 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             )
 
             if profile_response.status_code >= 400:
-                raise GetIdEmailError(profile_response.json())
+                raise GetIdEmailError(response=profile_response)
 
             email_response = await client.get(
                 EMAIL_ENDPOINT,
@@ -58,7 +59,7 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             )
 
             if email_response.status_code >= 400:
-                raise GetIdEmailError(email_response.json())
+                raise GetIdEmailError(response=email_response)
 
             profile_data = cast(Dict[str, Any], profile_response.json())
             user_id = profile_data["id"]

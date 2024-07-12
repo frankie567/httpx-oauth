@@ -40,6 +40,7 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             access_token_endpoint,
             name=name,
             base_scopes=scopes,
+            token_endpoint_auth_method="client_secret_post",
         )
 
     def get_authorization_url(
@@ -60,7 +61,7 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response.json())
+                raise GetIdEmailError(response=response)
 
             data = cast(Dict[str, Any], response.json())
 

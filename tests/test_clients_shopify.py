@@ -110,5 +110,4 @@ class TestShopifyGetIdEmail:
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
 
-        assert isinstance(excinfo.value.args[0], dict)
-        assert excinfo.value.args[0] == {"error": "message"}
+        assert isinstance(excinfo.value.response, Response)

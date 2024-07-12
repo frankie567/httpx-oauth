@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 
 import pytest
 import respx
-from httpx import Response
+from httpx import HTTPError, Response
 
 from httpx_oauth.clients.github import EMAILS_ENDPOINT, PROFILE_ENDPOINT, GitHubOAuth2
 from httpx_oauth.errors import GetIdEmailError
@@ -28,8 +28,8 @@ profile_response_no_public_email = {"id": 42, "email": None}
 emails_response = [{"email": "arthur@camelot.bt"}]
 
 
+@pytest.mark.asyncio
 class TestGitHubRefreshToken:
-    @pytest.mark.asyncio
     @respx.mock
     async def test_refresh_token(self, load_mock, get_respx_call_args):
         request = respx.post(client.refresh_token_endpoint).mock(
@@ -50,9 +50,26 @@ class TestGitHubRefreshToken:
         assert "token_type" in access_token
         assert access_token.is_expired() is False
 
-    @pytest.mark.asyncio
     @respx.mock
-    async def test_refresh_token_error(self, load_mock):
+    async def test_refresh_token_status_error(self, load_mock):
+        respx.post(client.refresh_token_endpoint).mock(
+            return_value=Response(400, json=load_mock("error"))
+        )
+
+        with pytest.raises(RefreshTokenError) as excinfo:
+            await client.refresh_token("REFRESH_TOKEN")
+        assert isinstance(excinfo.value.response, Response)
+
+    @respx.mock
+    async def test_refresh_token_http_error(self, load_mock):
+        respx.post(client.refresh_token_endpoint).mock(side_effect=HTTPError("ERROR"))
+
+        with pytest.raises(RefreshTokenError) as excinfo:
+            await client.refresh_token("REFRESH_TOKEN")
+        assert excinfo.value.response is None
+
+    @respx.mock
+    async def test_refresh_token_200_error(self):
         error_response = {
             "error": "bad_refresh_token",
             "error_description": "The refresh token passed is incorrect or expired.",
@@ -70,8 +87,17 @@ class TestGitHubRefreshToken:
 
         with pytest.raises(RefreshTokenError) as excinfo:
             await client.refresh_token("REFRESH_TOKEN")
-        assert isinstance(excinfo.value.args[0], dict)
-        assert "error" in excinfo.value.args[0]
+        assert isinstance(excinfo.value.response, Response)
+
+    @respx.mock
+    async def test_refresh_token_json_error(self):
+        respx.post(client.refresh_token_endpoint).mock(
+            return_value=Response(200, text="NOT JSON")
+        )
+
+        with pytest.raises(RefreshTokenError) as excinfo:
+            await client.refresh_token("REFRESH_TOKEN")
+        assert isinstance(excinfo.value.response, Response)
 
 
 class TestGitHubGetIdEmail:
@@ -100,8 +126,7 @@ class TestGitHubGetIdEmail:
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
 
-        assert isinstance(excinfo.value.args[0], dict)
-        assert excinfo.value.args[0] == {"error": "message"}
+        assert isinstance(excinfo.value.response, Response)
 
     @pytest.mark.asyncio
     @respx.mock
@@ -134,5 +159,4 @@ class TestGitHubGetIdEmail:
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
 
-        assert isinstance(excinfo.value.args[0], dict)
-        assert excinfo.value.args[0] == {"error": "message"}
+        assert isinstance(excinfo.value.response, Response)

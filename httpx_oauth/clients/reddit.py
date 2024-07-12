@@ -2,8 +2,12 @@ from typing import Any, Dict, List, Optional, Tuple, cast
 
 import httpx
 
-import httpx_oauth.oauth2 as oauth
 from httpx_oauth.errors import GetIdEmailError
+from httpx_oauth.oauth2 import (
+    BaseOAuth2,
+    GetAccessTokenError,
+    OAuth2Token,
+)
 
 AUTHORIZE_ENDPOINT = "https://www.reddit.com/api/v1/authorize"
 ACCESS_TOKEN_ENDPOINT = "https://www.reddit.com/api/v1/access_token"
@@ -24,7 +28,7 @@ LOGO_SVG = """
 """
 
 
-class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
+class RedditOAuth2(BaseOAuth2[Dict[str, Any]]):
     display_name = "Reddit"
     logo_svg = LOGO_SVG
 
@@ -47,73 +51,19 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
             REVOKE_ENDPOINT,
             name=name,
             base_scopes=scopes,
+            token_endpoint_auth_method="client_secret_basic",
+            revocation_endpoint_auth_method="client_secret_basic",
         )
-
-        # Below fixes typing of the parent class, which marks these as Optional
-        self.refresh_token_endpoint: str
-        self.revoke_token_endpoint: str
 
     async def get_access_token(
         self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
-    ) -> oauth.OAuth2Token:
-        async with self.get_httpx_client() as client:
-            response = await client.post(
-                self.access_token_endpoint,
-                data={
-                    "grant_type": "authorization_code",
-                    "code": code,
-                    "redirect_uri": redirect_uri,
-                },
-                auth=(self.client_id, self.client_secret),
-                headers=self.request_headers,
-            )
+    ) -> OAuth2Token:
+        oauth2_token = await super().get_access_token(code, redirect_uri, code_verifier)
 
-            data = cast(Dict[str, Any], response.json())
+        if "error" in oauth2_token:
+            raise GetAccessTokenError(oauth2_token["error"])
 
-            if response.status_code >= httpx.codes.BAD_REQUEST or "error" in data:
-                raise oauth.GetAccessTokenError(data)
-
-            return oauth.OAuth2Token(data)
-
-    async def refresh_token(self, refresh_token: str) -> oauth.OAuth2Token:
-        async with self.get_httpx_client() as client:
-            response = await client.post(
-                self.refresh_token_endpoint,
-                data={
-                    "grant_type": "refresh_token",
-                    "refresh_token": refresh_token,
-                },
-                auth=(self.client_id, self.client_secret),
-                headers=self.request_headers,
-            )
-
-            data = cast(Dict[str, Any], response.json())
-
-            if response.status_code >= httpx.codes.BAD_REQUEST or "error" in data:
-                raise oauth.RefreshTokenError(data)
-
-            return oauth.OAuth2Token(data)
-
-    async def revoke_token(
-        self,
-        token: str,
-        token_type_hint: Optional[str] = None,
-    ) -> None:
-        async with self.get_httpx_client() as client:
-            data = {"token": token}
-
-            if token_type_hint is not None:
-                data["token_type_hint"] = token_type_hint
-
-            response = await client.post(
-                self.revoke_token_endpoint,
-                data=data,
-                auth=(self.client_id, self.client_secret),
-                headers=self.request_headers,
-            )
-
-            if response.status_code >= httpx.codes.BAD_REQUEST:
-                raise oauth.RevokeTokenError()
+        return oauth2_token
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
@@ -128,7 +78,7 @@ class RedditOAuth2(oauth.BaseOAuth2[Dict[str, Any]]):
             # Reddit doesn't return any useful JSON in case of auth failures
             # on oauth.reddit.com endpoints, so we simulate our own
             if response.status_code != httpx.codes.OK:
-                raise GetIdEmailError({"error": response.status_code})
+                raise GetIdEmailError(response=response)
 
             data = cast(Dict[str, Any], response.json())
             return data["name"], None

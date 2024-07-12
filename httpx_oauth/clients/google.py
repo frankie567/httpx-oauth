@@ -52,6 +52,8 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             REVOKE_TOKEN_ENDPOINT,
             name=name,
             base_scopes=scopes,
+            token_endpoint_auth_method="client_secret_post",
+            revocation_endpoint_auth_method="client_secret_post",
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
@@ -63,7 +65,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response.json())
+                raise GetIdEmailError(response=response)
 
             data = cast(Dict[str, Any], response.json())
 

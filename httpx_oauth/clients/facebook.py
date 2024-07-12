@@ -1,7 +1,10 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
+import json
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
+
+import httpx
 
 from httpx_oauth.errors import GetIdEmailError
-from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token
+from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Error, OAuth2Token
 
 AUTHORIZE_ENDPOINT = "https://www.facebook.com/v5.0/dialog/oauth"
 ACCESS_TOKEN_ENDPOINT = "https://graph.facebook.com/v5.0/oauth/access_token"
@@ -20,8 +23,12 @@ LOGO_SVG = """
 """
 
 
-class GetLongLivedAccessTokenError(Exception):
-    pass
+class GetLongLivedAccessTokenError(OAuth2Error):
+    def __init__(
+        self, message: str, response: Union[httpx.Response, None] = None
+    ) -> None:
+        self.response = response
+        super().__init__(message)
 
 
 class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
@@ -46,20 +53,27 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
 
     async def get_long_lived_access_token(self, token: str):
         async with self.get_httpx_client() as client:
-            response = await client.post(
-                self.access_token_endpoint,
-                data={
-                    "grant_type": "fb_exchange_token",
-                    "fb_exchange_token": token,
-                    "client_id": self.client_id,
-                    "client_secret": self.client_secret,
-                },
-            )
+            try:
+                response = await client.post(
+                    self.access_token_endpoint,
+                    data={
+                        "grant_type": "fb_exchange_token",
+                        "fb_exchange_token": token,
+                        "client_id": self.client_id,
+                        "client_secret": self.client_secret,
+                    },
+                )
+                response.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                raise GetLongLivedAccessTokenError(str(e), e.response) from e
+            except httpx.HTTPError as e:
+                raise GetLongLivedAccessTokenError(str(e)) from e
 
-            data = cast(Dict[str, Any], response.json())
-
-            if response.status_code >= 400:
-                raise GetLongLivedAccessTokenError(data)
+            try:
+                data = cast(Dict[str, Any], response.json())
+            except json.decoder.JSONDecodeError as e:
+                message = "Invalid JSON content"
+                raise GetLongLivedAccessTokenError(message, response) from e
 
             return OAuth2Token(data)
 
@@ -71,7 +85,7 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response.json())
+                raise GetIdEmailError(response=response)
 
             data = cast(Dict[str, Any], response.json())
 
