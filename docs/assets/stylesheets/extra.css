@@ -1,0 +1,9 @@
+.buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.buttons .md-button {
+    margin-bottom: 0.5rem;
+    text-align: center;
+}

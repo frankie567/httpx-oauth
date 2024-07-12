@@ -33,6 +33,8 @@ class GoogleOAuth2AuthorizeParams(TypedDict, total=False):
 
 
 class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
+    """OAuth2 client for Google."""
+
     display_name = "Google"
     logo_svg = LOGO_SVG
 
@@ -43,6 +45,13 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
         scopes: Optional[List[str]] = BASE_SCOPES,
         name="google",
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            scopes: The default scopes to be used in the authorization URL.
+            name: A unique name for the OAuth2 client.
+        """
         super().__init__(
             client_id,
             client_secret,

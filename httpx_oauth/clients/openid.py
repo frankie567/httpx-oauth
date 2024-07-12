@@ -3,16 +3,24 @@ from typing import Any, Dict, List, Optional, Tuple
 import httpx
 
 from httpx_oauth.exceptions import GetIdEmailError
-from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Error
+from httpx_oauth.oauth2 import BaseOAuth2, OAuth2RequestError
 
 BASE_SCOPES = ["openid", "email"]
 
 
-class OpenIDConfigurationError(OAuth2Error):
-    pass
+class OpenIDConfigurationError(OAuth2RequestError):
+    """
+    Raised when an error occurred while fetching the OpenID configuration.
+    """
 
 
 class OpenID(BaseOAuth2[Dict[str, Any]]):
+    """
+    Generic client for providers following the [OpenID Connect protocol](https://openid.net/connect/).
+
+    Besides the Client ID and the Client Secret, you'll have to provide the OpenID configuration endpoint, allowing the client to discover the required endpoints automatically. By convention, it's usually served under the path `.well-known/openid-configuration`.
+    """
+
     def __init__(
         self,
         client_id: str,
@@ -21,10 +29,30 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
         name: str = "openid",
         base_scopes: Optional[List[str]] = BASE_SCOPES,
     ):
+        """
+        Args:
+            client_id: The client ID provided by the OAuth2 provider.
+            client_secret: The client secret provided by the OAuth2 provider.
+            openid_configuration_endpoint: OpenID Connect discovery endpoint URL.
+            name: A unique name for the OAuth2 client.
+            base_scopes: The base scopes to be used in the authorization URL.
+
+        Raises:
+            OpenIDConfigurationError:
+                An error occurred while fetching the OpenID configuration.
+
+        Examples:
+            >>> from httpx_oauth.clients.openid import OpenID
+            >>> client = OpenID("CLIENT_ID", "CLIENT_SECRET", "https://example.fief.dev/.well-known/openid-configuration")
+        """
         with httpx.Client() as client:
-            response = client.get(openid_configuration_endpoint)
-            if response.status_code >= 400:
-                raise OpenIDConfigurationError(response.json())
+            try:
+                response = client.get(openid_configuration_endpoint)
+                response.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                raise OpenIDConfigurationError(str(e), e.response) from e
+            except httpx.HTTPError as e:
+                raise OpenIDConfigurationError(str(e)) from e
             self.openid_configuration: Dict[str, Any] = response.json()
 
         token_endpoint = self.openid_configuration["token_endpoint"]

@@ -3,29 +3,76 @@ site_description: Async OAuth client using HTTPX
 
 theme:
   name: material
-  palette:
-    primary: blue-grey
-    accent: red
   icon:
     logo: material/security
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      accent: blue grey
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      accent: blue grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra_css:
+  - assets/stylesheets/extra.css
 
 repo_name: frankie567/httpx-oauth
 repo_url: https://github.com/frankie567/httpx-oauth
 edit_uri: ""
 
 markdown_extensions:
-  - markdown_include.include:
-      base_path: docs
-  - toc:
-      permalink: true
-  - admonition
-  - codehilite
-  - pymdownx.superfences
-  - pymdownx.tasklist
+    - toc:
+        permalink: true
+    - pymdownx.highlight:
+        anchor_linenums: true
+    - pymdownx.tasklist:
+        custom_checkbox: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences
+    - admonition
+    - attr_list
+
+plugins:
+    - search
+    - autorefs
+    - mkdocstrings:
+        handlers:
+            python:
+                import:
+                    - https://docs.python.org/3.8/objects.inv
+                options:
+                    docstring_style: google
+                    extensions:
+                      - griffe_inherited_docstrings
+
+watch:
+    - docs
+    - httpx_oauth
 
 nav:
   - About: index.md
-  - Usage:
-    - oauth2.md
+  - Usage: usage.md
   - Integrations:
     - fastapi.md
+  - Reference:
+      - httpx_oauth.clients: reference/httpx_oauth.clients.md
+      - httpx_oauth.oauth2: reference/httpx_oauth.oauth2.md
+      - httpx_oauth.exceptions: reference/httpx_oauth.exceptions.md
