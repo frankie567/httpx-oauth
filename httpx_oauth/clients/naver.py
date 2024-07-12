@@ -1,7 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, cast
 
-import httpx
-
 from httpx_oauth.errors import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2, RevokeTokenError
 
@@ -55,8 +53,6 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
         async with self.get_httpx_client() as client:
             data = {
                 "grant_type": "delete",
-                "client_id": self.client_id,
-                "client_secret": self.client_secret,
                 "access_token": token,
                 "service_provider": "NAVER",
             }
@@ -64,17 +60,14 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
             if token_type_hint is not None:
                 data["token_type_hint"] = token_type_hint
 
-            try:
-                response = await client.post(
-                    self.revoke_token_endpoint,
-                    data=data,
-                    headers=self.request_headers,
-                )
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                raise RevokeTokenError(str(e), e.response) from e
-            except httpx.HTTPError as e:
-                raise RevokeTokenError(str(e)) from e
+            request, auth = self.build_request(
+                client,
+                "POST",
+                self.revoke_token_endpoint,
+                auth_method=self.token_endpoint_auth_method,
+                data=data,
+            )
+            await self.send_request(client, request, auth, exc_class=RevokeTokenError)
 
         return None
 

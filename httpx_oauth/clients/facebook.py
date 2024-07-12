@@ -1,10 +1,7 @@
-import json
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
-
-import httpx
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 from httpx_oauth.errors import GetIdEmailError
-from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Error, OAuth2Token
+from httpx_oauth.oauth2 import BaseOAuth2, OAuth2RequestError, OAuth2Token
 
 AUTHORIZE_ENDPOINT = "https://www.facebook.com/v5.0/dialog/oauth"
 ACCESS_TOKEN_ENDPOINT = "https://graph.facebook.com/v5.0/oauth/access_token"
@@ -23,12 +20,7 @@ LOGO_SVG = """
 """
 
 
-class GetLongLivedAccessTokenError(OAuth2Error):
-    def __init__(
-        self, message: str, response: Union[httpx.Response, None] = None
-    ) -> None:
-        self.response = response
-        super().__init__(message)
+class GetLongLivedAccessTokenError(OAuth2RequestError): ...
 
 
 class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
@@ -53,28 +45,20 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
 
     async def get_long_lived_access_token(self, token: str):
         async with self.get_httpx_client() as client:
-            try:
-                response = await client.post(
-                    self.access_token_endpoint,
-                    data={
-                        "grant_type": "fb_exchange_token",
-                        "fb_exchange_token": token,
-                        "client_id": self.client_id,
-                        "client_secret": self.client_secret,
-                    },
-                )
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                raise GetLongLivedAccessTokenError(str(e), e.response) from e
-            except httpx.HTTPError as e:
-                raise GetLongLivedAccessTokenError(str(e)) from e
-
-            try:
-                data = cast(Dict[str, Any], response.json())
-            except json.decoder.JSONDecodeError as e:
-                message = "Invalid JSON content"
-                raise GetLongLivedAccessTokenError(message, response) from e
-
+            request, auth = self.build_request(
+                client,
+                "POST",
+                self.access_token_endpoint,
+                auth_method=self.token_endpoint_auth_method,
+                data={
+                    "grant_type": "fb_exchange_token",
+                    "fb_exchange_token": token,
+                },
+            )
+            response = await self.send_request(
+                client, request, auth, exc_class=GetLongLivedAccessTokenError
+            )
+            data = self.get_json(response, exc_class=GetLongLivedAccessTokenError)
             return OAuth2Token(data)
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
