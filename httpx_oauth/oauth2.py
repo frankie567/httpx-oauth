@@ -7,8 +7,10 @@ from typing import (
     Generic,
     List,
     Literal,
+    Mapping,
     Optional,
     Tuple,
+    Type,
     TypeVar,
     Union,
     cast,
@@ -47,7 +49,7 @@ class RevokeTokenNotSupportedError(OAuth2Error):
         super().__init__("Revoke token is not supported by this provider.")
 
 
-class GetAccessTokenError(OAuth2Error):
+class OAuth2RequestError(OAuth2Error):
     def __init__(
         self, message: str, response: Union[httpx.Response, None] = None
     ) -> None:
@@ -55,20 +57,13 @@ class GetAccessTokenError(OAuth2Error):
         super().__init__(message)
 
 
-class RefreshTokenError(OAuth2Error):
-    def __init__(
-        self, message: str, response: Union[httpx.Response, None] = None
-    ) -> None:
-        self.response = response
-        super().__init__(message)
+class GetAccessTokenError(OAuth2RequestError): ...
 
 
-class RevokeTokenError(OAuth2Error):
-    def __init__(
-        self, message: str, response: Union[httpx.Response, None] = None
-    ) -> None:
-        self.response = response
-        super().__init__(message)
+class RefreshTokenError(OAuth2RequestError): ...
+
+
+class RevokeTokenError(OAuth2RequestError): ...
 
 
 OAuth2ClientAuthMethod = Literal["client_secret_basic", "client_secret_post"]
@@ -105,6 +100,8 @@ class BaseOAuth2(Generic[T]):
     refresh_token_endpoint: Optional[str]
     revoke_token_endpoint: Optional[str]
     base_scopes: Optional[List[str]]
+    token_endpoint_auth_method: OAuth2ClientAuthMethod
+    revocation_endpoint_auth_method: Optional[OAuth2ClientAuthMethod]
     request_headers: Dict[str, str]
 
     def __init__(
@@ -192,37 +189,17 @@ class BaseOAuth2(Generic[T]):
             if code_verifier:
                 data["code_verifier"] = code_verifier
 
-            try:
-                response = await client.post(
-                    self.access_token_endpoint,
-                    data={
-                        **data,
-                        **(
-                            {
-                                "client_id": self.client_id,
-                                "client_secret": self.client_secret,
-                            }
-                            if self.token_endpoint_auth_method == "client_secret_post"
-                            else {}
-                        ),
-                    },
-                    auth=(self.client_id, self.client_secret)
-                    if self.token_endpoint_auth_method == "client_secret_basic"
-                    else httpx.USE_CLIENT_DEFAULT,
-                    headers=self.request_headers,
-                )
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                raise GetAccessTokenError(str(e), e.response) from e
-            except httpx.HTTPError as e:
-                raise GetAccessTokenError(str(e)) from e
-
-            try:
-                data = cast(Dict[str, Any], response.json())
-            except json.decoder.JSONDecodeError as e:
-                message = "Invalid JSON content"
-                raise GetAccessTokenError(message, response) from e
-
+            request, auth = self.build_request(
+                client,
+                "POST",
+                self.access_token_endpoint,
+                auth_method=self.token_endpoint_auth_method,
+                data=data,
+            )
+            response = await self.send_request(
+                client, request, auth, exc_class=GetAccessTokenError
+            )
+            data = self.get_json(response, exc_class=GetAccessTokenError)
             return OAuth2Token(data)
 
     async def refresh_token(self, refresh_token: str):
@@ -230,38 +207,20 @@ class BaseOAuth2(Generic[T]):
             raise RefreshTokenNotSupportedError()
 
         async with self.get_httpx_client() as client:
-            try:
-                response = await client.post(
-                    self.refresh_token_endpoint,
-                    data={
-                        "grant_type": "refresh_token",
-                        "refresh_token": refresh_token,
-                        **(
-                            {
-                                "client_id": self.client_id,
-                                "client_secret": self.client_secret,
-                            }
-                            if self.token_endpoint_auth_method == "client_secret_post"
-                            else {}
-                        ),
-                    },
-                    auth=(self.client_id, self.client_secret)
-                    if self.token_endpoint_auth_method == "client_secret_basic"
-                    else httpx.USE_CLIENT_DEFAULT,
-                    headers=self.request_headers,
-                )
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                raise RefreshTokenError(str(e), e.response) from e
-            except httpx.HTTPError as e:
-                raise RefreshTokenError(str(e)) from e
-
-            try:
-                data = cast(Dict[str, Any], response.json())
-            except json.decoder.JSONDecodeError as e:
-                message = "Invalid JSON content"
-                raise RefreshTokenError(message, response) from e
-
+            request, auth = self.build_request(
+                client,
+                "POST",
+                self.refresh_token_endpoint,
+                auth_method=self.token_endpoint_auth_method,
+                data={
+                    "grant_type": "refresh_token",
+                    "refresh_token": refresh_token,
+                },
+            )
+            response = await self.send_request(
+                client, request, auth, exc_class=RefreshTokenError
+            )
+            data = self.get_json(response, exc_class=RefreshTokenError)
             return OAuth2Token(data)
 
     async def revoke_token(
@@ -276,31 +235,14 @@ class BaseOAuth2(Generic[T]):
             if token_type_hint is not None:
                 data["token_type_hint"] = token_type_hint
 
-            try:
-                response = await client.post(
-                    self.revoke_token_endpoint,
-                    data={
-                        **data,
-                        **(
-                            {
-                                "client_id": self.client_id,
-                                "client_secret": self.client_secret,
-                            }
-                            if self.revocation_endpoint_auth_method
-                            == "client_secret_post"
-                            else {}
-                        ),
-                    },
-                    auth=(self.client_id, self.client_secret)
-                    if self.revocation_endpoint_auth_method == "client_secret_basic"
-                    else httpx.USE_CLIENT_DEFAULT,
-                    headers=self.request_headers,
-                )
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                raise RevokeTokenError(str(e), e.response) from e
-            except httpx.HTTPError as e:
-                raise RevokeTokenError(str(e)) from e
+            request, auth = self.build_request(
+                client,
+                "POST",
+                self.revoke_token_endpoint,
+                auth_method=self.token_endpoint_auth_method,
+                data=data,
+            )
+            await self.send_request(client, request, auth, exc_class=RevokeTokenError)
 
         return None
 
@@ -309,6 +251,68 @@ class BaseOAuth2(Generic[T]):
 
     def get_httpx_client(self) -> AsyncContextManager[httpx.AsyncClient]:
         return httpx.AsyncClient()
+
+    def build_request(
+        self,
+        client: httpx.AsyncClient,
+        method: str,
+        url: str,
+        *,
+        auth_method: Union[OAuth2ClientAuthMethod, None] = None,
+        data: Union[Mapping[str, Any], None] = None,
+    ) -> Tuple[httpx.Request, Union[httpx.Auth, None]]:
+        if data is not None:
+            data = {
+                **data,
+                **(
+                    {
+                        "client_id": self.client_id,
+                        "client_secret": self.client_secret,
+                    }
+                    if auth_method == "client_secret_post"
+                    else {}
+                ),
+            }
+
+        request = client.build_request(
+            method,
+            url,
+            data=data,
+            headers=self.request_headers,
+        )
+
+        auth = None
+        if auth_method == "client_secret_basic":
+            auth = httpx.BasicAuth(self.client_id, self.client_secret)
+
+        return request, auth
+
+    async def send_request(
+        self,
+        client: httpx.AsyncClient,
+        request: httpx.Request,
+        auth: Union[httpx.Auth, None],
+        *,
+        exc_class: Type[OAuth2RequestError],
+    ) -> httpx.Response:
+        try:
+            response = await client.send(request, auth=auth)
+            response.raise_for_status()
+        except httpx.HTTPStatusError as e:
+            raise exc_class(str(e), e.response) from e
+        except httpx.HTTPError as e:
+            raise exc_class(str(e)) from e
+
+        return response
+
+    def get_json(
+        self, response: httpx.Response, *, exc_class: Type[OAuth2RequestError]
+    ) -> Dict[str, Any]:
+        try:
+            return cast(Dict[str, Any], response.json())
+        except json.decoder.JSONDecodeError as e:
+            message = "Invalid JSON content"
+            raise exc_class(message, response) from e
 
 
 OAuth2 = BaseOAuth2[Dict[str, Any]]

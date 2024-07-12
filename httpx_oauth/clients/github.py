@@ -1,4 +1,3 @@
-import json
 import urllib.parse
 from typing import Any, Dict, List, Optional, Tuple, TypedDict, cast
 
@@ -53,22 +52,19 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
     async def refresh_token(self, refresh_token: str):
         assert self.refresh_token_endpoint is not None
         async with self.get_httpx_client() as client:
-            try:
-                response = await client.post(
-                    self.refresh_token_endpoint,
-                    data={
-                        "grant_type": "refresh_token",
-                        "refresh_token": refresh_token,
-                        "client_id": self.client_id,
-                        "client_secret": self.client_secret,
-                    },
-                    headers=self.request_headers,
-                )
-                response.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                raise RefreshTokenError(str(e), e.response) from e
-            except httpx.HTTPError as e:
-                raise RefreshTokenError(str(e)) from e
+            request, auth = self.build_request(
+                client,
+                "POST",
+                self.refresh_token_endpoint,
+                auth_method=self.token_endpoint_auth_method,
+                data={
+                    "grant_type": "refresh_token",
+                    "refresh_token": refresh_token,
+                },
+            )
+            response = await self.send_request(
+                client, request, auth, exc_class=RefreshTokenError
+            )
 
             content_type = response.headers.get("content-type", "")
 
@@ -78,11 +74,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
                 data = urllib.parse.parse_qs(response.text)
                 raise RefreshTokenError(cast(str, data["error"]), response)
 
-            try:
-                data = cast(Dict[str, Any], response.json())
-            except json.decoder.JSONDecodeError as e:
-                message = "Invalid JSON content"
-                raise RefreshTokenError(message, response) from e
+            data = self.get_json(response, exc_class=RefreshTokenError)
 
             return OAuth2Token(data)
 
