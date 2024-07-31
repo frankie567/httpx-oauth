@@ -31,6 +31,7 @@ dependencies = [
     "pytest-asyncio",
     "respx",
     "fastapi",
+    "litestar"
 ]
 
 [tool.hatch.envs.default.scripts]
