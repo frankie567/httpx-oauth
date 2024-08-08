@@ -84,9 +84,7 @@ def test_missing_revoke_token_auth_method() -> None:
 
 
 class TestOAuth2Token:
-    @pytest.mark.parametrize(
-        "expires_at,expired", [(0, True), (time.time() + 3600, False)]
-    )
+    @pytest.mark.parametrize("expires_at,expired", [(0, True), (time.time() + 3600, False)])
     def test_expires_at(self, expires_at, expired):
         token = OAuth2Token({"access_token": "ACCESS_TOKEN", "expires_at": expires_at})
 
@@ -114,10 +112,7 @@ class TestGetAuthorizationURL:
         assert authorization_url.startswith("https://www.camelot.bt/authorize")
         assert "response_type=code" in authorization_url
         assert f"client_id={CLIENT_ID}" in authorization_url
-        assert (
-            "redirect_uri=https%3A%2F%2Fwww.tintagel.bt%2Foauth-callback"
-            in authorization_url
-        )
+        assert "redirect_uri=https%3A%2F%2Fwww.tintagel.bt%2Foauth-callback" in authorization_url
 
     async def test_get_authorization_url_with_state(self, client: OAuth2):
         authorization_url = await client.get_authorization_url(
@@ -133,9 +128,7 @@ class TestGetAuthorizationURL:
         )
         assert "scope=SCOPE1+SCOPE2+SCOPE3" in authorization_url
 
-    async def test_get_authorization_url_with_plain_code_challenge(
-        self, client: OAuth2
-    ):
+    async def test_get_authorization_url_with_plain_code_challenge(self, client: OAuth2):
         authorization_url = await client.get_authorization_url(
             REDIRECT_URI,
             code_challenge="CODE_CHALLENGE",
@@ -157,15 +150,11 @@ class TestGetAuthorizationURL:
 @pytest.mark.asyncio
 class TestGetAccessToken:
     @respx.mock
-    async def test_get_access_token(
-        self, load_mock, get_respx_call_args, client: OAuth2
-    ):
+    async def test_get_access_token(self, load_mock, get_respx_call_args, client: OAuth2):
         request = respx.post(client.access_token_endpoint).mock(
             return_value=Response(200, json=load_mock("google_success_access_token"))
         )
-        access_token = await client.get_access_token(
-            "CODE", REDIRECT_URI, "CODE_VERIFIER"
-        )
+        access_token = await client.get_access_token("CODE", REDIRECT_URI, "CODE_VERIFIER")
 
         url, headers, content = await get_respx_call_args(request)
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
@@ -189,9 +178,7 @@ class TestGetAccessToken:
 
     @respx.mock
     async def test_get_access_token_error(self, load_mock, client: OAuth2):
-        respx.post(client.access_token_endpoint).mock(
-            return_value=Response(400, json=load_mock("error"))
-        )
+        respx.post(client.access_token_endpoint).mock(return_value=Response(400, json=load_mock("error")))
 
         with pytest.raises(GetAccessTokenError) as excinfo:
             await client.get_access_token("CODE", REDIRECT_URI)
@@ -207,9 +194,7 @@ class TestGetAccessToken:
 
     @respx.mock
     async def test_get_access_token_json_error(self, client: OAuth2):
-        respx.post(client.access_token_endpoint).mock(
-            return_value=Response(200, text="NOT JSON")
-        )
+        respx.post(client.access_token_endpoint).mock(return_value=Response(200, text="NOT JSON"))
 
         with pytest.raises(GetAccessTokenError) as excinfo:
             await client.get_access_token("CODE", REDIRECT_URI)
@@ -224,9 +209,7 @@ class TestRefreshToken:
             await client.refresh_token("REFRESH_TOKEN")
 
     @respx.mock
-    async def test_refresh_token(
-        self, load_mock, get_respx_call_args, client_refresh: OAuth2
-    ):
+    async def test_refresh_token(self, load_mock, get_respx_call_args, client_refresh: OAuth2):
         request = respx.post(client_refresh.refresh_token_endpoint).mock(
             return_value=Response(200, json=load_mock("google_success_refresh_token"))
         )
@@ -252,9 +235,7 @@ class TestRefreshToken:
 
     @respx.mock
     async def test_refresh_token_error(self, load_mock, client_refresh: OAuth2):
-        respx.post(client_refresh.refresh_token_endpoint).mock(
-            return_value=Response(400, json=load_mock("error"))
-        )
+        respx.post(client_refresh.refresh_token_endpoint).mock(return_value=Response(400, json=load_mock("error")))
 
         with pytest.raises(RefreshTokenError) as excinfo:
             await client_refresh.refresh_token("REFRESH_TOKEN")
@@ -262,9 +243,7 @@ class TestRefreshToken:
 
     @respx.mock
     async def test_refresh_token_http_error(self, client_refresh: OAuth2):
-        respx.post(client_refresh.refresh_token_endpoint).mock(
-            side_effect=HTTPError("ERROR")
-        )
+        respx.post(client_refresh.refresh_token_endpoint).mock(side_effect=HTTPError("ERROR"))
 
         with pytest.raises(RefreshTokenError) as excinfo:
             await client_refresh.refresh_token("REFRESH_TOKEN")
@@ -272,9 +251,7 @@ class TestRefreshToken:
 
     @respx.mock
     async def test_refresh_token_json_error(self, client_refresh: OAuth2):
-        respx.post(client_refresh.refresh_token_endpoint).mock(
-            return_value=Response(200, text="NOT JSON")
-        )
+        respx.post(client_refresh.refresh_token_endpoint).mock(return_value=Response(200, text="NOT JSON"))
 
         with pytest.raises(RefreshTokenError) as excinfo:
             await client_refresh.refresh_token("REFRESH_TOKEN")
@@ -289,12 +266,8 @@ class TestRevokeToken:
             await client.revoke_token("TOKEN")
 
     @respx.mock
-    async def test_revoke_token(
-        self, load_mock, get_respx_call_args, client_revoke: OAuth2
-    ):
-        request = respx.post(client_revoke.revoke_token_endpoint).mock(
-            return_value=Response(200)
-        )
+    async def test_revoke_token(self, load_mock, get_respx_call_args, client_revoke: OAuth2):
+        request = respx.post(client_revoke.revoke_token_endpoint).mock(return_value=Response(200))
         await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
 
         url, headers, content = await get_respx_call_args(request)
@@ -312,9 +285,7 @@ class TestRevokeToken:
 
     @respx.mock
     async def test_revoke_token_error(self, load_mock, client_revoke: OAuth2):
-        respx.post(client_revoke.revoke_token_endpoint).mock(
-            return_value=Response(400, json=load_mock("error"))
-        )
+        respx.post(client_revoke.revoke_token_endpoint).mock(return_value=Response(400, json=load_mock("error")))
 
         with pytest.raises(RevokeTokenError) as excinfo:
             await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
@@ -322,9 +293,7 @@ class TestRevokeToken:
 
     @respx.mock
     async def test_revoke_token_http_error(self, client_revoke: OAuth2):
-        respx.post(client_revoke.revoke_token_endpoint).mock(
-            side_effect=HTTPError("ERROR")
-        )
+        respx.post(client_revoke.revoke_token_endpoint).mock(side_effect=HTTPError("ERROR"))
 
         with pytest.raises(RevokeTokenError) as excinfo:
             await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")

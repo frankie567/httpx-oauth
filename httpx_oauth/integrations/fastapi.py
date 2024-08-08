@@ -1,11 +1,15 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
 
-import httpx
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union
+
 from fastapi import HTTPException
 from starlette import status
-from starlette.requests import Request
 
 from httpx_oauth.oauth2 import BaseOAuth2, GetAccessTokenError, OAuth2Error, OAuth2Token
+
+if TYPE_CHECKING:
+    import httpx
+    from starlette.requests import Request
 
 
 class OAuth2AuthorizeCallbackError(HTTPException, OAuth2Error):
@@ -38,9 +42,12 @@ class OAuth2AuthorizeCallback:
         from httpx_oauth.integrations.fastapi import OAuth2AuthorizeCallback
         from httpx_oauth.oauth2 import OAuth2
 
-        client = OAuth2("CLIENT_ID", "CLIENT_SECRET", "AUTHORIZE_ENDPOINT", "ACCESS_TOKEN_ENDPOINT")
+        client = OAuth2(
+            "CLIENT_ID", "CLIENT_SECRET", "AUTHORIZE_ENDPOINT", "ACCESS_TOKEN_ENDPOINT"
+        )
         oauth2_authorize_callback = OAuth2AuthorizeCallback(client, "oauth-callback")
         app = FastAPI()
+
 
         @app.get("/oauth-callback", name="oauth-callback")
         async def oauth_callback(access_token_state=Depends(oauth2_authorize_callback)):
@@ -92,9 +99,7 @@ class OAuth2AuthorizeCallback:
             redirect_url = self.redirect_url
 
         try:
-            access_token = await self.client.get_access_token(
-                code, redirect_url, code_verifier
-            )
+            access_token = await self.client.get_access_token(code, redirect_url, code_verifier)
         except GetAccessTokenError as e:
             raise OAuth2AuthorizeCallbackError(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

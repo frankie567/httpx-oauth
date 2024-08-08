@@ -28,9 +28,7 @@ class TestKakaoGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
-        request = respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
-            return_value=Response(200, json=profile_response)
-        )
+        request = respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(return_value=Response(200, json=profile_response))
 
         user_id, user_email = await client.get_id_email("TOKEN")
         url, headers, _ = await get_respx_call_args(request)
@@ -43,9 +41,7 @@ class TestKakaoGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_error(self):
-        respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
-            return_value=Response(400, json={"msg": "failed message"})
-        )
+        respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(return_value=Response(400, json={"msg": "failed message"}))
 
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
@@ -55,9 +51,7 @@ class TestKakaoGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_no_email(self):
-        respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
-            return_value=Response(200, json=profile_no_email_response)
-        )
+        respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(return_value=Response(200, json=profile_no_email_response))
 
         user_id, user_email = await client.get_id_email("TOKEN")
 

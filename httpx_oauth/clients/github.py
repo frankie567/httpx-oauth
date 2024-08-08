@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import urllib.parse
 from typing import Any, Dict, List, Optional, Tuple, TypedDict, cast
 
@@ -93,9 +95,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
                     "refresh_token": refresh_token,
                 },
             )
-            response = await self.send_request(
-                client, request, auth, exc_class=RefreshTokenError
-            )
+            response = await self.send_request(client, request, auth, exc_class=RefreshTokenError)
 
             content_type = response.headers.get("content-type", "")
 
@@ -135,9 +135,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             user_id, user_email = await client.get_id_email("TOKEN")
             ```
         """
-        async with httpx.AsyncClient(
-            headers={**self.request_headers, "Authorization": f"token {token}"}
-        ) as client:
+        async with httpx.AsyncClient(headers={**self.request_headers, "Authorization": f"token {token}"}) as client:
             response = await client.get(PROFILE_ENDPOINT)
 
             if response.status_code >= 400:
@@ -158,8 +156,6 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
                 emails = cast(List[Dict[str, Any]], response.json())
 
                 # Use the primary email if it exists, otherwise the first
-                email = next(
-                    (e["email"] for e in emails if e.get("primary")), emails[0]["email"]
-                )
+                email = next((e["email"] for e in emails if e.get("primary")), emails[0]["email"])
 
             return str(id), email

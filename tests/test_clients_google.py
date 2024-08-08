@@ -35,9 +35,7 @@ class TestGoogleGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
-        request = respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
-            return_value=Response(200, json=profile_response)
-        )
+        request = respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(return_value=Response(200, json=profile_response))
 
         user_id, user_email = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
@@ -50,9 +48,7 @@ class TestGoogleGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_error(self):
-        respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
-            return_value=Response(400, json={"error": "message"})
-        )
+        respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(return_value=Response(400, json={"error": "message"}))
 
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")

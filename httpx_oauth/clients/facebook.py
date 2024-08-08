@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional, Tuple, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
@@ -83,9 +85,7 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
                     "fb_exchange_token": token,
                 },
             )
-            response = await self.send_request(
-                client, request, auth, exc_class=GetLongLivedAccessTokenError
-            )
+            response = await self.send_request(client, request, auth, exc_class=GetLongLivedAccessTokenError)
             data = self.get_json(response, exc_class=GetLongLivedAccessTokenError)
             return OAuth2Token(data)
 

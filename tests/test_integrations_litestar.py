@@ -1,10 +1,12 @@
 import pytest
-from fastapi import Depends, FastAPI
+from litestar import Litestar, get
+from litestar import status_codes as status
+from litestar.di import Provide
+from litestar.params import Dependency
+from litestar.testing import TestClient
 from pytest_mock import MockerFixture
-from starlette import status
-from starlette.testclient import TestClient
 
-from httpx_oauth.integrations.fastapi import OAuth2AuthorizeCallback
+from httpx_oauth.integrations.litestar import AccessTokenState, OAuth2AuthorizeCallback
 from httpx_oauth.oauth2 import GetAccessTokenError, OAuth2
 
 CLIENT_ID = "CLIENT_ID"
@@ -17,35 +19,42 @@ ROUTE_NAME = "callback"
 client = OAuth2(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_ENDPOINT, ACCESS_TOKEN_ENDPOINT)
 oauth2_authorize_callback_route_name = OAuth2AuthorizeCallback(client, route_name=ROUTE_NAME)
 oauth2_authorize_callback_redirect_url = OAuth2AuthorizeCallback(client, redirect_url=REDIRECT_URL)
-app = FastAPI()
 
 
-@app.get("/authorize-route-name")
+@get(
+    "/authorize-route-name",
+    dependencies={"access_token_state": Provide(oauth2_authorize_callback_route_name)},
+)
 async def authorize_route_name(
-    access_token_state=Depends(oauth2_authorize_callback_route_name),
-):
+    access_token_state: AccessTokenState = Dependency(skip_validation=True),
+) -> AccessTokenState:
     return access_token_state
 
 
-@app.get("/authorize-redirect-url")
+@get(
+    "/authorize-redirect-url",
+    dependencies={"access_token_state": Provide(oauth2_authorize_callback_redirect_url)},
+)
 async def authorize_redirect_url(
-    access_token_state=Depends(oauth2_authorize_callback_redirect_url),
-):
+    access_token_state: AccessTokenState = Dependency(skip_validation=True),
+) -> AccessTokenState:
     return access_token_state
 
 
-@app.get("/callback", name="callback")
-async def callback():
-    pass
+@get("/callback", name="callback")
+async def callback() -> dict:
+    return {}
 
 
-test_client = TestClient(app)
+app = Litestar(route_handlers=[authorize_route_name, authorize_redirect_url, callback])
+
+test_client = TestClient(app=app)
 
 
 @pytest.mark.parametrize(
     "route,expected_redirect_url",
     [
-        ("/authorize-route-name", "http://testserver/callback"),
+        ("/authorize-route-name", "http://testserver.local/callback"),
         ("/authorize-redirect-url", "https://www.tintagel.bt/callback"),
     ],
 )
@@ -57,7 +66,7 @@ class TestOAuth2AuthorizeCallback:
     def test_oauth2_authorize_error(self, route, expected_redirect_url):
         response = test_client.get(route, params={"error": "access_denied"})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.json() == {"detail": "access_denied"}
+        assert response.json() == {"status_code": 400, "detail": "access_denied"}
 
     def test_oauth2_authorize_get_access_token_error(self, mocker: MockerFixture, route, expected_redirect_url):
         get_access_token_mock = mocker.patch.object(
@@ -68,7 +77,13 @@ class TestOAuth2AuthorizeCallback:
 
         get_access_token_mock.assert_called_once_with("CODE", expected_redirect_url, None)
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-        assert response.json() == {"detail": "ERROR"}
+        # by default, litestar will only return `Internal Server Error` as the detail on a response.
+        # we are adding the ERROR to the `extra` payload
+        assert response.json() == {
+            "status_code": 500,
+            "detail": "Internal Server Error",
+            "extra": {"message": "ERROR"},
+        }
 
     def test_oauth2_authorize_without_state(self, patch_async_method, route, expected_redirect_url):
         patch_async_method(client, "get_access_token", return_value="ACCESS_TOKEN")

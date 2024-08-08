@@ -9,14 +9,8 @@ client = ShopifyOAuth2("CLIENT_ID", "CLIENT_SECRET", "my-shop")
 
 
 def test_shopify_oauth2():
-    assert (
-        client.authorize_endpoint
-        == "https://my-shop.myshopify.com/admin/oauth/authorize"
-    )
-    assert (
-        client.access_token_endpoint
-        == "https://my-shop.myshopify.com/admin/oauth/access_token"
-    )
+    assert client.authorize_endpoint == "https://my-shop.myshopify.com/admin/oauth/authorize"
+    assert client.access_token_endpoint == "https://my-shop.myshopify.com/admin/oauth/access_token"
     assert client.refresh_token_endpoint is None
     assert client.revoke_token_endpoint is None
     assert client.base_scopes == ["read_orders"]
@@ -89,9 +83,7 @@ class TestShopifyGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
-        request = respx.get(client.profile_endpoint).mock(
-            return_value=Response(200, json=profile_response)
-        )
+        request = respx.get(client.profile_endpoint).mock(return_value=Response(200, json=profile_response))
 
         user_id, user_email = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
@@ -103,9 +95,7 @@ class TestShopifyGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_error(self):
-        respx.get(client.profile_endpoint).mock(
-            return_value=Response(400, json={"error": "message"})
-        )
+        respx.get(client.profile_endpoint).mock(return_value=Response(400, json={"error": "message"}))
 
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")

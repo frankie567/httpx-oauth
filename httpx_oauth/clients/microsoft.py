@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional, Tuple, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
@@ -53,15 +55,11 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             token_endpoint_auth_method="client_secret_post",
         )
 
-    def get_authorization_url(
-        self, redirect_uri, state=None, scope=None, extras_params=None
-    ):
+    def get_authorization_url(self, redirect_uri, state=None, scope=None, extras_params=None):
         if extras_params is None:
             extras_params = {}
         extras_params["response_mode"] = "query"
-        return super().get_authorization_url(
-            redirect_uri, state=state, scope=scope, extras_params=extras_params
-        )
+        return super().get_authorization_url(redirect_uri, state=state, scope=scope, extras_params=extras_params)
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:

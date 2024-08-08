@@ -42,9 +42,9 @@ openid_configuration_response = {
 @pytest.fixture
 @respx.mock
 def client() -> OpenID:
-    respx.get(
-        re.compile("https://example.fief.dev/.well-known/openid-configuration")
-    ).mock(return_value=Response(200, json=openid_configuration_response))
+    respx.get(re.compile("https://example.fief.dev/.well-known/openid-configuration")).mock(
+        return_value=Response(200, json=openid_configuration_response)
+    )
     return OpenID(
         "CLIENT_ID",
         "CLIENT_SECRET",
@@ -54,9 +54,9 @@ def client() -> OpenID:
 
 @respx.mock
 def test_openid_configuration_error():
-    respx.get(
-        re.compile("https://example.fief.dev/.well-known/openid-configuration")
-    ).mock(return_value=Response(400, json={"error": "message"}))
+    respx.get(re.compile("https://example.fief.dev/.well-known/openid-configuration")).mock(
+        return_value=Response(400, json={"error": "message"})
+    )
     with pytest.raises(OpenIDConfigurationError):
         OpenID(
             "CLIENT_ID",
@@ -67,9 +67,9 @@ def test_openid_configuration_error():
 
 @respx.mock
 def test_openid_configuration_http_error():
-    respx.get(
-        re.compile("https://example.fief.dev/.well-known/openid-configuration")
-    ).mock(side_effect=HTTPError("ERROR"))
+    respx.get(re.compile("https://example.fief.dev/.well-known/openid-configuration")).mock(
+        side_effect=HTTPError("ERROR")
+    )
     with pytest.raises(OpenIDConfigurationError):
         OpenID(
             "CLIENT_ID",

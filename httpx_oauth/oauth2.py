@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import time
 from typing import (
@@ -26,8 +28,6 @@ from httpx_oauth.exceptions import HTTPXOAuthError
 class OAuth2Error(HTTPXOAuthError):
     """Base exception class for OAuth2 client errors."""
 
-    pass
-
 
 class NotSupportedAuthMethodError(OAuth2Error):
     """Error raised when an unsupported authentication method is used."""
@@ -55,7 +55,7 @@ class RefreshTokenNotSupportedError(OAuth2Error):
 
 class RevokeTokenNotSupportedError(OAuth2Error):
     """
-    Error raised when trying to revole a token
+    Error raised when trying to revoke a token
     on a provider that does not support it.
     """
 
@@ -68,9 +68,7 @@ class OAuth2RequestError(OAuth2Error):
     Base exception class for OAuth2 request errors.
     """
 
-    def __init__(
-        self, message: str, response: Union[httpx.Response, None] = None
-    ) -> None:
+    def __init__(self, message: str, response: Union[httpx.Response, None] = None) -> None:
         self.response = response
         super().__init__(message)
 
@@ -190,11 +188,8 @@ class BaseOAuth2(Generic[T]):
         _check_valid_auth_method(token_endpoint_auth_method)
         if revocation_endpoint_auth_method is not None:
             _check_valid_auth_method(revocation_endpoint_auth_method)
-        if (
-            revoke_token_endpoint is not None
-            and revocation_endpoint_auth_method is None
-        ):
-            raise MissingRevokeTokenAuthMethodError()
+        if revoke_token_endpoint is not None and revocation_endpoint_auth_method is None:
+            raise MissingRevokeTokenAuthMethodError
 
         self.client_id = client_id
         self.client_secret = client_secret
@@ -272,9 +267,7 @@ class BaseOAuth2(Generic[T]):
 
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
-    async def get_access_token(
-        self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
-    ) -> OAuth2Token:
+    async def get_access_token(self, code: str, redirect_uri: str, code_verifier: Optional[str] = None) -> OAuth2Token:
         """
         Requests an access token using the authorization code obtained
         after the user has authorized the application.
@@ -293,7 +286,9 @@ class BaseOAuth2(Generic[T]):
 
         Examples:
             ```py
-            access_token = await client.get_access_token("CODE", "https://www.tintagel.bt/oauth-callback")
+            access_token = await client.get_access_token(
+                "CODE", "https://www.tintagel.bt/oauth-callback"
+            )
             ```
         """
         async with self.get_httpx_client() as client:
@@ -313,9 +308,7 @@ class BaseOAuth2(Generic[T]):
                 auth_method=self.token_endpoint_auth_method,
                 data=data,
             )
-            response = await self.send_request(
-                client, request, auth, exc_class=GetAccessTokenError
-            )
+            response = await self.send_request(client, request, auth, exc_class=GetAccessTokenError)
             data = self.get_json(response, exc_class=GetAccessTokenError)
             return OAuth2Token(data)
 
@@ -339,7 +332,7 @@ class BaseOAuth2(Generic[T]):
             ```
         """
         if self.refresh_token_endpoint is None:
-            raise RefreshTokenNotSupportedError()
+            raise RefreshTokenNotSupportedError
 
         async with self.get_httpx_client() as client:
             request, auth = self.build_request(
@@ -352,15 +345,11 @@ class BaseOAuth2(Generic[T]):
                     "refresh_token": refresh_token,
                 },
             )
-            response = await self.send_request(
-                client, request, auth, exc_class=RefreshTokenError
-            )
+            response = await self.send_request(client, request, auth, exc_class=RefreshTokenError)
             data = self.get_json(response, exc_class=RefreshTokenError)
             return OAuth2Token(data)
 
-    async def revoke_token(
-        self, token: str, token_type_hint: Optional[str] = None
-    ) -> None:
+    async def revoke_token(self, token: str, token_type_hint: Optional[str] = None) -> None:
         """
         Revokes a token.
 
@@ -378,7 +367,7 @@ class BaseOAuth2(Generic[T]):
             RevokeTokenNotSupportedError: The provider does not support token revoke.
         """
         if self.revoke_token_endpoint is None:
-            raise RevokeTokenNotSupportedError()
+            raise RevokeTokenNotSupportedError
 
         async with self.get_httpx_client() as client:
             data = {"token": token}
@@ -394,8 +383,6 @@ class BaseOAuth2(Generic[T]):
                 data=data,
             )
             await self.send_request(client, request, auth, exc_class=RevokeTokenError)
-
-        return None
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         """
@@ -420,7 +407,7 @@ class BaseOAuth2(Generic[T]):
             user_id, user_email = await client.get_id_email("TOKEN")
             ```
         """
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def get_httpx_client(self) -> AsyncContextManager[httpx.AsyncClient]:
         return httpx.AsyncClient()
@@ -478,9 +465,7 @@ class BaseOAuth2(Generic[T]):
 
         return response
 
-    def get_json(
-        self, response: httpx.Response, *, exc_class: Type[OAuth2RequestError]
-    ) -> Dict[str, Any]:
+    def get_json(self, response: httpx.Response, *, exc_class: Type[OAuth2RequestError]) -> Dict[str, Any]:
         try:
             return cast(Dict[str, Any], response.json())
         except json.decoder.JSONDecodeError as e:

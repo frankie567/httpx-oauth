@@ -1,6 +1,6 @@
 [tool.ruff.lint]
 extend-select = ["I", "TRY"]
-ignore = ["E501"]
+ignore = ["E501","UP007","UP006","S101","PLR2004","S105","S106","ARG002","FBT002","FBT001","A001","PT006","B008","S107"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=httpx_oauth/ --cov-report=term-missing --cov-fail-under=100"
@@ -31,6 +31,7 @@ dependencies = [
     "pytest-asyncio",
     "respx",
     "fastapi",
+    "litestar"
 ]
 
 [tool.hatch.envs.default.scripts]
