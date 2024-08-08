@@ -1,7 +1,7 @@
 # pylint: disable=[invalid-name,import-outside-toplevel]
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, TypeAlias, Union  # noqa: UP035
+from typing import TYPE_CHECKING, Any, Dict, List, TypeAlias, Union
 
 from litestar import status_codes as status
 from litestar.exceptions import HTTPException
@@ -32,14 +32,12 @@ class OAuth2AuthorizeCallbackError(OAuth2Error, HTTPException):
         self,
         status_code: int,
         detail: Any = None,
-        headers: Union[Dict[str, str], None] = None,  # noqa: UP007, UP006
-        response: Union[httpx.Response, None] = None,  # noqa: UP007
-        extra: Union[Dict[str, Any], List[Any]] | None = None,  # noqa: UP007, UP006
+        headers: Union[Dict[str, str], None] = None,
+        response: Union[httpx.Response, None] = None,
+        extra: Union[Dict[str, Any], List[Any]] | None = None,
     ) -> None:
         super().__init__(message=detail)
-        HTTPException.__init__(
-            self, detail=detail, status_code=status_code, extra=extra, headers=headers
-        )
+        HTTPException.__init__(self, detail=detail, status_code=status_code, extra=extra, headers=headers)
         self.response = response
 
 
