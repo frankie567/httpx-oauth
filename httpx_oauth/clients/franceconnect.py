@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import secrets
 from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict
 
@@ -68,9 +70,7 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
         if _extras_params.get("nonce") is None:
             _extras_params["nonce"] = secrets.token_urlsafe()
 
-        return await super().get_authorization_url(
-            redirect_uri, state, scope, extras_params=_extras_params
-        )
+        return await super().get_authorization_url(redirect_uri, state, scope, extras_params=_extras_params)
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:

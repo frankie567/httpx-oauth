@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
@@ -55,9 +57,7 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
         """
         authorize_endpoint = AUTHORIZE_ENDPOINT.format(shop=shop)
         access_token_endpoint = ACCESS_TOKEN_ENDPOINT.format(shop=shop)
-        self.profile_endpoint = PROFILE_ENDPOINT.format(
-            shop=shop, api_version=api_version
-        )
+        self.profile_endpoint = PROFILE_ENDPOINT.format(shop=shop, api_version=api_version)
         super().__init__(
             client_id,
             client_secret,

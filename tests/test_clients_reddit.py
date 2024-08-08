@@ -7,8 +7,8 @@ import httpx
 import pytest
 import respx
 
-import httpx_oauth.clients.reddit as reddit
 import httpx_oauth.oauth2 as oauth
+from httpx_oauth.clients import reddit
 from httpx_oauth.exceptions import GetIdEmailError
 
 FAKE_CLIENT_ID = "fake-client-id-1234567"
@@ -36,9 +36,7 @@ def b64encode(s: str) -> str:
 
 def require_auth(response: httpx.Response) -> Callable[[httpx.Request], httpx.Response]:
     def require_auth_inner(request: httpx.Request) -> httpx.Response:
-        expected_auth_header = (
-            f"Basic {b64encode(f'{FAKE_CLIENT_ID}:{FAKE_CLIENT_SECRET}')}"
-        )
+        expected_auth_header = f"Basic {b64encode(f'{FAKE_CLIENT_ID}:{FAKE_CLIENT_SECRET}')}"
 
         if request.headers.get("Authorization", None) != expected_auth_header:
             return response_unauthorized
@@ -82,14 +80,10 @@ class TestRedditGetAccessToken:
             side_effect=require_auth(self.response_success),
         )
 
-        invalid_client = reddit.RedditOAuth2(
-            "INVALID_CLIENT_ID", "INVALID_CLIENT_SECRET"
-        )
+        invalid_client = reddit.RedditOAuth2("INVALID_CLIENT_ID", "INVALID_CLIENT_SECRET")
 
         with pytest.raises(oauth.GetAccessTokenError) as excinfo:
-            await invalid_client.get_access_token(
-                FAKE_AUTHORIZATION_CODE, FAKE_REDIRECT_URI
-            )
+            await invalid_client.get_access_token(FAKE_AUTHORIZATION_CODE, FAKE_REDIRECT_URI)
 
         assert isinstance(excinfo.value.response, httpx.Response)
 
@@ -99,9 +93,7 @@ class TestRedditGetAccessToken:
             side_effect=require_auth(self.response_success),
         )
 
-        token = await client.get_access_token(
-            FAKE_AUTHORIZATION_CODE, FAKE_REDIRECT_URI
-        )
+        token = await client.get_access_token(FAKE_AUTHORIZATION_CODE, FAKE_REDIRECT_URI)
         url, headers, content = await get_respx_call_args(request)
         content_url_decoded = parse_qsl(content)
 
@@ -114,14 +106,10 @@ class TestRedditGetAccessToken:
 
     @respx.mock
     async def test_error(self):
-        respx.post(re.compile(f"^{reddit.ACCESS_TOKEN_ENDPOINT}")).mock(
-            side_effect=require_auth(self.response_error)
-        )
+        respx.post(re.compile(f"^{reddit.ACCESS_TOKEN_ENDPOINT}")).mock(side_effect=require_auth(self.response_error))
 
         with pytest.raises(oauth.GetAccessTokenError) as excinfo:
-            await client.get_access_token(
-                "INVALID_AUTHORIZATION_CODE", FAKE_REDIRECT_URI
-            )
+            await client.get_access_token("INVALID_AUTHORIZATION_CODE", FAKE_REDIRECT_URI)
 
         assert isinstance(excinfo.value.message, str)
 
@@ -134,9 +122,7 @@ class TestRedditRevokeToken:
             side_effect=require_auth(httpx.Response(httpx.codes.OK)),
         )
 
-        invalid_client = reddit.RedditOAuth2(
-            "INVALID_CLIENT_ID", "INVALID_CLIENT_SECRET"
-        )
+        invalid_client = reddit.RedditOAuth2("INVALID_CLIENT_ID", "INVALID_CLIENT_SECRET")
 
         with pytest.raises(oauth.RevokeTokenError):
             await invalid_client.revoke_token(FAKE_REFRESH_TOKEN, "refresh_token")
@@ -161,9 +147,7 @@ class TestRedditGetIdEmail:
     @respx.mock
     async def test_success(self, load_mock, get_respx_call_args):
         request = respx.get(re.compile(f"^{reddit.IDENTITY_ENDPOINT}")).mock(
-            return_value=httpx.Response(
-                httpx.codes.OK, json=load_mock("reddit_success_identity")
-            )
+            return_value=httpx.Response(httpx.codes.OK, json=load_mock("reddit_success_identity"))
         )
 
         user_id, user_email = await client.get_id_email(FAKE_ACCESS_TOKEN)

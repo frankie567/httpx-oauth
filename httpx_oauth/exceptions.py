@@ -1,6 +1,9 @@
-from typing import Union
+from __future__ import annotations
 
-import httpx
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    import httpx
 
 
 class HTTPXOAuthError(Exception):

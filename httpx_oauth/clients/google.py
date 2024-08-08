@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
@@ -79,10 +81,6 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             data = cast(Dict[str, Any], response.json())
 
             user_id = data["resourceName"]
-            user_email = next(
-                email["value"]
-                for email in data["emailAddresses"]
-                if email["metadata"]["primary"]
-            )
+            user_email = next(email["value"] for email in data["emailAddresses"] if email["metadata"]["primary"])
 
             return user_id, user_email

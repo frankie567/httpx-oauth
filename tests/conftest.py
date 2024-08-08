@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 import asyncio
 import json
 import os
 import sys
-from typing import Any, Dict, Tuple
+from typing import TYPE_CHECKING, Any, Dict, Tuple
 
-import httpx
 import pytest
+
+if TYPE_CHECKING:
+    import httpx
 
 
 @pytest.fixture

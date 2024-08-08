@@ -23,9 +23,7 @@ from httpx_oauth.exceptions import GetIdEmailError
         ),
     ],
 )
-def test_franceconnect(
-    integration: bool, authorize: str, access_token: str, profile: str
-):
+def test_franceconnect(integration: bool, authorize: str, access_token: str, profile: str):
     client = FranceConnectOAuth2("CLIENT_ID", "CLIENT_SECRET", integration)
     assert client.authorize_endpoint == authorize
     assert client.access_token_endpoint == access_token
@@ -55,9 +53,7 @@ class TestFranceConnectGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, client: FranceConnectOAuth2, get_respx_call_args):
-        request = respx.get(path="/api/v1/userinfo").mock(
-            return_value=Response(200, json=profile_response)
-        )
+        request = respx.get(path="/api/v1/userinfo").mock(return_value=Response(200, json=profile_response))
 
         user_id, user_email = await client.get_id_email("TOKEN")
         url, headers, content = await get_respx_call_args(request)
@@ -70,9 +66,7 @@ class TestFranceConnectGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_error(self, client: FranceConnectOAuth2):
-        respx.get(path="/api/v1/userinfo").mock(
-            return_value=Response(400, json={"error": "message"})
-        )
+        respx.get(path="/api/v1/userinfo").mock(return_value=Response(400, json={"error": "message"}))
 
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")

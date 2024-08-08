@@ -17,12 +17,8 @@ REDIRECT_URL = "https://www.tintagel.bt/callback"
 ROUTE_NAME = "callback"
 
 client = OAuth2(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_ENDPOINT, ACCESS_TOKEN_ENDPOINT)
-oauth2_authorize_callback_route_name = OAuth2AuthorizeCallback(
-    client, route_name=ROUTE_NAME
-)
-oauth2_authorize_callback_redirect_url = OAuth2AuthorizeCallback(
-    client, redirect_url=REDIRECT_URL
-)
+oauth2_authorize_callback_route_name = OAuth2AuthorizeCallback(client, route_name=ROUTE_NAME)
+oauth2_authorize_callback_redirect_url = OAuth2AuthorizeCallback(client, redirect_url=REDIRECT_URL)
 
 
 @get(
@@ -37,9 +33,7 @@ async def authorize_route_name(
 
 @get(
     "/authorize-redirect-url",
-    dependencies={
-        "access_token_state": Provide(oauth2_authorize_callback_redirect_url)
-    },
+    dependencies={"access_token_state": Provide(oauth2_authorize_callback_redirect_url)},
 )
 async def authorize_redirect_url(
     access_token_state: AccessTokenState = Dependency(skip_validation=True),
@@ -74,18 +68,14 @@ class TestOAuth2AuthorizeCallback:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json() == {"status_code": 400, "detail": "access_denied"}
 
-    def test_oauth2_authorize_get_access_token_error(
-        self, mocker: MockerFixture, route, expected_redirect_url
-    ):
+    def test_oauth2_authorize_get_access_token_error(self, mocker: MockerFixture, route, expected_redirect_url):
         get_access_token_mock = mocker.patch.object(
             client, "get_access_token", side_effect=GetAccessTokenError("ERROR")
         )
 
         response = test_client.get(route, params={"code": "CODE"})
 
-        get_access_token_mock.assert_called_once_with(
-            "CODE", expected_redirect_url, None
-        )
+        get_access_token_mock.assert_called_once_with("CODE", expected_redirect_url, None)
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         # by default, litestar will only return `Internal Server Error` as the detail on a response.
         # we are adding the ERROR to the `extra` payload
@@ -95,53 +85,37 @@ class TestOAuth2AuthorizeCallback:
             "extra": {"message": "ERROR"},
         }
 
-    def test_oauth2_authorize_without_state(
-        self, patch_async_method, route, expected_redirect_url
-    ):
+    def test_oauth2_authorize_without_state(self, patch_async_method, route, expected_redirect_url):
         patch_async_method(client, "get_access_token", return_value="ACCESS_TOKEN")
 
         response = test_client.get(route, params={"code": "CODE"})
 
         client.get_access_token.assert_called()
-        client.get_access_token.assert_called_once_with(
-            "CODE", expected_redirect_url, None
-        )
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url, None)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == ["ACCESS_TOKEN", None]
 
-    def test_oauth2_authorize_code_verifier_without_state(
-        self, patch_async_method, route, expected_redirect_url
-    ):
+    def test_oauth2_authorize_code_verifier_without_state(self, patch_async_method, route, expected_redirect_url):
         patch_async_method(client, "get_access_token", return_value="ACCESS_TOKEN")
 
-        response = test_client.get(
-            route, params={"code": "CODE", "code_verifier": "CODE_VERIFIER"}
-        )
+        response = test_client.get(route, params={"code": "CODE", "code_verifier": "CODE_VERIFIER"})
 
         client.get_access_token.assert_called()
-        client.get_access_token.assert_called_once_with(
-            "CODE", expected_redirect_url, "CODE_VERIFIER"
-        )
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url, "CODE_VERIFIER")
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == ["ACCESS_TOKEN", None]
 
-    def test_oauth2_authorize_with_state(
-        self, patch_async_method, route, expected_redirect_url
-    ):
+    def test_oauth2_authorize_with_state(self, patch_async_method, route, expected_redirect_url):
         patch_async_method(client, "get_access_token", return_value="ACCESS_TOKEN")
 
         response = test_client.get(route, params={"code": "CODE", "state": "STATE"})
 
         client.get_access_token.assert_called()
-        client.get_access_token.assert_called_once_with(
-            "CODE", expected_redirect_url, None
-        )
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url, None)
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == ["ACCESS_TOKEN", "STATE"]
 
-    def test_oauth2_authorize_with_state_and_code_verifier(
-        self, patch_async_method, route, expected_redirect_url
-    ):
+    def test_oauth2_authorize_with_state_and_code_verifier(self, patch_async_method, route, expected_redirect_url):
         patch_async_method(client, "get_access_token", return_value="ACCESS_TOKEN")
 
         response = test_client.get(
@@ -150,8 +124,6 @@ class TestOAuth2AuthorizeCallback:
         )
 
         client.get_access_token.assert_called()
-        client.get_access_token.assert_called_once_with(
-            "CODE", expected_redirect_url, "CODE_VERIFIER"
-        )
+        client.get_access_token.assert_called_once_with("CODE", expected_redirect_url, "CODE_VERIFIER")
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == ["ACCESS_TOKEN", "STATE"]

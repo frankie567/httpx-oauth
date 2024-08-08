@@ -79,9 +79,7 @@ class TestDiscordGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_error(self):
-        respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
-            return_value=Response(400, json={"error": "message"})
-        )
+        respx.get(re.compile(f"^{PROFILE_ENDPOINT}")).mock(return_value=Response(400, json={"error": "message"}))
 
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
@@ -91,9 +89,7 @@ class TestDiscordGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_no_email(self):
-        respx.get(re.compile(f"^{PROFILE_ENDPOINT}$")).mock(
-            return_value=Response(200, json=profile_no_email_response)
-        )
+        respx.get(re.compile(f"^{PROFILE_ENDPOINT}$")).mock(return_value=Response(200, json=profile_no_email_response))
 
         user_id, user_email = await client.get_id_email("TOKEN")
 

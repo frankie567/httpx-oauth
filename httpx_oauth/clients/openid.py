@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
@@ -59,9 +61,7 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
             self.openid_configuration: Dict[str, Any] = response.json()
 
         token_endpoint = self.openid_configuration["token_endpoint"]
-        refresh_token_supported = "refresh_token" in self.openid_configuration.get(
-            "grant_types_supported", []
-        )
+        refresh_token_supported = "refresh_token" in self.openid_configuration.get("grant_types_supported", [])
         revocation_endpoint = self.openid_configuration.get("revocation_endpoint")
         token_endpoint_auth_methods_supported = self.openid_configuration.get(
             "token_endpoint_auth_methods_supported", ["client_secret_basic"]
@@ -80,9 +80,7 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
             name=name,
             base_scopes=base_scopes,
             token_endpoint_auth_method=token_endpoint_auth_methods_supported[0],
-            revocation_endpoint_auth_method=revocation_endpoint_auth_methods_supported[
-                0
-            ]
+            revocation_endpoint_auth_method=revocation_endpoint_auth_methods_supported[0]
             if revocation_endpoint
             else None,
         )

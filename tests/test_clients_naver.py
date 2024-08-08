@@ -42,9 +42,7 @@ class TestNaverdGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_success(self, get_respx_call_args):
-        request = respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
-            return_value=Response(200, json=profile_response)
-        )
+        request = respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(return_value=Response(200, json=profile_response))
 
         user_id, user_email = await client.get_id_email("TOKEN")
         _, headers, _ = await get_respx_call_args(request)
@@ -57,9 +55,7 @@ class TestNaverdGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_error(self):
-        respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(
-            return_value=Response(400, json={"error": "message"})
-        )
+        respx.post(re.compile(f"^{PROFILE_ENDPOINT}")).mock(return_value=Response(400, json={"error": "message"}))
 
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email("TOKEN")
@@ -69,9 +65,7 @@ class TestNaverdGetIdEmail:
     @pytest.mark.asyncio
     @respx.mock
     async def test_no_email(self):
-        respx.post(re.compile(f"^{PROFILE_ENDPOINT}$")).mock(
-            return_value=Response(200, json=profile_no_email_response)
-        )
+        respx.post(re.compile(f"^{PROFILE_ENDPOINT}$")).mock(return_value=Response(200, json=profile_no_email_response))
 
         user_id, user_email = await client.get_id_email("TOKEN")
 
@@ -83,9 +77,7 @@ class TestRevokeToken:
     @pytest.mark.asyncio
     @respx.mock
     async def test_revoke_token(self, get_respx_call_args):
-        request = respx.post(client.revoke_token_endpoint).mock(
-            return_value=Response(200)
-        )
+        request = respx.post(client.revoke_token_endpoint).mock(return_value=Response(200))
         await client.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
 
         url, headers, content = await get_respx_call_args(request)
@@ -97,9 +89,7 @@ class TestRevokeToken:
     @pytest.mark.asyncio
     @respx.mock
     async def test_revoke_token_error(self):
-        respx.post(client.revoke_token_endpoint).mock(
-            return_value=Response(400, json={"error": "message"})
-        )
+        respx.post(client.revoke_token_endpoint).mock(return_value=Response(400, json={"error": "message"}))
 
         with pytest.raises(RevokeTokenError) as excinfo:
             await client.revoke_token("TOKEN", "TOKEN_TYPE_HINT")

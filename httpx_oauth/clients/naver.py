@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional, Tuple, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
@@ -55,9 +57,7 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
             revocation_endpoint_auth_method="client_secret_post",
         )
 
-    async def revoke_token(
-        self, token: str, token_type_hint: Optional[str] = None
-    ) -> None:
+    async def revoke_token(self, token: str, token_type_hint: Optional[str] = None) -> None:
         assert self.revoke_token_endpoint is not None
         async with self.get_httpx_client() as client:
             data = {
@@ -77,8 +77,6 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
                 data=data,
             )
             await self.send_request(client, request, auth, exc_class=RevokeTokenError)
-
-        return None
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:

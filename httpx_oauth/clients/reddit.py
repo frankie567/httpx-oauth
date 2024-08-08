@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional, Tuple, cast
 
 import httpx
@@ -64,9 +66,7 @@ class RedditOAuth2(BaseOAuth2[Dict[str, Any]]):
             revocation_endpoint_auth_method="client_secret_basic",
         )
 
-    async def get_access_token(
-        self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
-    ) -> OAuth2Token:
+    async def get_access_token(self, code: str, redirect_uri: str, code_verifier: Optional[str] = None) -> OAuth2Token:
         oauth2_token = await super().get_access_token(code, redirect_uri, code_verifier)
 
         if "error" in oauth2_token:
