@@ -131,6 +131,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "bvolkmer",
+      "name": "Benedikt Volkmer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7070761?v=4",
+      "profile": "https://github.com/bvolkmer",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
