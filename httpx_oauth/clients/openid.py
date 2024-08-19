@@ -1,9 +1,9 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, get_args
 
 import httpx
 
 from httpx_oauth.exceptions import GetIdEmailError
-from httpx_oauth.oauth2 import BaseOAuth2, OAuth2RequestError
+from httpx_oauth.oauth2 import BaseOAuth2, OAuth2ClientAuthMethod, OAuth2RequestError
 
 BASE_SCOPES = ["openid", "email"]
 
@@ -70,6 +70,19 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
             "revocation_endpoint_auth_methods_supported", ["client_secret_basic"]
         )
 
+        supported_auth_methods = get_args(OAuth2ClientAuthMethod)
+        # check if there is any supported and select the first one
+        token_endpoint_auth_methods_supported = [
+            method
+            for method in token_endpoint_auth_methods_supported
+            if method in supported_auth_methods
+        ]
+        revocation_endpoint_auth_methods_supported = [
+            method
+            for method in revocation_endpoint_auth_methods_supported
+            if method in supported_auth_methods
+        ]
+
         super().__init__(
             client_id,
             client_secret,
@@ -80,11 +93,11 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
             name=name,
             base_scopes=base_scopes,
             token_endpoint_auth_method=token_endpoint_auth_methods_supported[0],
-            revocation_endpoint_auth_method=revocation_endpoint_auth_methods_supported[
-                0
-            ]
-            if revocation_endpoint
-            else None,
+            revocation_endpoint_auth_method=(
+                revocation_endpoint_auth_methods_supported[0]
+                if revocation_endpoint
+                else None
+            ),
         )
 
     async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
