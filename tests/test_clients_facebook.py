@@ -49,7 +49,7 @@ class TestGetLongLivedAccessToken:
         assert f"client_id={CLIENT_ID}" in content
         assert f"client_secret={CLIENT_SECRET}" in content
 
-        assert type(access_token) == OAuth2Token
+        assert type(access_token) is OAuth2Token
         assert "access_token" in access_token
         assert "token_type" in access_token
         assert access_token.is_expired() is False
