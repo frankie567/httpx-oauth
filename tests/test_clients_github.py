@@ -1,5 +1,5 @@
+import json
 import re
-from urllib.parse import urlencode
 
 import pytest
 import respx
@@ -75,13 +75,12 @@ class TestGitHubRefreshToken:
             "error_description": "The refresh token passed is incorrect or expired.",
             "error_uri": "https://docs.github.com",
         }
-        error_response_encoded = urlencode(error_response)
 
         respx.post(client.refresh_token_endpoint).mock(
             return_value=Response(
                 200,
-                headers={"content-type": "application/x-www-form-urlencoded"},
-                content=error_response_encoded,
+                headers={"content-type": "application/json"},
+                content=json.dumps(error_response),
             )
         )
 

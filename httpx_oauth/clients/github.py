@@ -1,4 +1,3 @@
-import urllib.parse
 from typing import Any, Dict, List, Optional, Tuple, TypedDict, cast
 
 import httpx
@@ -97,12 +96,10 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
                 client, request, auth, exc_class=RefreshTokenError
             )
 
-            content_type = response.headers.get("content-type", "")
+            data = self.get_json(response, exc_class=RefreshTokenError)
 
             # GitHub sends errors with a 200 status code
-            # and a form-urlencoded content type 😕
-            if content_type.startswith("application/x-www-form-urlencoded"):
-                data = urllib.parse.parse_qs(response.text)
+            if "error" in data:
                 raise RefreshTokenError(cast(str, data["error"]), response)
 
             data = self.get_json(response, exc_class=RefreshTokenError)
