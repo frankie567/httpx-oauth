@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Optional, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
@@ -19,7 +19,7 @@ LOGO_SVG = """
 """
 
 
-class DiscordOAuth2(BaseOAuth2[Dict[str, Any]]):
+class DiscordOAuth2(BaseOAuth2[dict[str, Any]]):
     """OAuth2 client for Discord."""
 
     display_name = "Discord"
@@ -29,7 +29,7 @@ class DiscordOAuth2(BaseOAuth2[Dict[str, Any]]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[list[str]] = BASE_SCOPES,
         name: str = "discord",
     ):
         """
@@ -52,7 +52,7 @@ class DiscordOAuth2(BaseOAuth2[Dict[str, Any]]):
             revocation_endpoint_auth_method="client_secret_basic",
         )
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
@@ -62,7 +62,7 @@ class DiscordOAuth2(BaseOAuth2[Dict[str, Any]]):
             if response.status_code >= 400:
                 raise GetIdEmailError(response=response)
 
-            data = cast(Dict[str, Any], response.json())
+            data = cast(dict[str, Any], response.json())
 
             user_id = data["id"]
             user_email = data.get("email")

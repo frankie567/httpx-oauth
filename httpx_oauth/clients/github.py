@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, TypedDict, cast
+from typing import Any, Optional, TypedDict, cast
 
 import httpx
 
@@ -36,7 +36,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[list[str]] = BASE_SCOPES,
         name: str = "github",
     ):
         """
@@ -106,7 +106,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
 
             return OAuth2Token(data)
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         """
         Returns the id and the email (if available) of the authenticated user
         from the API provider.
@@ -140,7 +140,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             if response.status_code >= 400:
                 raise GetIdEmailError(response=response)
 
-            data = cast(Dict[str, Any], response.json())
+            data = cast(dict[str, Any], response.json())
 
             id = data["id"]
             email = data.get("email")
@@ -152,7 +152,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
                 if response.status_code >= 400:
                     raise GetIdEmailError(response=response)
 
-                emails = cast(List[Dict[str, Any]], response.json())
+                emails = cast(list[dict[str, Any]], response.json())
 
                 # Use the primary email if it exists, otherwise the first
                 email = next(

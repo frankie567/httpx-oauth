@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Optional, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2, RevokeTokenError
@@ -8,7 +8,7 @@ ACCESS_TOKEN_ENDPOINT = "https://nid.naver.com/oauth2.0/token"
 REFRESH_TOKEN_ENDPOINT = ACCESS_TOKEN_ENDPOINT
 REVOKE_TOKEN_ENDPOINT = ACCESS_TOKEN_ENDPOINT
 PROFILE_ENDPOINT = "https://openapi.naver.com/v1/nid/me"
-BASE_SCOPES: List[str] = []
+BASE_SCOPES: list[str] = []
 
 LOGO_SVG = """
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" version="1.1" xml:space="preserve" width="40" height="40" viewBox="0 0 40 40">
@@ -22,7 +22,7 @@ LOGO_SVG = """
 """
 
 
-class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
+class NaverOAuth2(BaseOAuth2[dict[str, Any]]):
     """OAuth2 client for Naver."""
 
     display_name = "Naver"
@@ -32,7 +32,7 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[list[str]] = BASE_SCOPES,
         name: str = "naver",
     ):
         """
@@ -80,7 +80,7 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
 
         return None
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.post(
                 PROFILE_ENDPOINT,
@@ -90,6 +90,6 @@ class NaverOAuth2(BaseOAuth2[Dict[str, Any]]):
             if response.status_code >= 400:
                 raise GetIdEmailError(response=response)
 
-            json = cast(Dict[str, Any], response.json())
-            account_info: Dict[str, Any] = json["response"]
+            json = cast(dict[str, Any], response.json())
+            account_info: dict[str, Any] = json["response"]
             return account_info["id"], account_info.get("email")

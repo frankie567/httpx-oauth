@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict, cast
+from typing import Any, Literal, Optional, TypedDict, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
@@ -42,7 +42,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[list[str]] = BASE_SCOPES,
         name: str = "google",
     ):
         """
@@ -65,7 +65,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             revocation_endpoint_auth_method="client_secret_post",
         )
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
@@ -76,7 +76,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             if response.status_code >= 400:
                 raise GetIdEmailError(response=response)
 
-            data = cast(Dict[str, Any], response.json())
+            data = cast(dict[str, Any], response.json())
 
             user_id = data["resourceName"]
             user_email = next(

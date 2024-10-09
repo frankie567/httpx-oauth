@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 import httpx
 from fastapi import HTTPException
@@ -21,7 +21,7 @@ class OAuth2AuthorizeCallbackError(HTTPException, OAuth2Error):
         self,
         status_code: int,
         detail: Any = None,
-        headers: Union[Dict[str, str], None] = None,
+        headers: Union[dict[str, str], None] = None,
         response: Union[httpx.Response, None] = None,
     ) -> None:
         self.response = response
@@ -79,7 +79,7 @@ class OAuth2AuthorizeCallback:
         code_verifier: Optional[str] = None,
         state: Optional[str] = None,
         error: Optional[str] = None,
-    ) -> Tuple[OAuth2Token, Optional[str]]:
+    ) -> tuple[OAuth2Token, Optional[str]]:
         if code is None or error is not None:
             raise OAuth2AuthorizeCallbackError(
                 status_code=status.HTTP_400_BAD_REQUEST,

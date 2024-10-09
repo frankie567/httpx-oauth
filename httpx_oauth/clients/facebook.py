@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Optional, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2RequestError, OAuth2Token
@@ -23,7 +23,7 @@ LOGO_SVG = """
 class GetLongLivedAccessTokenError(OAuth2RequestError): ...
 
 
-class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
+class FacebookOAuth2(BaseOAuth2[dict[str, Any]]):
     """OAuth2 client for Facebook."""
 
     display_name = "Facebook"
@@ -33,7 +33,7 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[list[str]] = BASE_SCOPES,
         name: str = "facebook",
     ):
         """
@@ -89,7 +89,7 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
             data = self.get_json(response, exc_class=GetLongLivedAccessTokenError)
             return OAuth2Token(data)
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
@@ -99,6 +99,6 @@ class FacebookOAuth2(BaseOAuth2[Dict[str, Any]]):
             if response.status_code >= 400:
                 raise GetIdEmailError(response=response)
 
-            data = cast(Dict[str, Any], response.json())
+            data = cast(dict[str, Any], response.json())
 
             return data["id"], data.get("email")

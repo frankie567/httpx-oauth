@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, get_args
+from typing import Any, Optional, get_args
 
 import httpx
 
@@ -14,7 +14,7 @@ class OpenIDConfigurationError(OAuth2RequestError):
     """
 
 
-class OpenID(BaseOAuth2[Dict[str, Any]]):
+class OpenID(BaseOAuth2[dict[str, Any]]):
     """
     Generic client for providers following the [OpenID Connect protocol](https://openid.net/connect/).
 
@@ -27,7 +27,7 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
         client_secret: str,
         openid_configuration_endpoint: str,
         name: str = "openid",
-        base_scopes: Optional[List[str]] = BASE_SCOPES,
+        base_scopes: Optional[list[str]] = BASE_SCOPES,
     ):
         """
         Args:
@@ -56,7 +56,7 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
                 raise OpenIDConfigurationError(str(e), e.response) from e
             except httpx.HTTPError as e:
                 raise OpenIDConfigurationError(str(e)) from e
-            self.openid_configuration: Dict[str, Any] = response.json()
+            self.openid_configuration: dict[str, Any] = response.json()
 
         token_endpoint = self.openid_configuration["token_endpoint"]
         refresh_token_supported = "refresh_token" in self.openid_configuration.get(
@@ -100,7 +100,7 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
             ),
         )
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 self.openid_configuration["userinfo_endpoint"],
@@ -110,6 +110,6 @@ class OpenID(BaseOAuth2[Dict[str, Any]]):
             if response.status_code >= 400:
                 raise GetIdEmailError(response=response)
 
-            data: Dict[str, Any] = response.json()
+            data: dict[str, Any] = response.json()
 
             return str(data["sub"]), data.get("email")

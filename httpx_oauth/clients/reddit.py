@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Optional, cast
 
 import httpx
 
@@ -28,7 +28,7 @@ LOGO_SVG = """
 """
 
 
-class RedditOAuth2(BaseOAuth2[Dict[str, Any]]):
+class RedditOAuth2(BaseOAuth2[dict[str, Any]]):
     """OAuth2 client for Reddit."""
 
     display_name = "Reddit"
@@ -38,7 +38,7 @@ class RedditOAuth2(BaseOAuth2[Dict[str, Any]]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[List[str]] = None,
+        scopes: Optional[list[str]] = None,
         name: str = "reddit",
     ):
         """
@@ -74,7 +74,7 @@ class RedditOAuth2(BaseOAuth2[Dict[str, Any]]):
 
         return oauth2_token
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             headers = self.request_headers.copy()
             headers["Authorization"] = f"Bearer {token}"
@@ -89,5 +89,5 @@ class RedditOAuth2(BaseOAuth2[Dict[str, Any]]):
             if response.status_code != httpx.codes.OK:
                 raise GetIdEmailError(response=response)
 
-            data = cast(Dict[str, Any], response.json())
+            data = cast(dict[str, Any], response.json())
             return data["name"], None

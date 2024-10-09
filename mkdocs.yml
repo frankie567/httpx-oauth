@@ -59,7 +59,7 @@ plugins:
         handlers:
             python:
                 import:
-                    - https://docs.python.org/3.8/objects.inv
+                    - https://docs.python.org/3.9/objects.inv
                     - https://fastapi.tiangolo.com/objects.inv
                 options:
                     docstring_style: google

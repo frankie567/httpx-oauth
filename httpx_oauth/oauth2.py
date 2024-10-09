@@ -1,16 +1,12 @@
+import contextlib
 import json
 import time
+from collections.abc import Mapping
 from typing import (
     Any,
-    AsyncContextManager,
-    Dict,
     Generic,
-    List,
     Literal,
-    Mapping,
     Optional,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -96,7 +92,7 @@ def _check_valid_auth_method(auth_method: str) -> None:
         raise NotSupportedAuthMethodError(auth_method)
 
 
-class OAuth2Token(Dict[str, Any]):
+class OAuth2Token(dict[str, Any]):
     """
     Wrapper around a standard `Dict[str, Any]` that bears the response
     of a successful token request.
@@ -110,7 +106,7 @@ class OAuth2Token(Dict[str, Any]):
         ```
     """
 
-    def __init__(self, token_dict: Dict[str, Any]):
+    def __init__(self, token_dict: dict[str, Any]):
         if "expires_at" in token_dict:
             token_dict["expires_at"] = int(token_dict["expires_at"])
         elif "expires_in" in token_dict:
@@ -146,10 +142,10 @@ class BaseOAuth2(Generic[T]):
     access_token_endpoint: str
     refresh_token_endpoint: Optional[str]
     revoke_token_endpoint: Optional[str]
-    base_scopes: Optional[List[str]]
+    base_scopes: Optional[list[str]]
     token_endpoint_auth_method: OAuth2ClientAuthMethod
     revocation_endpoint_auth_method: Optional[OAuth2ClientAuthMethod]
-    request_headers: Dict[str, str]
+    request_headers: dict[str, str]
 
     def __init__(
         self,
@@ -161,7 +157,7 @@ class BaseOAuth2(Generic[T]):
         revoke_token_endpoint: Optional[str] = None,
         *,
         name: str = "oauth2",
-        base_scopes: Optional[List[str]] = None,
+        base_scopes: Optional[list[str]] = None,
         token_endpoint_auth_method: OAuth2ClientAuthMethod = "client_secret_post",
         revocation_endpoint_auth_method: Optional[OAuth2ClientAuthMethod] = None,
     ):
@@ -215,7 +211,7 @@ class BaseOAuth2(Generic[T]):
         self,
         redirect_uri: str,
         state: Optional[str] = None,
-        scope: Optional[List[str]] = None,
+        scope: Optional[list[str]] = None,
         code_challenge: Optional[str] = None,
         code_challenge_method: Optional[Literal["plain", "S256"]] = None,
         extras_params: Optional[T] = None,
@@ -397,7 +393,7 @@ class BaseOAuth2(Generic[T]):
 
         return None
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         """
         Returns the id and the email (if available) of the authenticated user
         from the API provider.
@@ -422,7 +418,9 @@ class BaseOAuth2(Generic[T]):
         """
         raise NotImplementedError()
 
-    def get_httpx_client(self) -> AsyncContextManager[httpx.AsyncClient]:
+    def get_httpx_client(
+        self,
+    ) -> contextlib.AbstractAsyncContextManager[httpx.AsyncClient]:
         return httpx.AsyncClient()
 
     def build_request(
@@ -433,7 +431,7 @@ class BaseOAuth2(Generic[T]):
         *,
         auth_method: Union[OAuth2ClientAuthMethod, None] = None,
         data: Union[Mapping[str, Any], None] = None,
-    ) -> Tuple[httpx.Request, Union[httpx.Auth, None]]:
+    ) -> tuple[httpx.Request, Union[httpx.Auth, None]]:
         if data is not None:
             data = {
                 **data,
@@ -466,7 +464,7 @@ class BaseOAuth2(Generic[T]):
         request: httpx.Request,
         auth: Union[httpx.Auth, None],
         *,
-        exc_class: Type[OAuth2RequestError],
+        exc_class: type[OAuth2RequestError],
     ) -> httpx.Response:
         try:
             response = await client.send(request, auth=auth)
@@ -479,16 +477,16 @@ class BaseOAuth2(Generic[T]):
         return response
 
     def get_json(
-        self, response: httpx.Response, *, exc_class: Type[OAuth2RequestError]
-    ) -> Dict[str, Any]:
+        self, response: httpx.Response, *, exc_class: type[OAuth2RequestError]
+    ) -> dict[str, Any]:
         try:
-            return cast(Dict[str, Any], response.json())
+            return cast(dict[str, Any], response.json())
         except json.decoder.JSONDecodeError as e:
             message = "Invalid JSON content"
             raise exc_class(message, response) from e
 
 
-OAuth2 = BaseOAuth2[Dict[str, Any]]
+OAuth2 = BaseOAuth2[dict[str, Any]]
 """
 Generic OAuth2 client.
 

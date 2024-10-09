@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Optional, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
@@ -19,7 +19,7 @@ LOGO_SVG = """
 """
 
 
-class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
+class MicrosoftGraphOAuth2(BaseOAuth2[dict[str, Any]]):
     """OAuth2 client for Microsoft Graph API."""
 
     display_name = "Microsoft"
@@ -30,7 +30,7 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
         client_id: str,
         client_secret: str,
         tenant: str = "common",
-        scopes: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[list[str]] = BASE_SCOPES,
         name: str = "microsoft",
     ):
         """
@@ -63,7 +63,7 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             redirect_uri, state=state, scope=scope, extras_params=extras_params
         )
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
@@ -73,6 +73,6 @@ class MicrosoftGraphOAuth2(BaseOAuth2[Dict[str, Any]]):
             if response.status_code >= 400:
                 raise GetIdEmailError(response=response)
 
-            data = cast(Dict[str, Any], response.json())
+            data = cast(dict[str, Any], response.json())
 
             return data["id"], data["userPrincipalName"]

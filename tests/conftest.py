@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 import sys
-from typing import Any, Dict, Tuple
+from typing import Any
 
 import httpx
 import pytest
@@ -10,7 +10,7 @@ import pytest
 
 @pytest.fixture
 def load_mock():
-    def _load_mock(name: str) -> Dict[Any, Any]:
+    def _load_mock(name: str) -> dict[Any, Any]:
         mock_path = os.path.join(os.path.dirname(__file__), "mock", f"{name}.json")
         with open(mock_path) as mock_file:
             return json.load(mock_file)
@@ -22,7 +22,7 @@ def load_mock():
 def get_respx_call_args():
     async def _get_respx_call_args(
         mock,
-    ) -> Tuple[httpx.URL, httpx.Headers, str]:
+    ) -> tuple[httpx.URL, httpx.Headers, str]:
         request_call = mock.calls[0][0]
 
         content = ""

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Optional, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token
@@ -19,7 +19,7 @@ LOGO_SVG = """
 """
 
 
-class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
+class LinkedInOAuth2(BaseOAuth2[dict[str, Any]]):
     """OAuth2 client for LinkedIn."""
 
     display_name = "LinkedIn"
@@ -29,7 +29,7 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[list[str]] = BASE_SCOPES,
         name: str = "linkedin",
     ):
         """
@@ -74,7 +74,7 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
         """
         return await super().refresh_token(refresh_token)  # pragma: no cover
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             profile_response = await client.get(
                 PROFILE_ENDPOINT,
@@ -94,10 +94,10 @@ class LinkedInOAuth2(BaseOAuth2[Dict[str, Any]]):
             if email_response.status_code >= 400:
                 raise GetIdEmailError(response=email_response)
 
-            profile_data = cast(Dict[str, Any], profile_response.json())
+            profile_data = cast(dict[str, Any], profile_response.json())
             user_id = profile_data["id"]
 
-            email_data = cast(Dict[str, Any], email_response.json())
+            email_data = cast(dict[str, Any], email_response.json())
             user_email = email_data["elements"][0]["handle~"]["emailAddress"]
 
             return user_id, user_email

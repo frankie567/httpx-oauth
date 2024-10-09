@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Tuple, cast
+from typing import Any, Optional, cast
 
 from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
@@ -19,7 +19,7 @@ LOGO_SVG = """
 """
 
 
-class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
+class KakaoOAuth2(BaseOAuth2[dict[str, Any]]):
     """OAuth2 client for Kakao."""
 
     display_name = "Kakao"
@@ -29,7 +29,7 @@ class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[list[str]] = BASE_SCOPES,
         name: str = "kakao",
     ):
         """
@@ -52,7 +52,7 @@ class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
             revocation_endpoint_auth_method="client_secret_post",
         )
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.post(
                 PROFILE_ENDPOINT,
@@ -63,7 +63,7 @@ class KakaoOAuth2(BaseOAuth2[Dict[str, Any]]):
             if response.status_code >= 400:
                 raise GetIdEmailError(response=response)
 
-            payload = cast(Dict[str, Any], response.json())
+            payload = cast(dict[str, Any], response.json())
             account_id = str(payload["id"])
             email = payload["kakao_account"].get("email")
             return account_id, email

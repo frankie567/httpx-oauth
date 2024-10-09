@@ -1,5 +1,5 @@
 import secrets
-from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict
+from typing import Any, Literal, Optional, TypedDict
 
 from httpx_oauth.exceptions import GetIdEmailError
 from httpx_oauth.oauth2 import BaseOAuth2
@@ -37,7 +37,7 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
         client_id: str,
         client_secret: str,
         integration: bool = False,
-        scopes: Optional[List[str]] = BASE_SCOPES,
+        scopes: Optional[list[str]] = BASE_SCOPES,
         name="franceconnect",
     ):
         endpoints = ENDPOINTS["integration"] if integration else ENDPOINTS["production"]
@@ -57,7 +57,7 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
         self,
         redirect_uri: str,
         state: Optional[str] = None,
-        scope: Optional[List[str]] = None,
+        scope: Optional[list[str]] = None,
         code_challenge: Optional[str] = None,
         code_challenge_method: Optional[Literal["plain", "S256"]] = None,
         extras_params: Optional[FranceConnectOAuth2AuthorizeParams] = None,
@@ -72,7 +72,7 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
             redirect_uri, state, scope, extras_params=_extras_params
         )
 
-    async def get_id_email(self, token: str) -> Tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 self.profile_endpoint,
@@ -82,6 +82,6 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
             if response.status_code >= 400:
                 raise GetIdEmailError(response=response)
 
-            data: Dict[str, Any] = response.json()
+            data: dict[str, Any] = response.json()
 
             return str(data["sub"]), data.get("email")

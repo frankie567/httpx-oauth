@@ -1,10 +1,14 @@
+[tool.ruff]
+target-version = "py39"
+
 [tool.ruff.lint]
-extend-select = ["I", "TRY"]
+extend-select = ["I", "TRY", "UP"]
 ignore = ["E501"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=httpx_oauth/ --cov-report=term-missing --cov-fail-under=100"
-asyncio_mode = "auto"
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.hatch]
 
@@ -68,14 +72,13 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Framework :: AsyncIO",
     "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3 :: Only",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "httpx >=0.18,<1.0.0",
 ]
