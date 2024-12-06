@@ -51,7 +51,7 @@ class RefreshTokenNotSupportedError(OAuth2Error):
 
 class RevokeTokenNotSupportedError(OAuth2Error):
     """
-    Error raised when trying to revole a token
+    Error raised when trying to revoke a token
     on a provider that does not support it.
     """
 
