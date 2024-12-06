@@ -81,7 +81,7 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "httpx >=0.18,<1.0.0",
+    "httpx >=0.18,<0.28", # Starting 0.28, there is an incompatibility with respx: https://github.com/lundberg/respx/issues/277
 ]
 
 [project.urls]
