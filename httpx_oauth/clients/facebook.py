@@ -1,6 +1,6 @@
 from typing import Any, Optional, cast
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2RequestError, OAuth2Token
 
 AUTHORIZE_ENDPOINT = "https://www.facebook.com/v5.0/dialog/oauth"
@@ -89,7 +89,7 @@ class FacebookOAuth2(BaseOAuth2[dict[str, Any]]):
             data = self.get_json(response, exc_class=GetLongLivedAccessTokenError)
             return OAuth2Token(data)
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_profile(self, token: str) -> dict[str, Any]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
@@ -97,8 +97,13 @@ class FacebookOAuth2(BaseOAuth2[dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response=response)
+                raise GetProfileError(response=response)
 
-            data = cast(dict[str, Any], response.json())
+            return cast(dict[str, Any], response.json())
 
-            return data["id"], data.get("email")
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
+        return profile["id"], profile.get("email")

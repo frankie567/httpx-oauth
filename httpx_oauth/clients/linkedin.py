@@ -1,6 +1,6 @@
 from typing import Any, Optional, cast
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token
 
 AUTHORIZE_ENDPOINT = "https://www.linkedin.com/oauth/v2/authorization"
@@ -74,30 +74,40 @@ class LinkedInOAuth2(BaseOAuth2[dict[str, Any]]):
         """
         return await super().refresh_token(refresh_token)  # pragma: no cover
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_profile(self, token: str) -> dict[str, Any]:
         async with self.get_httpx_client() as client:
-            profile_response = await client.get(
+            response = await client.get(
                 PROFILE_ENDPOINT,
                 headers={"Authorization": f"Bearer {token}"},
                 params={"projection": "(id)"},
             )
 
-            if profile_response.status_code >= 400:
-                raise GetIdEmailError(response=profile_response)
+            if response.status_code >= 400:
+                raise GetProfileError(response=response)
 
-            email_response = await client.get(
+            return cast(dict[str, Any], response.json())
+
+    async def get_email(self, token: str) -> dict[str, Any]:
+        async with self.get_httpx_client() as client:
+            response = await client.get(
                 EMAIL_ENDPOINT,
                 headers={"Authorization": f"Bearer {token}"},
                 params={"q": "members", "projection": "(elements*(handle~))"},
             )
 
-            if email_response.status_code >= 400:
-                raise GetIdEmailError(response=email_response)
+            if response.status_code >= 400:
+                raise GetProfileError(response=response)
 
-            profile_data = cast(dict[str, Any], profile_response.json())
-            user_id = profile_data["id"]
+            return cast(dict[str, Any], response.json())
 
-            email_data = cast(dict[str, Any], email_response.json())
-            user_email = email_data["elements"][0]["handle~"]["emailAddress"]
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        try:
+            profile = await self.get_profile(token)
+            email = await self.get_email(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
 
-            return user_id, user_email
+        user_id = profile["id"]
+        user_email = email["elements"][0]["handle~"]["emailAddress"]
+
+        return user_id, user_email

@@ -332,6 +332,13 @@ class TestRevokeToken:
 
 
 @pytest.mark.asyncio
+class TestGetProfile:
+    async def test_not_implemented(self, client: OAuth2):
+        with pytest.raises(NotImplementedError):
+            await client.get_profile("TOKEN")
+
+
+@pytest.mark.asyncio
 class TestGetIdEmail:
     async def test_not_implemented(self, client: OAuth2):
         with pytest.raises(NotImplementedError):

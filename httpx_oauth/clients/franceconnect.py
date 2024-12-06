@@ -1,7 +1,7 @@
 import secrets
 from typing import Any, Literal, Optional, TypedDict
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 ENDPOINTS = {
@@ -72,7 +72,7 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
             redirect_uri, state, scope, extras_params=_extras_params
         )
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_profile(self, token: str) -> dict[str, Any]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 self.profile_endpoint,
@@ -80,8 +80,14 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response=response)
+                raise GetProfileError(response=response)
 
-            data: dict[str, Any] = response.json()
+            return response.json()
 
-            return str(data["sub"]), data.get("email")
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
+
+        return str(profile["sub"]), profile.get("email")

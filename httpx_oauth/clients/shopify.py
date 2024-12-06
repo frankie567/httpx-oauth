@@ -1,6 +1,6 @@
 from typing import Any, Literal, Optional, TypedDict, cast
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://{shop}.myshopify.com/admin/oauth/authorize"
@@ -68,6 +68,40 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
             token_endpoint_auth_method="client_secret_post",
         )
 
+    async def get_profile(self, token: str) -> dict[str, Any]:
+        """
+        Returns the profile of the authenticated user from the API provider.
+
+        !!! warning "`get_profile` is based on the `Shop` resource"
+            The implementation of `get_profile` calls the [Get Shop endpoint](https://shopify.dev/docs/api/admin-rest/2023-04/resources/shop#get-shop) of the Shopify Admin API.
+            It means that it'll return you the **profile of the shop**.
+
+        Args:
+            token: The access token.
+
+        Returns:
+            The profile of the authenticated shop.
+
+        Raises:
+            httpx_oauth.exceptions.GetProfileError:
+                An error occurred while getting the profile
+
+        Examples:
+            ```py
+            profile = await client.get_profile("TOKEN")
+            ```
+        """
+        async with self.get_httpx_client() as client:
+            response = await client.get(
+                self.profile_endpoint,
+                headers={"X-Shopify-Access-Token": token},
+            )
+
+            if response.status_code >= 400:
+                raise GetProfileError(response=response)
+
+            return cast(dict[str, Any], response.json())
+
     async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         """
         Returns the id and the email (if available) of the authenticated user
@@ -93,15 +127,10 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
             user_id, user_email = await client.get_id_email("TOKEN")
             ```
         """
-        async with self.get_httpx_client() as client:
-            response = await client.get(
-                self.profile_endpoint,
-                headers={"X-Shopify-Access-Token": token},
-            )
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
 
-            if response.status_code >= 400:
-                raise GetIdEmailError(response=response)
-
-            data = cast(dict[str, Any], response.json())
-            shop = data["shop"]
-            return str(shop["id"]), shop["email"]
+        shop = profile["shop"]
+        return str(shop["id"]), shop["email"]

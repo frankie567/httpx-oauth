@@ -1,7 +1,7 @@
 import json
 from typing import Any, Optional, cast
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://kauth.kakao.com/oauth/authorize"
@@ -52,7 +52,7 @@ class KakaoOAuth2(BaseOAuth2[dict[str, Any]]):
             revocation_endpoint_auth_method="client_secret_post",
         )
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_profile(self, token: str) -> dict[str, Any]:
         async with self.get_httpx_client() as client:
             response = await client.post(
                 PROFILE_ENDPOINT,
@@ -61,9 +61,16 @@ class KakaoOAuth2(BaseOAuth2[dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response=response)
+                raise GetProfileError(response=response)
 
-            payload = cast(dict[str, Any], response.json())
-            account_id = str(payload["id"])
-            email = payload["kakao_account"].get("email")
-            return account_id, email
+            return cast(dict[str, Any], response.json())
+
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
+
+        account_id = str(profile["id"])
+        email = profile["kakao_account"].get("email")
+        return account_id, email

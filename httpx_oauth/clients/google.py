@@ -1,6 +1,6 @@
 from typing import Any, Literal, Optional, TypedDict, cast
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
@@ -65,7 +65,7 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             revocation_endpoint_auth_method="client_secret_post",
         )
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_profile(self, token: str) -> dict[str, Any]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
@@ -74,15 +74,21 @@ class GoogleOAuth2(BaseOAuth2[GoogleOAuth2AuthorizeParams]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response=response)
+                raise GetProfileError(response=response)
 
-            data = cast(dict[str, Any], response.json())
+            return cast(dict[str, Any], response.json())
 
-            user_id = data["resourceName"]
-            user_email = next(
-                email["value"]
-                for email in data["emailAddresses"]
-                if email["metadata"]["primary"]
-            )
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
 
-            return user_id, user_email
+        user_id = profile["resourceName"]
+        user_email = next(
+            email["value"]
+            for email in profile["emailAddresses"]
+            if email["metadata"]["primary"]
+        )
+
+        return user_id, user_email

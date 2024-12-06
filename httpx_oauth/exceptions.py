@@ -13,7 +13,7 @@ class HTTPXOAuthError(Exception):
         super().__init__(message)
 
 
-class GetIdEmailError(HTTPXOAuthError):
+class GetProfileError(HTTPXOAuthError):
     """Error raised while retrieving user profile from provider API."""
 
     def __init__(
@@ -23,3 +23,14 @@ class GetIdEmailError(HTTPXOAuthError):
     ) -> None:
         self.response = response
         super().__init__(message)
+
+
+class GetIdEmailError(GetProfileError):
+    """Error raised while retrieving id and email from provider API."""
+
+    def __init__(
+        self,
+        message: str = "Error while retrieving id and email.",
+        response: Union[httpx.Response, None] = None,
+    ) -> None:
+        super().__init__(message, response)

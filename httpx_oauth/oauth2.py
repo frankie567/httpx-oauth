@@ -241,7 +241,7 @@ class BaseOAuth2(Generic[T]):
             authorization_url = await client.get_authorization_url(
                 "https://www.tintagel.bt/oauth-callback", scope=["SCOPE1", "SCOPE2", "SCOPE3"],
             )
-            ```py
+            ```
         """
         params = {
             "response_type": "code",
@@ -392,6 +392,30 @@ class BaseOAuth2(Generic[T]):
             await self.send_request(client, request, auth, exc_class=RevokeTokenError)
 
         return None
+
+    async def get_profile(self, token: str) -> dict[str, Any]:
+        """
+        Returns the profile of the authenticated user
+        from the API provider.
+
+        **It assumes you have asked for the required scopes**.
+
+        Args:
+            token: The access token.
+
+        Returns:
+            The profile of the authenticated user.
+
+        Raises:
+            httpx_oauth.exceptions.GetProfileError:
+                An error occurred while getting the profile.
+
+        Examples:
+            ```py
+            profile = await client.get_profile("TOKEN")
+            ```
+        """
+        raise NotImplementedError()
 
     async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         """

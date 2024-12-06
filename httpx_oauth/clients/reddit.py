@@ -2,7 +2,7 @@ from typing import Any, Optional, cast
 
 import httpx
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import (
     BaseOAuth2,
     GetAccessTokenError,
@@ -74,20 +74,22 @@ class RedditOAuth2(BaseOAuth2[dict[str, Any]]):
 
         return oauth2_token
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_profile(self, token: str) -> dict[str, Any]:
         async with self.get_httpx_client() as client:
-            headers = self.request_headers.copy()
-            headers["Authorization"] = f"Bearer {token}"
-
             response = await client.get(
                 IDENTITY_ENDPOINT,
-                headers=headers,
+                headers={**self.request_headers, "Authorization": f"Bearer {token}"},
             )
 
-            # Reddit doesn't return any useful JSON in case of auth failures
-            # on oauth.reddit.com endpoints, so we simulate our own
             if response.status_code != httpx.codes.OK:
-                raise GetIdEmailError(response=response)
+                raise GetProfileError(response=response)
 
-            data = cast(dict[str, Any], response.json())
-            return data["name"], None
+            return cast(dict[str, Any], response.json())
+
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
+
+        return profile["name"], None

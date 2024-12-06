@@ -2,7 +2,7 @@ from typing import Any, Optional, TypedDict, cast
 
 import httpx
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token, RefreshTokenError
 
 AUTHORIZE_ENDPOINT = "https://github.com/login/oauth/authorize"
@@ -106,6 +106,51 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
 
             return OAuth2Token(data)
 
+    async def get_profile(self, token: str) -> dict[str, Any]:
+        async with httpx.AsyncClient(
+            headers={**self.request_headers, "Authorization": f"token {token}"}
+        ) as client:
+            response = await client.get(PROFILE_ENDPOINT)
+
+            if response.status_code >= 400:
+                raise GetProfileError(response=response)
+
+            return cast(dict[str, Any], response.json())
+
+    async def get_emails(self, token: str) -> list[dict[str, Any]]:
+        """
+        Return the emails of the authenticated user from the API provider.
+
+        !!! tip
+            You should enable **Email addresses** permission
+            in the **Permissions & events** section of your GitHub app parameters.
+            You can find it at [https://github.com/settings/apps/{YOUR_APP}/permissions](https://github.com/settings/apps/{YOUR_APP}/permissions).
+
+        Args:
+            token: The access token.
+
+        Returns:
+            A list of emails as described in the [GitHub API](https://docs.github.com/en/rest/users/emails?apiVersion=2022-11-28#list-email-addresses-for-the-authenticated-user).
+
+        Raises:
+            httpx_oauth.exceptions.GetProfileError:
+                An error occurred while getting the emails.
+
+        Examples:
+            ```py
+            emails = await client.get_emails("TOKEN")
+            ```
+        """
+        async with httpx.AsyncClient(
+            headers={**self.request_headers, "Authorization": f"token {token}"}
+        ) as client:
+            response = await client.get(EMAILS_ENDPOINT)
+
+            if response.status_code >= 400:
+                raise GetProfileError(response=response)
+
+            return cast(list[dict[str, Any]], response.json())
+
     async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
         """
         Returns the id and the email (if available) of the authenticated user
@@ -132,31 +177,24 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             user_id, user_email = await client.get_id_email("TOKEN")
             ```
         """
-        async with httpx.AsyncClient(
-            headers={**self.request_headers, "Authorization": f"token {token}"}
-        ) as client:
-            response = await client.get(PROFILE_ENDPOINT)
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
 
-            if response.status_code >= 400:
-                raise GetIdEmailError(response=response)
+        id = profile["id"]
+        email = profile.get("email")
 
-            data = cast(dict[str, Any], response.json())
+        # No public email, make a separate call to /user/emails
+        if email is None:
+            try:
+                emails = await self.get_emails(token)
+            except GetProfileError as e:
+                raise GetIdEmailError(response=e.response) from e
 
-            id = data["id"]
-            email = data.get("email")
+            # Use the primary email if it exists, otherwise the first
+            email = next(
+                (e["email"] for e in emails if e.get("primary")), emails[0]["email"]
+            )
 
-            # No public email, make a separate call to /user/emails
-            if email is None:
-                response = await client.get(EMAILS_ENDPOINT)
-
-                if response.status_code >= 400:
-                    raise GetIdEmailError(response=response)
-
-                emails = cast(list[dict[str, Any]], response.json())
-
-                # Use the primary email if it exists, otherwise the first
-                email = next(
-                    (e["email"] for e in emails if e.get("primary")), emails[0]["email"]
-                )
-
-            return str(id), email
+        return str(id), email

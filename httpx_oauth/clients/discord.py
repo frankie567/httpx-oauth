@@ -1,6 +1,6 @@
 from typing import Any, Optional, cast
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
 
 AUTHORIZE_ENDPOINT = "https://discord.com/api/oauth2/authorize"
@@ -52,7 +52,7 @@ class DiscordOAuth2(BaseOAuth2[dict[str, Any]]):
             revocation_endpoint_auth_method="client_secret_basic",
         )
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_profile(self, token: str) -> dict[str, Any]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 PROFILE_ENDPOINT,
@@ -60,14 +60,20 @@ class DiscordOAuth2(BaseOAuth2[dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response=response)
+                raise GetProfileError(response=response)
 
-            data = cast(dict[str, Any], response.json())
+            return cast(dict[str, Any], response.json())
 
-            user_id = data["id"]
-            user_email = data.get("email")
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
 
-            if not data.get("verified", False):
-                user_email = None
+        user_id = profile["id"]
+        user_email = profile.get("email")
 
-            return user_id, user_email
+        if not profile.get("verified", False):
+            user_email = None
+
+        return user_id, user_email

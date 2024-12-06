@@ -54,9 +54,15 @@ access_token = await client.refresh_token("REFRESH_TOKEN")
 
 For providers supporting it, you can ask to revoke an access or refresh token. For this, use the [revoke_token][httpx_oauth.oauth2.BaseOAuth2.revoke_token] method.
 
-## Get authenticated user ID and email
+## Get profile
 
-For convenience, we provide a method that'll use a valid access token to query the provider API and get the ID and the email (if available) of the authenticated user. For this, use the [get_id_email][httpx_oauth.oauth2.BaseOAuth2.get_id_email] method.
+For convenience, we provide a method that'll use a valid access token to query the provider API and get the profile of the authenticated user. For this, use the [get_profile][httpx_oauth.oauth2.BaseOAuth2.get_profile] method.
+
+This method is implemented specifically on each provider. Please note it's a raw JSON output from the provider API, so it might vary greatly.
+
+### Get authenticated user ID and email
+
+Often, what you need is only the ID and the email. We offer another convenience method that'll do the heavy lifting of retrieving them from the profile output: the [get_id_email][httpx_oauth.oauth2.BaseOAuth2.get_id_email] method.
 
 This method is implemented specifically on each provider.
 

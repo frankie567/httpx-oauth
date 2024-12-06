@@ -2,7 +2,7 @@ from typing import Any, Optional, get_args
 
 import httpx
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2ClientAuthMethod, OAuth2RequestError
 
 BASE_SCOPES = ["openid", "email"]
@@ -100,7 +100,7 @@ class OpenID(BaseOAuth2[dict[str, Any]]):
             ),
         )
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_profile(self, token: str) -> dict[str, Any]:
         async with self.get_httpx_client() as client:
             response = await client.get(
                 self.openid_configuration["userinfo_endpoint"],
@@ -108,8 +108,14 @@ class OpenID(BaseOAuth2[dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response=response)
+                raise GetProfileError(response=response)
 
-            data: dict[str, Any] = response.json()
+            return response.json()
 
-            return str(data["sub"]), data.get("email")
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
+
+        return str(profile["sub"]), profile.get("email")

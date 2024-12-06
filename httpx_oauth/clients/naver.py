@@ -1,6 +1,6 @@
 from typing import Any, Optional, cast
 
-from httpx_oauth.exceptions import GetIdEmailError
+from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2, RevokeTokenError
 
 AUTHORIZE_ENDPOINT = "https://nid.naver.com/oauth2.0/authorize"
@@ -80,7 +80,7 @@ class NaverOAuth2(BaseOAuth2[dict[str, Any]]):
 
         return None
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_profile(self, token: str) -> dict[str, Any]:
         async with self.get_httpx_client() as client:
             response = await client.post(
                 PROFILE_ENDPOINT,
@@ -88,8 +88,15 @@ class NaverOAuth2(BaseOAuth2[dict[str, Any]]):
             )
 
             if response.status_code >= 400:
-                raise GetIdEmailError(response=response)
+                raise GetProfileError(response=response)
 
-            json = cast(dict[str, Any], response.json())
-            account_info: dict[str, Any] = json["response"]
-            return account_info["id"], account_info.get("email")
+            json = response.json()
+            return cast(dict[str, Any], json["response"])
+
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        try:
+            profile = await self.get_profile(token)
+        except GetProfileError as e:
+            raise GetIdEmailError(response=e.response) from e
+
+        return profile["id"], profile.get("email")
