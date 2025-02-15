@@ -1,5 +1,14 @@
 # Reference - Clients
 
+## Apple
+
+::: httpx_oauth.clients.apple
+    options:
+      show_root_heading: true
+      show_source: false
+      inherited_members: true
+      heading_level: 3
+
 ## Discord
 
 ::: httpx_oauth.clients.discord
