@@ -6,11 +6,19 @@ from typing import Optional
 import jwt  # PyJWT or any library that can sign JWTs
 
 from httpx_oauth.clients.openid import OpenID
+from httpx_oauth.oauth2 import OAuth2Token
 
 APPLE_OPENID_CONFIG = "https://appleid.apple.com/.well-known/openid-configuration"
-# The default OIDC scopes. Apple’s docs generally require "openid" and "email".
+# The default OIDC scopes. Apple's docs generally require "openid" and "email".
 # "name" scope is often used to request the user's name on first login.
 BASE_SCOPES = ["openid", "email", "name"]
+
+
+class AppleOAuthError(Exception):
+    """Errors raised by Apple OAuth client."""
+
+    NO_ID_TOKEN = "No ID token found"
+    NO_SUBJECT = "No subject claim found"
 
 
 class AppleOAuth2(OpenID):
@@ -80,6 +88,28 @@ class AppleOAuth2(OpenID):
             redirect_uri, state=state, scope=scope, extras_params=extras_params
         )
         return super_url
+
+    def get_id_email_from_id_token(
+        self, token: OAuth2Token
+    ) -> tuple[str, Optional[str]]:
+        """
+        Get user ID and email from Apple ID token.
+
+        Apple does not have a userinfo endpoint, so we need to decode the ID token
+        ourselves.
+        """
+        id_token = token.get("id_token")
+        if not id_token:
+            raise AppleOAuthError(AppleOAuthError.NO_ID_TOKEN)
+
+        claims = jwt.decode(id_token, options={"verify_signature": False})
+
+        user_id = claims.get("sub")
+        if not user_id:
+            raise AppleOAuthError(AppleOAuthError.NO_SUBJECT)
+
+        email = claims.get("email")
+        return user_id, email
 
     def _generate_apple_client_secret(
         self,
