@@ -70,15 +70,16 @@ class AppleOAuth2(OpenID):
             base_scopes=base_scopes,
         )
 
-    def get_authorization_url(
+    async def get_authorization_url(
         self, redirect_uri, state=None, scope=None, extras_params=None
     ):
         if extras_params is None:
             extras_params = {}
         extras_params["response_mode"] = "form_post"
-        return super().get_authorization_url(
+        super_url = await super().get_authorization_url(
             redirect_uri, state=state, scope=scope, extras_params=extras_params
         )
+        return super_url
 
     def _generate_apple_client_secret(
         self,

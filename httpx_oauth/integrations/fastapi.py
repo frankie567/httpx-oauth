@@ -1,3 +1,4 @@
+import json
 from typing import Any, Optional, Union
 
 import httpx
@@ -5,6 +6,7 @@ from fastapi import HTTPException
 from starlette import status
 from starlette.requests import Request
 
+from httpx_oauth.clients.apple import AppleOAuth2
 from httpx_oauth.oauth2 import BaseOAuth2, GetAccessTokenError, OAuth2Error, OAuth2Token
 
 
@@ -32,6 +34,11 @@ class OAuth2AuthorizeCallback:
     """
     Dependency callable to handle the authorization callback. It reads the query parameters and returns the access token and the state.
 
+    Some providers, such as Apple, use form post instead of query params, this dependency will work with both.
+
+    With `include_raw_data=True`, it also returns the raw data dictionary as a third item. This is useful for Apple,
+    which only returns user info in the first-ever Authorization, and does not implement a userinfo endpoint.
+
     Examples:
         ```py
         from fastapi import FastAPI, Depends
@@ -52,18 +59,21 @@ class OAuth2AuthorizeCallback:
     client: BaseOAuth2
     route_name: Optional[str]
     redirect_url: Optional[str]
+    include_raw_data: bool
 
     def __init__(
         self,
         client: BaseOAuth2,
         route_name: Optional[str] = None,
         redirect_url: Optional[str] = None,
+        include_raw_data: bool = False,
     ):
         """
         Args:
             client: An [OAuth2][httpx_oauth.oauth2.BaseOAuth2] client.
             route_name: Name of the callback route, as defined in the `name` parameter of the route decorator.
             redirect_url: Full URL to the callback route.
+            include_raw_data: Whether to include the raw data dictionary as a third item.
         """
         assert (route_name is not None and redirect_url is None) or (
             route_name is None and redirect_url is not None
@@ -71,6 +81,7 @@ class OAuth2AuthorizeCallback:
         self.client = client
         self.route_name = route_name
         self.redirect_url = redirect_url
+        self.include_raw_data = include_raw_data
 
     async def __call__(
         self,
@@ -79,7 +90,29 @@ class OAuth2AuthorizeCallback:
         code_verifier: Optional[str] = None,
         state: Optional[str] = None,
         error: Optional[str] = None,
-    ) -> tuple[OAuth2Token, Optional[str]]:
+    ) -> Union[
+        tuple[OAuth2Token, Optional[str]],
+        tuple[OAuth2Token, Optional[str], dict[str, Any]],
+    ]:
+        raw_data: dict[str, Any] = {}
+
+        if isinstance(self.client, AppleOAuth2) and request.method == "POST":
+            form = await request.form()
+            # Overwrite query args with form values if present
+            code = form.get("code") or code
+            state = form.get("state") or state
+            error = form.get("error") or error
+
+            # If Apple posted the "user" field, parse it
+            if "user" in form:
+                try:
+                    raw_data["user"] = json.loads(form["user"])
+                except json.JSONDecodeError:
+                    # If Apple sends something unexpected
+                    raw_data["user"] = form["user"]
+
+            raw_data["form"] = dict(form)
+
         if code is None or error is not None:
             raise OAuth2AuthorizeCallbackError(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -102,4 +135,7 @@ class OAuth2AuthorizeCallback:
                 response=e.response,
             ) from e
 
-        return access_token, state
+        if self.include_raw_data:
+            return access_token, state, raw_data
+        else:
+            return access_token, state
