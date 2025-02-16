@@ -17,6 +17,7 @@ BASE_SCOPES = ["openid", "email", "name"]
 class AppleOAuthError(Exception):
     """Errors raised by Apple OAuth client."""
 
+    NO_ACCESS_TOKEN = "No access token found, you need to call get_access_token first"
     NO_ID_TOKEN = "No ID token found"
     NO_SUBJECT = "No subject claim found"
 
@@ -32,6 +33,9 @@ class AppleOAuth2(OpenID):
     - https://developer.apple.com/documentation/sign_in_with_apple
     - https://appleid.apple.com/.well-known/openid-configuration
     """
+
+    # The token response from Apple, see get_access_token for more details
+    oauth2_token: OAuth2Token | None
 
     def __init__(
         self,
@@ -78,6 +82,8 @@ class AppleOAuth2(OpenID):
             base_scopes=base_scopes,
         )
 
+        self.oauth2_token = None
+
     async def get_authorization_url(
         self, redirect_uri, state=None, scope=None, extras_params=None
     ):
@@ -89,16 +95,45 @@ class AppleOAuth2(OpenID):
         )
         return super_url
 
-    def get_id_email_from_id_token(
-        self, token: OAuth2Token
-    ) -> tuple[str, Optional[str]]:
+    async def get_access_token(
+        self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
+    ) -> OAuth2Token:
         """
-        Get user ID and email from Apple ID token.
+        Get access token from Apple.
 
-        Apple does not have a userinfo endpoint, so we need to decode the ID token
-        ourselves.
+        Apple does not have a userinfo endpoint, so we need to store the raw token
+        response which includes the id_token in memory, so that future calls to
+        get_id_email can use it.
         """
-        id_token = token.get("id_token")
+        token = await super().get_access_token(code, redirect_uri, code_verifier)
+        self.oauth2_token = token
+
+        return token
+
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        """
+        Returns the id and the email (if available) of the authenticated user
+        from the ID token.
+
+        Apple does not provide a userinfo endpoint, so we decode the ID token instead.
+        The ID token must have been saved during the initial token request.
+
+        Args:
+            token: The access token. Unused, but required by the OAuth2 client interface.
+
+        Returns:
+            A tuple with the id and the email of the authenticated user.
+
+        Raises:
+            httpx_oauth.exceptions.GetIdEmailError:
+                An error occurred while getting the id and email.
+            AppleOAuthError:
+                The ID token was missing or invalid.
+        """
+        if self.oauth2_token is None:
+            raise AppleOAuthError(AppleOAuthError.NO_ACCESS_TOKEN)
+
+        id_token = self.oauth2_token.get("id_token")
         if not id_token:
             raise AppleOAuthError(AppleOAuthError.NO_ID_TOKEN)
 

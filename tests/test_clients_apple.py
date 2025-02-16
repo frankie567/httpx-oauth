@@ -50,7 +50,56 @@ def test_apple_oauth2_basic():
     assert "email" in client.base_scopes
 
 
-def test_get_id_email_from_id_token_success():
+@respx.mock
+@pytest.mark.asyncio
+async def test_get_access_token_stores_token():
+    # Mock the GET to Apple's .well-known/openid-configuration
+    respx.get("https://appleid.apple.com/.well-known/openid-configuration").mock(
+        return_value=Response(200, json=APPLE_CONFIG)
+    )
+
+    client = AppleOAuth2(
+        client_id="com.example.service",
+        team_id="ABCD1234EF",
+        key_id="ABC123DEFG",
+        private_key=TEST_PRIVATE_KEY,
+    )
+
+    # Mock a successful token response
+    mock_token_response = {
+        "access_token": "mock_access_token",
+        "token_type": "Bearer",
+        "expires_in": 3600,
+        "id_token": {"sub": "mock_id_token"},
+    }
+
+    # Mock the token endpoint with a pattern matcher to ensure required params
+    route = respx.post("https://appleid.apple.com/auth/token")
+    route.mock(return_value=Response(200, json=mock_token_response))
+
+    # Get the token
+    token = await client.get_access_token("mock_code", "mock_redirect_uri")
+
+    # Verify the request was made with correct parameters
+    assert route.called
+    request = route.calls.last.request
+    assert request.method == "POST"
+    body = request.content.decode()
+    assert "grant_type=authorization_code" in body
+    assert "code=mock_code" in body
+    assert "redirect_uri=mock_redirect_uri" in body
+    assert "client_id=com.example.service" in body
+    assert "client_secret=" in body  # The JWT will be different each time
+
+    # Verify the token was stored internally
+    assert client.oauth2_token is not None
+    assert client.oauth2_token == token
+    assert client.oauth2_token["access_token"] == "mock_access_token"
+    assert client.oauth2_token["id_token"] == {"sub": "mock_id_token"}
+
+
+@pytest.mark.asyncio
+async def test_get_id_email_success():
     client = AppleOAuth2(
         client_id="com.example.service",
         team_id="ABCD1234EF",
@@ -75,14 +124,16 @@ def test_get_id_email_from_id_token_success():
     # Create a JWT token from the mock response
     token = jwt.encode(mock_id_token, "secret", algorithm="HS256")
     oauth_token = OAuth2Token({"id_token": token})
+    client.oauth2_token = oauth_token
 
     # Test the method
-    user_id, email = client.get_id_email_from_id_token(oauth_token)
+    user_id, email = await client.get_id_email("unused")
     assert user_id == "000958.280e99fb24734730a496b16e104683c4.0408"
     assert email == "some_email@whatever.com"
 
 
-def test_get_id_email_from_id_token_no_id_token():
+@pytest.mark.asyncio
+async def test_get_id_email_no_id_token():
     client = AppleOAuth2(
         client_id="com.example.service",
         team_id="ABCD1234EF",
@@ -92,12 +143,14 @@ def test_get_id_email_from_id_token_no_id_token():
 
     # Test with missing id_token
     oauth_token = OAuth2Token({})
+    client.oauth2_token = oauth_token
     with pytest.raises(AppleOAuthError) as exc:
-        client.get_id_email_from_id_token(oauth_token)
+        await client.get_id_email("unused")
     assert str(exc.value) == AppleOAuthError.NO_ID_TOKEN
 
 
-def test_get_id_email_from_id_token_no_subject():
+@pytest.mark.asyncio
+async def test_get_id_email_no_subject():
     client = AppleOAuth2(
         client_id="com.example.service",
         team_id="ABCD1234EF",
@@ -114,7 +167,21 @@ def test_get_id_email_from_id_token_no_subject():
 
     token = jwt.encode(mock_id_token, "secret", algorithm="HS256")
     oauth_token = OAuth2Token({"id_token": token})
+    client.oauth2_token = oauth_token
+    with pytest.raises(AppleOAuthError) as exc:
+        await client.get_id_email("unused")
+    assert str(exc.value) == AppleOAuthError.NO_SUBJECT
+
+
+@pytest.mark.asyncio
+async def test_get_id_email_no_token():
+    client = AppleOAuth2(
+        client_id="com.example.service",
+        team_id="ABCD1234EF",
+        key_id="ABC123DEFG",
+        private_key=TEST_PRIVATE_KEY,
+    )
 
     with pytest.raises(AppleOAuthError) as exc:
-        client.get_id_email_from_id_token(oauth_token)
-    assert str(exc.value) == AppleOAuthError.NO_SUBJECT
+        await client.get_id_email("unused")
+    assert str(exc.value) == AppleOAuthError.NO_ACCESS_TOKEN
