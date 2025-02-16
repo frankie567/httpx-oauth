@@ -180,57 +180,10 @@ class TestAppleIntegrationFastAPI:
 
         data = resp.json()
         # Expect a 3-element list
-        assert len(data) == 3
-        access_token, returned_state, raw_data = data
+        assert len(data) == 2
+        access_token, returned_state = data
         assert access_token == "MOCK_APPLE_TOKEN"
         assert returned_state == "APPLE_STATE"
-        assert "user" in raw_data
-        assert raw_data["user"] == user_payload
-        assert "form" in raw_data
-        form_dict = raw_data["form"]
-        assert form_dict["code"] == "APPLE_CODE"
-        assert form_dict["state"] == "APPLE_STATE"
-
-    def test_invalid_user_json(
-        self,
-        url_route,
-        expected_redirect,
-        patch_get_access_token,
-        test_client,
-    ):
-        """
-        If 'user' field isn't valid JSON, store raw string.
-        """
-        patch_get_access_token(return_value="FAKE_TOKEN")
-        resp = test_client.post(
-            url_route,
-            data={
-                "code": "CODE",
-                "state": "STATE",
-                "user": "NOT_JSON",
-            },
-        )
-        assert resp.status_code == 200
-        data = resp.json()
-        _, _, raw_data = data
-        assert raw_data["user"] == "NOT_JSON"
-
-    def test_empty_user_field(
-        self,
-        url_route,
-        expected_redirect,
-        patch_get_access_token,
-        test_client,
-    ):
-        """
-        If Apple sends `user=""`, store an empty string in raw_data["user"].
-        """
-        patch_get_access_token(return_value="FAKE_TOKEN")
-        resp = test_client.post(url_route, data={"code": "CODE", "user": ""})
-        assert resp.status_code == 200
-        data = resp.json()
-        _, _, raw_data = data
-        assert raw_data["user"] == ""
 
 
 @pytest.mark.asyncio

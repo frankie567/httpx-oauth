@@ -1,4 +1,3 @@
-import json
 from typing import Any, Optional, Union
 
 import httpx
@@ -36,9 +35,6 @@ class OAuth2AuthorizeCallback:
 
     Some providers, such as Apple, use form post instead of query params, this dependency will work with both.
 
-    With `include_raw_data=True`, it also returns the raw data dictionary as a third item. This is useful for Apple,
-    which only returns user info in the first-ever Authorization, and does not implement a userinfo endpoint.
-
     Examples:
         ```py
         from fastapi import FastAPI, Depends
@@ -73,7 +69,6 @@ class OAuth2AuthorizeCallback:
             client: An [OAuth2][httpx_oauth.oauth2.BaseOAuth2] client.
             route_name: Name of the callback route, as defined in the `name` parameter of the route decorator.
             redirect_url: Full URL to the callback route.
-            include_raw_data: Whether to include the raw data dictionary as a third item.
         """
         assert (route_name is not None and redirect_url is None) or (
             route_name is None and redirect_url is not None
@@ -90,28 +85,13 @@ class OAuth2AuthorizeCallback:
         code_verifier: Optional[str] = None,
         state: Optional[str] = None,
         error: Optional[str] = None,
-    ) -> Union[
-        tuple[OAuth2Token, Optional[str]],
-        tuple[OAuth2Token, Optional[str], dict[str, Any]],
-    ]:
-        raw_data: dict[str, Any] = {}
-
+    ) -> tuple[OAuth2Token, Optional[str]]:
         if isinstance(self.client, AppleOAuth2) and request.method == "POST":
             form = await request.form()
             # Overwrite query args with form values if present
             code = form.get("code") or code
             state = form.get("state") or state
             error = form.get("error") or error
-
-            # If Apple posted the "user" field, parse it
-            if "user" in form:
-                try:
-                    raw_data["user"] = json.loads(form["user"])
-                except json.JSONDecodeError:
-                    # If Apple sends something unexpected
-                    raw_data["user"] = form["user"]
-
-            raw_data["form"] = dict(form)
 
         if code is None or error is not None:
             raise OAuth2AuthorizeCallbackError(
@@ -135,7 +115,4 @@ class OAuth2AuthorizeCallback:
                 response=e.response,
             ) from e
 
-        if self.include_raw_data:
-            return access_token, state, raw_data
-        else:
-            return access_token, state
+        return access_token, state
