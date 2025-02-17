@@ -13,9 +13,28 @@ APPLE_CONFIG = {
     "issuer": "https://appleid.apple.com",
     "authorization_endpoint": "https://appleid.apple.com/auth/authorize",
     "token_endpoint": "https://appleid.apple.com/auth/token",
-    "userinfo_endpoint": "https://appleid.apple.com/auth/userinfo",
-    "grant_types_supported": ["authorization_code", "refresh_token"],
+    "revocation_endpoint": "https://appleid.apple.com/auth/revoke",
+    "jwks_uri": "https://appleid.apple.com/auth/keys",
+    "response_types_supported": ["code"],
+    "response_modes_supported": ["query", "fragment", "form_post"],
+    "subject_types_supported": ["pairwise"],
+    "id_token_signing_alg_values_supported": ["RS256"],
+    "scopes_supported": ["openid", "email", "name"],
     "token_endpoint_auth_methods_supported": ["client_secret_post"],
+    "claims_supported": [
+        "aud",
+        "email",
+        "email_verified",
+        "exp",
+        "iat",
+        "is_private_email",
+        "iss",
+        "nonce",
+        "nonce_supported",
+        "real_user_status",
+        "sub",
+        "transfer_sub",
+    ],
 }
 
 TEST_PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
@@ -42,9 +61,6 @@ def test_apple_oauth2_basic():
 
     assert client.authorize_endpoint == "https://appleid.apple.com/auth/authorize"
     assert client.access_token_endpoint == "https://appleid.apple.com/auth/token"
-    assert client.refresh_token_endpoint == "https://appleid.apple.com/auth/token"
-    # Apple might return "revocation_endpoint" in future versions or not
-    # ...
     assert client.name == "apple"
     assert "openid" in client.base_scopes
     assert "email" in client.base_scopes
