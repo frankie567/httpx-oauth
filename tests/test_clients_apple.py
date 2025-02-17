@@ -6,7 +6,7 @@ import respx
 from httpx import Response
 
 from httpx_oauth.clients.apple import AppleOAuth2, AppleOAuthError
-from httpx_oauth.oauth2 import OAuth2Token
+from httpx_oauth.oauth2 import OAuth2Token, RefreshTokenError
 
 # Minimal mock data from the .well-known config
 APPLE_CONFIG = {
@@ -62,6 +62,7 @@ def test_apple_oauth2_basic():
     assert client.authorize_endpoint == "https://appleid.apple.com/auth/authorize"
     assert client.access_token_endpoint == "https://appleid.apple.com/auth/token"
     assert client.name == "apple"
+    assert client.base_scopes is not None
     assert "openid" in client.base_scopes
     assert "email" in client.base_scopes
 
@@ -201,3 +202,119 @@ async def test_get_id_email_no_token():
     with pytest.raises(AppleOAuthError) as exc:
         await client.get_id_email("unused")
     assert str(exc.value) == AppleOAuthError.NO_ACCESS_TOKEN
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_refresh_token_success(get_respx_call_args):
+    # Mock the GET to Apple's .well-known/openid-configuration
+    respx.get("https://appleid.apple.com/.well-known/openid-configuration").mock(
+        return_value=Response(200, json=APPLE_CONFIG)
+    )
+
+    client = AppleOAuth2(
+        client_id="com.example.service",
+        team_id="ABCD1234EF",
+        key_id="ABC123DEFG",
+        private_key=TEST_PRIVATE_KEY,
+    )
+
+    # Mock a successful refresh token response
+    mock_token_response = {
+        "access_token": "new_mock_access_token",
+        "token_type": "Bearer",
+        "expires_in": 3600,
+        "refresh_token": "new_mock_refresh_token",
+        "id_token": {"sub": "mock_id_token"},
+    }
+
+    # Mock the token endpoint
+    route = respx.post("https://appleid.apple.com/auth/token")
+    route.mock(return_value=Response(200, json=mock_token_response))
+
+    # Refresh the token
+    token = await client.refresh_token("old_refresh_token")
+
+    # Verify the request was made with correct parameters
+    assert route.called
+    request = route.calls.last.request
+    assert request.method == "POST"
+    body = request.content.decode()
+    assert "grant_type=refresh_token" in body
+    assert "refresh_token=old_refresh_token" in body
+    assert "client_id=com.example.service" in body
+    assert "client_secret=" in body  # The JWT will be different each time
+
+    # Verify the token response
+    assert isinstance(token, OAuth2Token)
+    assert token["access_token"] == "new_mock_access_token"
+    assert token["refresh_token"] == "new_mock_refresh_token"
+    assert token["token_type"] == "Bearer"
+    assert token["expires_in"] == 3600
+    assert token["id_token"] == {"sub": "mock_id_token"}
+
+    # Verify the token was stored internally
+    assert client.oauth2_token is not None
+    assert client.oauth2_token == token
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_refresh_token_error():
+    # Mock the GET to Apple's .well-known/openid-configuration
+    respx.get("https://appleid.apple.com/.well-known/openid-configuration").mock(
+        return_value=Response(200, json=APPLE_CONFIG)
+    )
+
+    client = AppleOAuth2(
+        client_id="com.example.service",
+        team_id="ABCD1234EF",
+        key_id="ABC123DEFG",
+        private_key=TEST_PRIVATE_KEY,
+    )
+
+    # Mock an error response
+    error_response = {
+        "error": "invalid_grant",
+        "error_description": "The refresh token is invalid or expired",
+    }
+
+    # Mock the token endpoint to return an error
+    respx.post("https://appleid.apple.com/auth/token").mock(
+        return_value=Response(400, json=error_response)
+    )
+
+    # Test that the error is properly raised
+    with pytest.raises(RefreshTokenError) as exc:
+        await client.refresh_token("invalid_refresh_token")
+    assert exc.value.response is not None
+    assert exc.value.response.status_code == 400
+    assert exc.value.response.json() == error_response
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_refresh_token_malformed_response():
+    # Mock the GET to Apple's .well-known/openid-configuration
+    respx.get("https://appleid.apple.com/.well-known/openid-configuration").mock(
+        return_value=Response(200, json=APPLE_CONFIG)
+    )
+
+    client = AppleOAuth2(
+        client_id="com.example.service",
+        team_id="ABCD1234EF",
+        key_id="ABC123DEFG",
+        private_key=TEST_PRIVATE_KEY,
+    )
+
+    # Mock a malformed response (not JSON)
+    respx.post("https://appleid.apple.com/auth/token").mock(
+        return_value=Response(200, content="not json")
+    )
+
+    # Test that the error is properly raised
+    with pytest.raises(RefreshTokenError) as exc:
+        await client.refresh_token("refresh_token")
+    assert exc.value.response is not None
+    assert exc.value.response.status_code == 200
+    assert exc.value.response.content == b"not json"

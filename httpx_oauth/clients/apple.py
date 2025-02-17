@@ -6,7 +6,7 @@ from typing import Optional
 import jwt  # PyJWT or any library that can sign JWTs
 
 from httpx_oauth.clients.openid import OpenID
-from httpx_oauth.oauth2 import OAuth2Token
+from httpx_oauth.oauth2 import OAuth2Token, RefreshTokenError
 
 APPLE_OPENID_CONFIG = "https://appleid.apple.com/.well-known/openid-configuration"
 # The default OIDC scopes. Apple's docs generally require "openid" and "email".
@@ -145,6 +145,48 @@ class AppleOAuth2(OpenID):
 
         email = claims.get("email")
         return user_id, email
+
+    async def refresh_token(self, refresh_token: str) -> OAuth2Token:
+        """
+        Requests a new access token using a refresh token.
+
+        Args:
+            refresh_token: The refresh token.
+
+        Returns:
+            An access token response dictionary.
+
+        Raises:
+            RefreshTokenError: An error occurred while refreshing the token.
+
+        Examples:
+            ```py
+            access_token = await apple_client.refresh_token("REFRESH_TOKEN")
+            ```
+        """
+        async with self.get_httpx_client() as client:
+            data = {
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token,
+            }
+
+            request, auth = self.build_request(
+                client,
+                "POST",
+                "https://appleid.apple.com/auth/token",
+                auth_method=self.token_endpoint_auth_method,
+                data=data,
+            )
+
+            response = await self.send_request(
+                client, request, auth, exc_class=RefreshTokenError
+            )
+            data = self.get_json(response, exc_class=RefreshTokenError)
+            token = OAuth2Token(data)
+            self.oauth2_token = token
+            return token
 
     def _generate_apple_client_secret(
         self,
