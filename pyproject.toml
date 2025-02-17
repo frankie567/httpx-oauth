@@ -35,7 +35,6 @@ dependencies = [
     "pytest-asyncio",
     "respx",
     "fastapi",
-    "python-multipart",
 ]
 
 [tool.hatch.envs.default.scripts]
