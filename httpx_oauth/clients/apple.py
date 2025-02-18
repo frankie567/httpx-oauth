@@ -101,6 +101,7 @@ class AppleOAuth2(OpenID):
             openid_configuration_endpoint=APPLE_OPENID_CONFIG,
             name=name,
             base_scopes=base_scopes,
+            callback_method="POST",
         )
 
         self.oauth2_token = None

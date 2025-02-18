@@ -5,7 +5,6 @@ from fastapi import HTTPException
 from starlette import status
 from starlette.requests import Request
 
-from httpx_oauth.clients.apple import AppleOAuth2
 from httpx_oauth.oauth2 import BaseOAuth2, GetAccessTokenError, OAuth2Error, OAuth2Token
 
 
@@ -86,9 +85,9 @@ class OAuth2AuthorizeCallback:
         state: Optional[str] = None,
         error: Optional[str] = None,
     ) -> tuple[OAuth2Token, Optional[str]]:
-        if isinstance(self.client, AppleOAuth2) and request.method == "POST":
+        if self.client.callback_method == "POST" and request.method == "POST":
             form = await request.form()
-            # Overwrite query args with form values if present
+
             code = form.get("code") or code
             state = form.get("state") or state
             error = form.get("error") or error
