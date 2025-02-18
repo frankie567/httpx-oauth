@@ -1,9 +1,11 @@
 # File: tests/test_clients_apple.py
 
+import time
+
 import jwt
 import pytest
 import respx
-from httpx import Response
+from httpx import AsyncClient, Response
 
 from httpx_oauth.clients.apple import AppleOAuth2, AppleOAuthError
 from httpx_oauth.oauth2 import OAuth2Token, RefreshTokenError
@@ -318,3 +320,58 @@ async def test_refresh_token_malformed_response():
     assert exc.value.response is not None
     assert exc.value.response.status_code == 200
     assert exc.value.response.content == b"not json"
+
+
+@respx.mock
+def test_client_secret_regeneration():
+    # Mock the GET to Apple's .well-known/openid-configuration
+    respx.get("https://appleid.apple.com/.well-known/openid-configuration").mock(
+        return_value=Response(200, json=APPLE_CONFIG)
+    )
+
+    client = AppleOAuth2(
+        client_id="com.example.service",
+        team_id="ABCD1234EF",
+        key_id="ABC123DEFG",
+        private_key=TEST_PRIVATE_KEY,
+    )
+
+    # Create a mock HTTP client
+    mock_http_client = AsyncClient()
+
+    # Store the initial client secret and regeneration time
+    initial_client_secret = client.client_secret
+    initial_regen_time = client.regenerate_client_secret_at
+
+    # Simulate passage of time by setting regenerate_client_secret_at to the past
+    client.regenerate_client_secret_at = time.time() - 1
+
+    # Make a request which should trigger regeneration
+    client.build_request(mock_http_client, "GET", "https://example.com")
+
+    # Verify the client secret was regenerated
+    assert client.client_secret != initial_client_secret
+    assert client.regenerate_client_secret_at > initial_regen_time
+
+    # Store the second client secret
+    second_client_secret = client.client_secret
+    second_regen_time = client.regenerate_client_secret_at
+
+    # Make another request without expiring the token
+    client.build_request(mock_http_client, "GET", "https://example.com")
+
+    # Verify the client secret was not regenerated
+    assert client.client_secret == second_client_secret
+    assert client.regenerate_client_secret_at == second_regen_time
+
+
+def test_get_profile_not_implemented():
+    client = AppleOAuth2(
+        client_id="com.example.service",
+        team_id="ABCD1234EF",
+        key_id="ABC123DEFG",
+        private_key=TEST_PRIVATE_KEY,
+    )
+
+    with pytest.raises(NotImplementedError):
+        client.get_profile("dummy_token")

@@ -1,9 +1,9 @@
 # File: httpx_oauth/clients/apple.py
 
 import time
-from typing import Optional
+from typing import Any, Optional
 
-import jwt  # PyJWT or any library that can sign JWTs
+import jwt
 
 from httpx_oauth.clients.openid import OpenID
 from httpx_oauth.oauth2 import OAuth2Token, RefreshTokenError
@@ -48,7 +48,7 @@ class AppleOAuth2(OpenID):
         base_scopes: Optional[list[str]] = None,
         name: str = "apple",
         # Apple allows a client_secret (JWT) up to 6 months validity
-        token_ttl_seconds: int = 5 * 30 * 24 * 3600,  # ~5 months
+        client_secret_ttl_seconds: int = 5 * 30 * 24 * 3600,  # ~5 months
     ):
         """
         Args:
@@ -64,14 +64,25 @@ class AppleOAuth2(OpenID):
         if base_scopes is None:
             base_scopes = BASE_SCOPES
 
+        # Save the parameters for use when regenerating the client_secret JWT.
+        self._client_id = client_id
+        self._team_id = team_id
+        self._key_id = key_id
+        self._private_key = private_key
+        self._issuer = issuer
+        self._base_scopes = base_scopes
+        self._name = name
+        self._client_secret_ttl_seconds = client_secret_ttl_seconds
+
         # Generate a short-lived client_secret (JWT) signed with your Apple key.
+        self.regenerate_client_secret_at = time.time() + client_secret_ttl_seconds
         client_secret_jwt = self._generate_apple_client_secret(
             client_id=client_id,
             team_id=team_id,
             key_id=key_id,
             private_key=private_key,
             issuer=issuer,
-            token_lifetime=token_ttl_seconds,
+            token_lifetime=client_secret_ttl_seconds,
         )
 
         super().__init__(
@@ -95,6 +106,13 @@ class AppleOAuth2(OpenID):
         )
         return super_url
 
+    # When building a request, regenerate the client secret JWT if it is expired.
+    def build_request(self, client, method, url, *, auth_method=None, data=None):
+        self._regenerate_client_secret()
+        return super().build_request(
+            client, method, url, auth_method=auth_method, data=data
+        )
+
     async def get_access_token(
         self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
     ) -> OAuth2Token:
@@ -109,42 +127,6 @@ class AppleOAuth2(OpenID):
         self.oauth2_token = token
 
         return token
-
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
-        """
-        Returns the id and the email (if available) of the authenticated user
-        from the ID token.
-
-        Apple does not provide a userinfo endpoint, so we decode the ID token instead.
-        The ID token must have been saved during the initial token request.
-
-        Args:
-            token: The access token. Unused, but required by the OAuth2 client interface.
-
-        Returns:
-            A tuple with the id and the email of the authenticated user.
-
-        Raises:
-            httpx_oauth.exceptions.GetIdEmailError:
-                An error occurred while getting the id and email.
-            AppleOAuthError:
-                The ID token was missing or invalid.
-        """
-        if self.oauth2_token is None:
-            raise AppleOAuthError(AppleOAuthError.NO_ACCESS_TOKEN)
-
-        id_token = self.oauth2_token.get("id_token")
-        if not id_token:
-            raise AppleOAuthError(AppleOAuthError.NO_ID_TOKEN)
-
-        claims = jwt.decode(id_token, options={"verify_signature": False})
-
-        user_id = claims.get("sub")
-        if not user_id:
-            raise AppleOAuthError(AppleOAuthError.NO_SUBJECT)
-
-        email = claims.get("email")
-        return user_id, email
 
     async def refresh_token(self, refresh_token: str) -> OAuth2Token:
         """
@@ -188,6 +170,63 @@ class AppleOAuth2(OpenID):
             self.oauth2_token = token
             return token
 
+    # Apple does not have a userinfo endpoint, so we raise a NotImplementedError.
+    def get_profile(self, token: str) -> dict[str, Any]:
+        raise NotImplementedError()
+
+    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+        """
+        Returns the id and the email (if available) of the authenticated user
+        from the ID token.
+
+        Apple does not provide a userinfo endpoint, so we decode the ID token instead.
+        The ID token must have been saved during the initial token request.
+
+        Args:
+            token: The access token. Unused, but required by the OAuth2 client interface.
+
+        Returns:
+            A tuple with the id and the email of the authenticated user.
+
+        Raises:
+            httpx_oauth.exceptions.GetIdEmailError:
+                An error occurred while getting the id and email.
+            AppleOAuthError:
+                The ID token was missing or invalid.
+        """
+        if self.oauth2_token is None:
+            raise AppleOAuthError(AppleOAuthError.NO_ACCESS_TOKEN)
+
+        id_token = self.oauth2_token.get("id_token")
+        if not id_token:
+            raise AppleOAuthError(AppleOAuthError.NO_ID_TOKEN)
+
+        # We don't verify the signature here. This comes as part of the access token
+        # in the OAuth redirect response, where we use the OAuth2 state to verify the request.
+        claims = jwt.decode(id_token, options={"verify_signature": False})
+
+        user_id = claims.get("sub")
+        if not user_id:
+            raise AppleOAuthError(AppleOAuthError.NO_SUBJECT)
+
+        email = claims.get("email")
+        return user_id, email
+
+    # Regenerate the client secret JWT if it is expired.
+    def _regenerate_client_secret(self):
+        if time.time() > self.regenerate_client_secret_at:
+            self.regenerate_client_secret_at = (
+                time.time() + self._client_secret_ttl_seconds
+            )
+            self.client_secret = self._generate_apple_client_secret(
+                client_id=self._client_id,
+                team_id=self._team_id,
+                key_id=self._key_id,
+                private_key=self._private_key,
+                issuer=self._issuer,
+                token_lifetime=self._client_secret_ttl_seconds,
+            )
+
     def _generate_apple_client_secret(
         self,
         client_id: str,
@@ -208,7 +247,6 @@ class AppleOAuth2(OpenID):
         now = int(time.time())
         headers = {
             "kid": key_id,
-            # Apple docs typically say "ES256" for the .p8 keys from Apple.
             "alg": "ES256",
         }
         payload = {
@@ -219,8 +257,6 @@ class AppleOAuth2(OpenID):
             "sub": client_id,
         }
 
-        # Using PyJWT (pip install PyJWT).
-        # If your Apple private key is RSA, you'd set algorithm="RS256".
         token = jwt.encode(
             payload,
             private_key,
