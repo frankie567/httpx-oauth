@@ -87,6 +87,10 @@ OAuth2ClientAuthMethod = Literal["client_secret_basic", "client_secret_post"]
 """Supported OAuth2 client authentication methods."""
 
 
+OAuth2CallbackMethod = Literal["GET", "POST"]
+"""Supported OAuth2 callback methods. RFC 6749 section 4.1.2. does not specify GET, but almost all providers use GET. Apple uses POST."""
+
+
 def _check_valid_auth_method(auth_method: str) -> None:
     if auth_method not in get_args(OAuth2ClientAuthMethod):
         raise NotSupportedAuthMethodError(auth_method)
@@ -146,6 +150,7 @@ class BaseOAuth2(Generic[T]):
     token_endpoint_auth_method: OAuth2ClientAuthMethod
     revocation_endpoint_auth_method: Optional[OAuth2ClientAuthMethod]
     request_headers: dict[str, str]
+    callback_method: OAuth2CallbackMethod
 
     def __init__(
         self,
@@ -160,6 +165,7 @@ class BaseOAuth2(Generic[T]):
         base_scopes: Optional[list[str]] = None,
         token_endpoint_auth_method: OAuth2ClientAuthMethod = "client_secret_post",
         revocation_endpoint_auth_method: Optional[OAuth2ClientAuthMethod] = None,
+        callback_method: OAuth2CallbackMethod = "GET",
     ):
         """
         Args:
@@ -176,6 +182,7 @@ class BaseOAuth2(Generic[T]):
             token_endpoint_auth_method: The authentication method to be used in the token endpoint.
             revocation_endpoint_auth_method: The authentication method to be used in the revocation endpoint.
                 If the revocation endpoint is not supported, set it to `None`.
+            callback_method: The HTTP method that the OAuth server uses in the authorization callback.
 
         Raises:
             NotSupportedAuthMethodError:
@@ -202,6 +209,7 @@ class BaseOAuth2(Generic[T]):
         self.base_scopes = base_scopes
         self.token_endpoint_auth_method = token_endpoint_auth_method
         self.revocation_endpoint_auth_method = revocation_endpoint_auth_method
+        self.callback_method = callback_method
 
         self.request_headers = {
             "Accept": "application/json",

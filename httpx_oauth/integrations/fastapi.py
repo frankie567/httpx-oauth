@@ -32,6 +32,8 @@ class OAuth2AuthorizeCallback:
     """
     Dependency callable to handle the authorization callback. It reads the query parameters and returns the access token and the state.
 
+    Some providers, such as Apple, use form post instead of query params, this dependency will work with both.
+
     Examples:
         ```py
         from fastapi import FastAPI, Depends
@@ -52,12 +54,14 @@ class OAuth2AuthorizeCallback:
     client: BaseOAuth2
     route_name: Optional[str]
     redirect_url: Optional[str]
+    include_raw_data: bool
 
     def __init__(
         self,
         client: BaseOAuth2,
         route_name: Optional[str] = None,
         redirect_url: Optional[str] = None,
+        include_raw_data: bool = False,
     ):
         """
         Args:
@@ -71,6 +75,7 @@ class OAuth2AuthorizeCallback:
         self.client = client
         self.route_name = route_name
         self.redirect_url = redirect_url
+        self.include_raw_data = include_raw_data
 
     async def __call__(
         self,
@@ -80,6 +85,13 @@ class OAuth2AuthorizeCallback:
         state: Optional[str] = None,
         error: Optional[str] = None,
     ) -> tuple[OAuth2Token, Optional[str]]:
+        if self.client.callback_method == "POST" and request.method == "POST":
+            form = await request.form()
+
+            code = form.get("code") or code
+            state = form.get("state") or state
+            error = form.get("error") or error
+
         if code is None or error is not None:
             raise OAuth2AuthorizeCallbackError(
                 status_code=status.HTTP_400_BAD_REQUEST,

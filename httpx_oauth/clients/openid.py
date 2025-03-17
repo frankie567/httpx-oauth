@@ -3,7 +3,12 @@ from typing import Any, Optional, get_args
 import httpx
 
 from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
-from httpx_oauth.oauth2 import BaseOAuth2, OAuth2ClientAuthMethod, OAuth2RequestError
+from httpx_oauth.oauth2 import (
+    BaseOAuth2,
+    OAuth2CallbackMethod,
+    OAuth2ClientAuthMethod,
+    OAuth2RequestError,
+)
 
 BASE_SCOPES = ["openid", "email"]
 
@@ -28,6 +33,7 @@ class OpenID(BaseOAuth2[dict[str, Any]]):
         openid_configuration_endpoint: str,
         name: str = "openid",
         base_scopes: Optional[list[str]] = BASE_SCOPES,
+        callback_method: OAuth2CallbackMethod = "GET",
     ):
         """
         Args:
@@ -36,6 +42,7 @@ class OpenID(BaseOAuth2[dict[str, Any]]):
             openid_configuration_endpoint: OpenID Connect discovery endpoint URL.
             name: A unique name for the OAuth2 client.
             base_scopes: The base scopes to be used in the authorization URL.
+            callback_method: The HTTP method that the OAuth server uses in the authorization callback.
 
         Raises:
             OpenIDConfigurationError:
@@ -98,6 +105,7 @@ class OpenID(BaseOAuth2[dict[str, Any]]):
                 if revocation_endpoint
                 else None
             ),
+            callback_method=callback_method,
         )
 
     async def get_profile(self, token: str) -> dict[str, Any]:
