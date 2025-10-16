@@ -1,0 +1,19 @@
+{
+    "id": 42,
+    "username": "arthur",
+    "email": "arthur@camelot.bt",
+    "name": "Arthur Pendragon",
+    "state": "active",
+    "avatar_url": "https://gitlab.com/uploads/-/system/user/avatar/42/avatar.png",
+    "web_url": "https://gitlab.com/arthur",
+    "created_at": "2020-12-10T22:39:30.000Z",
+    "bio": "King of the Britons",
+    "location": "Camelot",
+    "public_email": "arthur@camelot.bt",
+    "skype": "",
+    "linkedin": "",
+    "twitter": "",
+    "website_url": "",
+    "organization": "Knights of the Round Table"
+}
+
