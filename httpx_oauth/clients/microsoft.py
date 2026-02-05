@@ -1,4 +1,4 @@
-from typing import Any, Optional, cast
+from typing import Any, Literal, Optional, cast
 
 from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
@@ -53,14 +53,25 @@ class MicrosoftGraphOAuth2(BaseOAuth2[dict[str, Any]]):
             token_endpoint_auth_method="client_secret_post",
         )
 
-    def get_authorization_url(
-        self, redirect_uri, state=None, scope=None, extras_params=None
-    ):
-        if extras_params is None:
-            extras_params = {}
+    async def get_authorization_url(
+        self,
+        redirect_uri: str,
+        state: Optional[str] = None,
+        scope: Optional[list[str]] = None,
+        code_challenge: Optional[str] = None,
+        code_challenge_method: Optional[Literal["plain", "S256"]] = None,
+        extras_params: Optional[dict] = None,
+    ) -> str:
+        extras_params = {} if extras_params is None else extras_params
         extras_params["response_mode"] = "query"
-        return super().get_authorization_url(
-            redirect_uri, state=state, scope=scope, extras_params=extras_params
+
+        return await super().get_authorization_url(
+            redirect_uri,
+            state,
+            scope,
+            code_challenge=code_challenge,
+            code_challenge_method=code_challenge_method,
+            extras_params=extras_params,
         )
 
     async def get_profile(self, token: str) -> dict[str, Any]:
