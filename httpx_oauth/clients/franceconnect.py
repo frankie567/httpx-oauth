@@ -69,7 +69,12 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
             _extras_params["nonce"] = secrets.token_urlsafe()
 
         return await super().get_authorization_url(
-            redirect_uri, state, scope, extras_params=_extras_params
+            redirect_uri,
+            state,
+            scope,
+            code_challenge=code_challenge,
+            code_challenge_method=code_challenge_method,
+            extras_params=_extras_params,
         )
 
     async def get_profile(self, token: str) -> dict[str, Any]:
