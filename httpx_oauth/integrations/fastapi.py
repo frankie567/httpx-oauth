@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any
 
 import httpx
 from fastapi import HTTPException
@@ -21,8 +21,8 @@ class OAuth2AuthorizeCallbackError(HTTPException, OAuth2Error):
         self,
         status_code: int,
         detail: Any = None,
-        headers: Union[dict[str, str], None] = None,
-        response: Union[httpx.Response, None] = None,
+        headers: dict[str, str] | None = None,
+        response: httpx.Response | None = None,
     ) -> None:
         self.response = response
         super().__init__(status_code, detail, headers)
@@ -50,14 +50,14 @@ class OAuth2AuthorizeCallback:
     """
 
     client: BaseOAuth2
-    route_name: Optional[str]
-    redirect_url: Optional[str]
+    route_name: str | None
+    redirect_url: str | None
 
     def __init__(
         self,
         client: BaseOAuth2,
-        route_name: Optional[str] = None,
-        redirect_url: Optional[str] = None,
+        route_name: str | None = None,
+        redirect_url: str | None = None,
     ):
         """
         Args:
@@ -75,11 +75,11 @@ class OAuth2AuthorizeCallback:
     async def __call__(
         self,
         request: Request,
-        code: Optional[str] = None,
-        code_verifier: Optional[str] = None,
-        state: Optional[str] = None,
-        error: Optional[str] = None,
-    ) -> tuple[OAuth2Token, Optional[str]]:
+        code: str | None = None,
+        code_verifier: str | None = None,
+        state: str | None = None,
+        error: str | None = None,
+    ) -> tuple[OAuth2Token, str | None]:
         if code is None or error is not None:
             raise OAuth2AuthorizeCallbackError(
                 status_code=status.HTTP_400_BAD_REQUEST,

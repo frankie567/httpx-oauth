@@ -1,5 +1,5 @@
 import json
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
@@ -29,7 +29,7 @@ class KakaoOAuth2(BaseOAuth2[dict[str, Any]]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[list[str]] = BASE_SCOPES,
+        scopes: list[str] | None = BASE_SCOPES,
         name: str = "kakao",
     ):
         """
@@ -65,7 +65,7 @@ class KakaoOAuth2(BaseOAuth2[dict[str, Any]]):
 
             return cast(dict[str, Any], response.json())
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, str | None]:
         try:
             profile = await self.get_profile(token)
         except GetProfileError as e:

@@ -1,4 +1,4 @@
-from typing import Any, Optional, get_args
+from typing import Any, get_args
 
 import httpx
 
@@ -27,7 +27,7 @@ class OpenID(BaseOAuth2[dict[str, Any]]):
         client_secret: str,
         openid_configuration_endpoint: str,
         name: str = "openid",
-        base_scopes: Optional[list[str]] = BASE_SCOPES,
+        base_scopes: list[str] | None = BASE_SCOPES,
     ):
         """
         Args:
@@ -112,7 +112,7 @@ class OpenID(BaseOAuth2[dict[str, Any]]):
 
             return response.json()
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, str | None]:
         try:
             profile = await self.get_profile(token)
         except GetProfileError as e:

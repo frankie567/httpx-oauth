@@ -30,7 +30,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-      - content.code.copy
+    - content.code.copy
 
 extra_css:
   - assets/stylesheets/extra.css
@@ -40,41 +40,41 @@ repo_url: https://github.com/frankie567/httpx-oauth
 edit_uri: ""
 
 markdown_extensions:
-    - toc:
-        permalink: true
-    - pymdownx.highlight:
-        anchor_linenums: true
-    - pymdownx.tasklist:
-        custom_checkbox: true
-    - pymdownx.inlinehilite
-    - pymdownx.snippets
-    - pymdownx.superfences
-    - admonition
-    - attr_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - attr_list
 
 plugins:
-    - search
-    - autorefs
-    - mkdocstrings:
-        handlers:
-            python:
-                import:
-                    - https://docs.python.org/3.9/objects.inv
-                    - https://fastapi.tiangolo.com/objects.inv
-                options:
-                    docstring_style: google
-                    extensions:
-                      - griffe_inherited_docstrings
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          import:
+            - https://docs.python.org/3.10/objects.inv
+            - https://fastapi.tiangolo.com/objects.inv
+          options:
+            docstring_style: google
+            extensions:
+              - griffe_inherited_docstrings
 
 watch:
-    - docs
-    - httpx_oauth
+  - docs
+  - httpx_oauth
 
 nav:
   - About: index.md
   - Usage: usage.md
   - Integrations:
-    - fastapi.md
+      - fastapi.md
   - Reference:
       - httpx_oauth.clients: reference/httpx_oauth.clients.md
       - httpx_oauth.oauth2: reference/httpx_oauth.oauth2.md

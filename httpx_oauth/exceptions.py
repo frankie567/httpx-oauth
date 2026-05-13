@@ -1,4 +1,3 @@
-from typing import Union
 
 import httpx
 
@@ -19,7 +18,7 @@ class GetProfileError(HTTPXOAuthError):
     def __init__(
         self,
         message: str = "Error while retrieving user profile.",
-        response: Union[httpx.Response, None] = None,
+        response: httpx.Response | None = None,
     ) -> None:
         self.response = response
         super().__init__(message)
@@ -31,6 +30,6 @@ class GetIdEmailError(GetProfileError):
     def __init__(
         self,
         message: str = "Error while retrieving id and email.",
-        response: Union[httpx.Response, None] = None,
+        response: httpx.Response | None = None,
     ) -> None:
         super().__init__(message, response)

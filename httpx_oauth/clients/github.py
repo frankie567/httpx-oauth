@@ -1,4 +1,4 @@
-from typing import Any, Optional, TypedDict, cast
+from typing import Any, TypedDict, cast
 
 import httpx
 
@@ -36,7 +36,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[list[str]] = BASE_SCOPES,
+        scopes: list[str] | None = BASE_SCOPES,
         name: str = "github",
     ):
         """
@@ -151,7 +151,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
 
             return cast(list[dict[str, Any]], response.json())
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, str | None]:
         """
         Returns the id and the email (if available) of the authenticated user
         from the API provider.

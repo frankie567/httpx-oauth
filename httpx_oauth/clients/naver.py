@@ -1,4 +1,4 @@
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2, RevokeTokenError
@@ -32,7 +32,7 @@ class NaverOAuth2(BaseOAuth2[dict[str, Any]]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[list[str]] = BASE_SCOPES,
+        scopes: list[str] | None = BASE_SCOPES,
         name: str = "naver",
     ):
         """
@@ -56,7 +56,7 @@ class NaverOAuth2(BaseOAuth2[dict[str, Any]]):
         )
 
     async def revoke_token(
-        self, token: str, token_type_hint: Optional[str] = None
+        self, token: str, token_type_hint: str | None = None
     ) -> None:
         assert self.revoke_token_endpoint is not None
         async with self.get_httpx_client() as client:
@@ -93,7 +93,7 @@ class NaverOAuth2(BaseOAuth2[dict[str, Any]]):
             json = response.json()
             return cast(dict[str, Any], json["response"])
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, str | None]:
         try:
             profile = await self.get_profile(token)
         except GetProfileError as e:

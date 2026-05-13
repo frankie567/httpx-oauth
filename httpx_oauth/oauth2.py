@@ -6,9 +6,7 @@ from typing import (
     Any,
     Generic,
     Literal,
-    Optional,
     TypeVar,
-    Union,
     cast,
     get_args,
 )
@@ -65,7 +63,7 @@ class OAuth2RequestError(OAuth2Error):
     """
 
     def __init__(
-        self, message: str, response: Union[httpx.Response, None] = None
+        self, message: str, response: httpx.Response | None = None
     ) -> None:
         self.response = response
         super().__init__(message)
@@ -140,11 +138,11 @@ class BaseOAuth2(Generic[T]):
     client_secret: str
     authorize_endpoint: str
     access_token_endpoint: str
-    refresh_token_endpoint: Optional[str]
-    revoke_token_endpoint: Optional[str]
-    base_scopes: Optional[list[str]]
+    refresh_token_endpoint: str | None
+    revoke_token_endpoint: str | None
+    base_scopes: list[str] | None
     token_endpoint_auth_method: OAuth2ClientAuthMethod
-    revocation_endpoint_auth_method: Optional[OAuth2ClientAuthMethod]
+    revocation_endpoint_auth_method: OAuth2ClientAuthMethod | None
     request_headers: dict[str, str]
 
     def __init__(
@@ -153,13 +151,13 @@ class BaseOAuth2(Generic[T]):
         client_secret: str,
         authorize_endpoint: str,
         access_token_endpoint: str,
-        refresh_token_endpoint: Optional[str] = None,
-        revoke_token_endpoint: Optional[str] = None,
+        refresh_token_endpoint: str | None = None,
+        revoke_token_endpoint: str | None = None,
         *,
         name: str = "oauth2",
-        base_scopes: Optional[list[str]] = None,
+        base_scopes: list[str] | None = None,
         token_endpoint_auth_method: OAuth2ClientAuthMethod = "client_secret_post",
-        revocation_endpoint_auth_method: Optional[OAuth2ClientAuthMethod] = None,
+        revocation_endpoint_auth_method: OAuth2ClientAuthMethod | None = None,
     ):
         """
         Args:
@@ -210,11 +208,11 @@ class BaseOAuth2(Generic[T]):
     async def get_authorization_url(
         self,
         redirect_uri: str,
-        state: Optional[str] = None,
-        scope: Optional[list[str]] = None,
-        code_challenge: Optional[str] = None,
-        code_challenge_method: Optional[Literal["plain", "S256"]] = None,
-        extras_params: Optional[T] = None,
+        state: str | None = None,
+        scope: list[str] | None = None,
+        code_challenge: str | None = None,
+        code_challenge_method: Literal["plain", "S256"] | None = None,
+        extras_params: T | None = None,
     ) -> str:
         """
         Builds the authorization URL
@@ -269,7 +267,7 @@ class BaseOAuth2(Generic[T]):
         return f"{self.authorize_endpoint}?{urlencode(params)}"
 
     async def get_access_token(
-        self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
+        self, code: str, redirect_uri: str, code_verifier: str | None = None
     ) -> OAuth2Token:
         """
         Requests an access token using the authorization code obtained
@@ -355,7 +353,7 @@ class BaseOAuth2(Generic[T]):
             return OAuth2Token(data)
 
     async def revoke_token(
-        self, token: str, token_type_hint: Optional[str] = None
+        self, token: str, token_type_hint: str | None = None
     ) -> None:
         """
         Revokes a token.
@@ -417,7 +415,7 @@ class BaseOAuth2(Generic[T]):
         """
         raise NotImplementedError()
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, str | None]:
         """
         Returns the id and the email (if available) of the authenticated user
         from the API provider.
@@ -453,9 +451,9 @@ class BaseOAuth2(Generic[T]):
         method: str,
         url: str,
         *,
-        auth_method: Union[OAuth2ClientAuthMethod, None] = None,
-        data: Union[Mapping[str, Any], None] = None,
-    ) -> tuple[httpx.Request, Union[httpx.Auth, None]]:
+        auth_method: OAuth2ClientAuthMethod | None = None,
+        data: Mapping[str, Any] | None = None,
+    ) -> tuple[httpx.Request, httpx.Auth | None]:
         if data is not None:
             data = {
                 **data,
@@ -486,7 +484,7 @@ class BaseOAuth2(Generic[T]):
         self,
         client: httpx.AsyncClient,
         request: httpx.Request,
-        auth: Union[httpx.Auth, None],
+        auth: httpx.Auth | None,
         *,
         exc_class: type[OAuth2RequestError],
     ) -> httpx.Response:

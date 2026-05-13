@@ -1,4 +1,4 @@
-from typing import Any, Literal, Optional, TypedDict, cast
+from typing import Any, Literal, TypedDict, cast
 
 from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2
@@ -21,7 +21,7 @@ LOGO_SVG = """
 
 
 class ShopifyOAuth2AuthorizeParams(TypedDict, total=False):
-    access_mode: Optional[Literal["per-user"]]
+    access_mode: Literal["per-user"] | None
 
 
 class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
@@ -40,7 +40,7 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
         client_id: str,
         client_secret: str,
         shop: str,
-        scopes: Optional[list[str]] = BASE_SCOPES,
+        scopes: list[str] | None = BASE_SCOPES,
         api_version: str = "2023-04",
         name: str = "shopify",
     ):
@@ -102,7 +102,7 @@ class ShopifyOAuth2(BaseOAuth2[ShopifyOAuth2AuthorizeParams]):
 
             return cast(dict[str, Any], response.json())
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, str | None]:
         """
         Returns the id and the email (if available) of the authenticated user
         from the API provider.

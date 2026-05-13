@@ -1,4 +1,4 @@
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 import httpx
 
@@ -38,7 +38,7 @@ class RedditOAuth2(BaseOAuth2[dict[str, Any]]):
         self,
         client_id: str,
         client_secret: str,
-        scopes: Optional[list[str]] = None,
+        scopes: list[str] | None = None,
         name: str = "reddit",
     ):
         """
@@ -65,7 +65,7 @@ class RedditOAuth2(BaseOAuth2[dict[str, Any]]):
         )
 
     async def get_access_token(
-        self, code: str, redirect_uri: str, code_verifier: Optional[str] = None
+        self, code: str, redirect_uri: str, code_verifier: str | None = None
     ) -> OAuth2Token:
         oauth2_token = await super().get_access_token(code, redirect_uri, code_verifier)
 
@@ -86,7 +86,7 @@ class RedditOAuth2(BaseOAuth2[dict[str, Any]]):
 
             return cast(dict[str, Any], response.json())
 
-    async def get_id_email(self, token: str) -> tuple[str, Optional[str]]:
+    async def get_id_email(self, token: str) -> tuple[str, str | None]:
         try:
             profile = await self.get_profile(token)
         except GetProfileError as e:
