@@ -26,4 +26,4 @@ docs-build:
     uv run mkdocs build
 
 version bump:
-    uvx hatch version {bump}
+    uvx hatch version {{bump}}
