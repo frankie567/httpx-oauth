@@ -26,14 +26,14 @@ class OAuth2Error(HTTPXOAuthError):
 class NotSupportedAuthMethodError(OAuth2Error):
     """Error raised when an unsupported authentication method is used."""
 
-    def __init__(self, auth_method: str):
+    def __init__(self, auth_method: str) -> None:
         super().__init__(f"Auth method {auth_method} is not supported.")
 
 
 class MissingRevokeTokenAuthMethodError(OAuth2Error):
     """Error raised when the revocation endpoint auth method is missing."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("Missing revocation endpoint auth method.")
 
 
@@ -43,7 +43,7 @@ class RefreshTokenNotSupportedError(OAuth2Error):
     on a provider that does not support it.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("Refresh token is not supported by this provider.")
 
 
@@ -53,7 +53,7 @@ class RevokeTokenNotSupportedError(OAuth2Error):
     on a provider that does not support it.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("Revoke token is not supported by this provider.")
 
 
@@ -62,9 +62,7 @@ class OAuth2RequestError(OAuth2Error):
     Base exception class for OAuth2 request errors.
     """
 
-    def __init__(
-        self, message: str, response: httpx.Response | None = None
-    ) -> None:
+    def __init__(self, message: str, response: httpx.Response | None = None) -> None:
         self.response = response
         super().__init__(message)
 

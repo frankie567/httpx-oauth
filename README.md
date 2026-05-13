@@ -68,37 +68,55 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
-## Development
-
 ### Setup environment
 
-We use [Hatch](https://hatch.pypa.io/latest/install/) to manage the development environment and production build. Ensure it's installed on your system.
+We use [uv](https://docs.astral.sh/uv/) to manage the development environment and production build, and [just](https://github.com/casey/just) to manage command shortcuts. Ensure they are installed on your system.
 
 ### Run unit tests
 
 You can run all the tests with:
 
 ```bash
-hatch run test
+just test
 ```
 
 ### Format the code
 
-Execute the following command to apply `isort` and `black` formatting:
+Execute the following command to apply linting and check typing:
 
 ```bash
-hatch run lint
+just lint
 ```
 
-### Serve the documentation
+### Publish a new version
 
-You can serve the documentation locally with the following command:
+You can bump the version, create a commit and associated tag with one command:
 
 ```bash
-hatch run docs
+just version patch
 ```
 
-The documentation will be available on [http://localhost:8000](http://localhost:8000).
+```bash
+just version minor
+```
+
+```bash
+just version major
+```
+
+Your default Git text editor will open so you can add information about the release.
+
+When you push the tag on GitHub, the workflow will automatically publish it on PyPi and a GitHub release will be created as draft.
+
+## Serve the documentation
+
+You can serve the Mkdocs documentation with:
+
+```bash
+just docs-serve
+```
+
+It'll automatically watch for changes in your code.
 
 ## License
 

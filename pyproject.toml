@@ -1,68 +1,7 @@
-[tool.ruff]
-target-version = "py310"
-
-[tool.ruff.lint]
-extend-select = ["I", "TRY", "UP"]
-ignore = ["E501"]
-
-[tool.pytest.ini_options]
-addopts = "--cov=httpx_oauth/ --cov-report=term-missing --cov-fail-under=100"
-asyncio_mode = "strict"
-asyncio_default_fixture_loop_scope = "function"
-
-[tool.hatch]
-
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[tool.hatch.version]
-source = "regex_commit"
-commit_extra_args = ["-e"]
-path = "httpx_oauth/__init__.py"
-
-[tool.hatch.envs.default]
-installer = "uv"
-dependencies = [
-    "pytest",
-    "ruff",
-    "mkdocs",
-    "mkdocs-material",
-    "mypy",
-    "pytest-cov",
-    "pytest-mock",
-    "mkdocstrings[python]",
-    "griffe-inherited-docstrings",
-    "pytest-asyncio",
-    "respx",
-    "fastapi",
-]
-
-[tool.hatch.envs.default.scripts]
-test = "pytest"
-test-cov-xml = "pytest --cov-report=xml"
-lint = [
-  "ruff format .",
-  "ruff check --fix .",
-  "mypy httpx_oauth/",
-]
-lint-check = [
-  "ruff format --check .",
-  "ruff check .",
-  "mypy httpx_oauth/",
-]
-docs = "mkdocs serve"
-
-[tool.hatch.build.targets.sdist]
-support-legacy = true  # Create setup.py
-
-[build-system]
-requires = ["hatchling", "hatch-regex-commit"]
-build-backend = "hatchling.build"
-
 [project]
 name = "httpx-oauth"
 authors = [
-  { name = "François Voron", email = "fvoron@gmail.com" }
+  { name = "Francois Voron", email = "fvoron@gmail.com" }
 ]
 description = "Async OAuth client using HTTPX"
 readme = "README.md"
@@ -87,3 +26,54 @@ dependencies = [
 [project.urls]
 Documentation = "https://frankie567.github.io/httpx-oauth/"
 Source = "https://github.com/frankie567/httpx-oauth"
+
+[build-system]
+requires = ["hatchling", "hatch-regex-commit"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "regex_commit"
+commit_extra_args = ["-e"]
+path = "httpx_oauth/__init__.py"
+
+[dependency-groups]
+dev = [
+    "mypy",
+    "ruff",
+    "pytest",
+    "pytest-cov",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "griffe-inherited-docstrings",
+    "pytest-asyncio",
+    "respx",
+    "fastapi",
+    "pytest-mock",
+]
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+extend-select = ["I", "TRY", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=httpx_oauth/ --cov-report=term-missing --cov-fail-under=100"
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.mypy]
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+strict_equality = true
+disallow_untyped_defs = true
+
+[tool.basedpyright]
+typeCheckingMode = "off"

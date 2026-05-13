@@ -49,13 +49,13 @@ class OAuth2AuthorizeCallback:
         ```
     """
 
-    client: BaseOAuth2
+    client: BaseOAuth2[Any]
     route_name: str | None
     redirect_url: str | None
 
     def __init__(
         self,
-        client: BaseOAuth2,
+        client: BaseOAuth2[Any],
         route_name: str | None = None,
         redirect_url: str | None = None,
     ):

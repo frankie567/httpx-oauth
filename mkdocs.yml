@@ -1,6 +1,10 @@
 site_name: HTTPX OAuth
 site_description: Async OAuth client using HTTPX
 
+repo_url: https://github.com/frankie567/httpx-oauth
+repo_name: frankie567/httpx-oauth
+edit_uri: ""
+
 theme:
   name: material
   icon:
@@ -35,10 +39,6 @@ theme:
 extra_css:
   - assets/stylesheets/extra.css
 
-repo_name: frankie567/httpx-oauth
-repo_url: https://github.com/frankie567/httpx-oauth
-edit_uri: ""
-
 markdown_extensions:
   - toc:
       permalink: true
@@ -58,7 +58,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          import:
+          inventories:
             - https://docs.python.org/3.10/objects.inv
             - https://fastapi.tiangolo.com/objects.inv
           options:

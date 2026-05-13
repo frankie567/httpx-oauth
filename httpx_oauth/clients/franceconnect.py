@@ -38,8 +38,8 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
         client_secret: str,
         integration: bool = False,
         scopes: list[str] | None = BASE_SCOPES,
-        name="franceconnect",
-    ):
+        name: str = "franceconnect",
+    ) -> None:
         endpoints = ENDPOINTS["integration"] if integration else ENDPOINTS["production"]
         super().__init__(
             client_id,

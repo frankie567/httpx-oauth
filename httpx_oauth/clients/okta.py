@@ -1,4 +1,3 @@
-
 from httpx_oauth.clients.openid import OpenID
 
 BASE_SCOPES = ["openid", "email"]
