@@ -62,7 +62,7 @@ class FranceConnectOAuth2(BaseOAuth2[FranceConnectOAuth2AuthorizeParams]):
         code_challenge_method: Literal["plain", "S256"] | None = None,
         extras_params: FranceConnectOAuth2AuthorizeParams | None = None,
     ) -> str:
-        _extras_params = extras_params or {}
+        _extras_params: FranceConnectOAuth2AuthorizeParams = extras_params or {}
 
         # nonce is required for FranceConnect
         if _extras_params.get("nonce") is None:
