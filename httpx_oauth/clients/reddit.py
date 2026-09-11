@@ -1,6 +1,6 @@
 from typing import Any, cast
 
-import httpx
+import httpx2
 
 from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import (
@@ -81,7 +81,7 @@ class RedditOAuth2(BaseOAuth2[dict[str, Any]]):
                 headers={**self.request_headers, "Authorization": f"Bearer {token}"},
             )
 
-            if response.status_code != httpx.codes.OK:
+            if response.status_code != httpx2.codes.OK:
                 raise GetProfileError(response=response)
 
             return cast(dict[str, Any], response.json())

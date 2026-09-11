@@ -1,6 +1,6 @@
 from typing import Any, TypedDict, cast
 
-import httpx
+import httpx2
 
 from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2Token, RefreshTokenError
@@ -107,7 +107,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             return OAuth2Token(data)
 
     async def get_profile(self, token: str) -> dict[str, Any]:
-        async with httpx.AsyncClient(
+        async with httpx2.AsyncClient(
             headers={**self.request_headers, "Authorization": f"token {token}"}
         ) as client:
             response = await client.get(PROFILE_ENDPOINT)
@@ -141,7 +141,7 @@ class GitHubOAuth2(BaseOAuth2[GitHubOAuth2AuthorizeParams]):
             emails = await client.get_emails("TOKEN")
             ```
         """
-        async with httpx.AsyncClient(
+        async with httpx2.AsyncClient(
             headers={**self.request_headers, "Authorization": f"token {token}"}
         ) as client:
             response = await client.get(EMAILS_ENDPOINT)

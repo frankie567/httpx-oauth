@@ -12,15 +12,13 @@ from typing import (
 )
 from urllib.parse import urlencode
 
-import httpx
+import httpx2
 
 from httpx_oauth.exceptions import HTTPXOAuthError
 
 
 class OAuth2Error(HTTPXOAuthError):
     """Base exception class for OAuth2 client errors."""
-
-    pass
 
 
 class NotSupportedAuthMethodError(OAuth2Error):
@@ -62,7 +60,7 @@ class OAuth2RequestError(OAuth2Error):
     Base exception class for OAuth2 request errors.
     """
 
-    def __init__(self, message: str, response: httpx.Response | None = None) -> None:
+    def __init__(self, message: str, response: httpx2.Response | None = None) -> None:
         self.response = response
         super().__init__(message)
 
@@ -387,8 +385,6 @@ class BaseOAuth2(Generic[T]):
             )
             await self.send_request(client, request, auth, exc_class=RevokeTokenError)
 
-        return None
-
     async def get_profile(self, token: str) -> dict[str, Any]:
         """
         Returns the profile of the authenticated user
@@ -440,18 +436,18 @@ class BaseOAuth2(Generic[T]):
 
     def get_httpx_client(
         self,
-    ) -> contextlib.AbstractAsyncContextManager[httpx.AsyncClient]:
-        return httpx.AsyncClient()
+    ) -> contextlib.AbstractAsyncContextManager[httpx2.AsyncClient]:
+        return httpx2.AsyncClient()
 
     def build_request(
         self,
-        client: httpx.AsyncClient,
+        client: httpx2.AsyncClient,
         method: str,
         url: str,
         *,
         auth_method: OAuth2ClientAuthMethod | None = None,
         data: Mapping[str, Any] | None = None,
-    ) -> tuple[httpx.Request, httpx.Auth | None]:
+    ) -> tuple[httpx2.Request, httpx2.Auth | None]:
         if data is not None:
             data = {
                 **data,
@@ -474,30 +470,30 @@ class BaseOAuth2(Generic[T]):
 
         auth = None
         if auth_method == "client_secret_basic":
-            auth = httpx.BasicAuth(self.client_id, self.client_secret)
+            auth = httpx2.BasicAuth(self.client_id, self.client_secret)
 
         return request, auth
 
     async def send_request(
         self,
-        client: httpx.AsyncClient,
-        request: httpx.Request,
-        auth: httpx.Auth | None,
+        client: httpx2.AsyncClient,
+        request: httpx2.Request,
+        auth: httpx2.Auth | None,
         *,
         exc_class: type[OAuth2RequestError],
-    ) -> httpx.Response:
+    ) -> httpx2.Response:
         try:
             response = await client.send(request, auth=auth)
             response.raise_for_status()
-        except httpx.HTTPStatusError as e:
+        except httpx2.HTTPStatusError as e:
             raise exc_class(str(e), e.response) from e
-        except httpx.HTTPError as e:
+        except httpx2.HTTPError as e:
             raise exc_class(str(e)) from e
 
         return response
 
     def get_json(
-        self, response: httpx.Response, *, exc_class: type[OAuth2RequestError]
+        self, response: httpx2.Response, *, exc_class: type[OAuth2RequestError]
     ) -> dict[str, Any]:
         try:
             return cast(dict[str, Any], response.json())

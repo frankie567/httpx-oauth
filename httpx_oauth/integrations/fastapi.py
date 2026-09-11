@@ -1,6 +1,6 @@
 from typing import Any
 
-import httpx
+import httpx2
 from fastapi import HTTPException
 from starlette import status
 from starlette.requests import Request
@@ -22,7 +22,7 @@ class OAuth2AuthorizeCallbackError(HTTPException, OAuth2Error):
         status_code: int,
         detail: Any = None,
         headers: dict[str, str] | None = None,
-        response: httpx.Response | None = None,
+        response: httpx2.Response | None = None,
     ) -> None:
         self.response = response
         super().__init__(status_code, detail, headers)
