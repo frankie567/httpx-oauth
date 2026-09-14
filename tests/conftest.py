@@ -4,7 +4,7 @@ import os
 import sys
 from typing import Any
 
-import httpx
+import httpx2
 import pytest
 
 
@@ -22,7 +22,7 @@ def load_mock():
 def get_respx_call_args():
     async def _get_respx_call_args(
         mock,
-    ) -> tuple[httpx.URL, httpx.Headers, str]:
+    ) -> tuple[httpx2.URL, httpx2.Headers, str]:
         request_call = mock.calls[0][0]
 
         content = ""

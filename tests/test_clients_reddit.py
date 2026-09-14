@@ -3,12 +3,12 @@ import re
 from collections.abc import Callable
 from urllib.parse import parse_qsl
 
-import httpx
+import httpx2
 import pytest
 import respx
 
-import httpx_oauth.clients.reddit as reddit
 import httpx_oauth.oauth2 as oauth
+from httpx_oauth.clients import reddit
 from httpx_oauth.exceptions import GetIdEmailError
 
 FAKE_CLIENT_ID = "fake-client-id-1234567"
@@ -21,10 +21,10 @@ FAKE_REFRESH_TOKEN = "12345678-fake-refresh-token-12345678901"
 
 client = reddit.RedditOAuth2(FAKE_CLIENT_ID, FAKE_CLIENT_SECRET)
 
-response_unauthorized = httpx.Response(
-    httpx.codes.UNAUTHORIZED,
+response_unauthorized = httpx2.Response(
+    httpx2.codes.UNAUTHORIZED,
     json={
-        "error": httpx.codes.UNAUTHORIZED,
+        "error": httpx2.codes.UNAUTHORIZED,
         "message": "Unauthorized",
     },
 )
@@ -34,8 +34,10 @@ def b64encode(s: str) -> str:
     return base64.b64encode(s.encode("utf-8")).decode("utf-8")
 
 
-def require_auth(response: httpx.Response) -> Callable[[httpx.Request], httpx.Response]:
-    def require_auth_inner(request: httpx.Request) -> httpx.Response:
+def require_auth(
+    response: httpx2.Response,
+) -> Callable[[httpx2.Request], httpx2.Response]:
+    def require_auth_inner(request: httpx2.Request) -> httpx2.Response:
         expected_auth_header = (
             f"Basic {b64encode(f'{FAKE_CLIENT_ID}:{FAKE_CLIENT_SECRET}')}"
         )
@@ -59,8 +61,8 @@ def test_reddit_defaults():
 
 @pytest.mark.asyncio
 class TestRedditGetAccessToken:
-    response_success = httpx.Response(
-        httpx.codes.OK,
+    response_success = httpx2.Response(
+        httpx2.codes.OK,
         json={
             "access_token": FAKE_ACCESS_TOKEN,
             "token_type": "bearer",
@@ -69,8 +71,8 @@ class TestRedditGetAccessToken:
         },
     )
 
-    response_error = httpx.Response(
-        httpx.codes.OK,  # sic, Reddit returns 200 upon errors on this endpoint
+    response_error = httpx2.Response(
+        httpx2.codes.OK,  # sic, Reddit returns 200 upon errors on this endpoint
         json={
             "error": "invalid_grant",
         },
@@ -91,7 +93,7 @@ class TestRedditGetAccessToken:
                 FAKE_AUTHORIZATION_CODE, FAKE_REDIRECT_URI
             )
 
-        assert isinstance(excinfo.value.response, httpx.Response)
+        assert isinstance(excinfo.value.response, httpx2.Response)
 
     @respx.mock
     async def test_success(self, get_respx_call_args):
@@ -131,7 +133,7 @@ class TestRedditRevokeToken:
     @respx.mock
     async def test_bad_auth(self):
         respx.post(re.compile(f"^{reddit.REVOKE_ENDPOINT}")).mock(
-            side_effect=require_auth(httpx.Response(httpx.codes.OK)),
+            side_effect=require_auth(httpx2.Response(httpx2.codes.OK)),
         )
 
         invalid_client = reddit.RedditOAuth2(
@@ -144,7 +146,7 @@ class TestRedditRevokeToken:
     @respx.mock
     async def test_success(self, get_respx_call_args):
         request = respx.post(re.compile(f"^{reddit.REVOKE_ENDPOINT}")).mock(
-            side_effect=require_auth(httpx.Response(httpx.codes.OK)),
+            side_effect=require_auth(httpx2.Response(httpx2.codes.OK)),
         )
 
         await client.revoke_token(FAKE_REFRESH_TOKEN, "refresh_token")
@@ -161,8 +163,8 @@ class TestRedditGetIdEmail:
     @respx.mock
     async def test_success(self, load_mock, get_respx_call_args):
         request = respx.get(re.compile(f"^{reddit.IDENTITY_ENDPOINT}")).mock(
-            return_value=httpx.Response(
-                httpx.codes.OK, json=load_mock("reddit_success_identity")
+            return_value=httpx2.Response(
+                httpx2.codes.OK, json=load_mock("reddit_success_identity")
             )
         )
 
@@ -177,10 +179,12 @@ class TestRedditGetIdEmail:
     async def test_error(self):
         respx.get(re.compile(f"^{reddit.IDENTITY_ENDPOINT}")).mock(
             # Reddit often returns HTML in case of a bad request
-            return_value=httpx.Response(httpx.codes.BAD_REQUEST, html="<!doctype html>")
+            return_value=httpx2.Response(
+                httpx2.codes.BAD_REQUEST, html="<!doctype html>"
+            )
         )
 
         with pytest.raises(GetIdEmailError) as excinfo:
             await client.get_id_email(FAKE_ACCESS_TOKEN)
 
-        assert isinstance(excinfo.value.response, httpx.Response)
+        assert isinstance(excinfo.value.response, httpx2.Response)

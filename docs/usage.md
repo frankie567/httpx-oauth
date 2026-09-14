@@ -75,18 +75,18 @@ Out-of-the box, we support lot of popular providers like [Google][httpx_oauth.cl
 
 ## Customize HTTPX client
 
-By default, requests are made using [`httpx.AsyncClient`](https://www.python-httpx.org/api/#asyncclient) with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do this by overloading the `get_httpx_client` method.
+By default, requests are made using [`httpx2.AsyncClient`](https://pydantic.dev/docs/httpx2/api/api/#asyncclient) with default parameters. If you wish to customize settings, like setting timeout or proxies, you can do this by overloading the `get_httpx_client` method.
 
 ```py
 from typing import AsyncContextManager
 
-import httpx
+import httpx2
 from httpx_oauth.oauth2 import OAuth2
 
 
 class OAuth2CustomTimeout(OAuth2):
-    def get_httpx_client(self) -> AsyncContextManager[httpx.AsyncClient]:
-        return httpx.AsyncClient(timeout=10.0)  # Use a default 10s timeout everywhere.
+    def get_httpx_client(self) -> AsyncContextManager[httpx2.AsyncClient]:
+        return httpx2.AsyncClient(timeout=10.0)  # Use a default 10s timeout everywhere.
 
 
 client = OAuth2CustomTimeout(

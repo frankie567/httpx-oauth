@@ -1,6 +1,6 @@
 from typing import Any, get_args
 
-import httpx
+import httpx2
 
 from httpx_oauth.exceptions import GetIdEmailError, GetProfileError
 from httpx_oauth.oauth2 import BaseOAuth2, OAuth2ClientAuthMethod, OAuth2RequestError
@@ -48,13 +48,13 @@ class OpenID(BaseOAuth2[dict[str, Any]]):
             client = OpenID("CLIENT_ID", "CLIENT_SECRET", "https://example.fief.dev/.well-known/openid-configuration")
             ``
         """
-        with httpx.Client() as client:
+        with httpx2.Client() as client:
             try:
                 response = client.get(openid_configuration_endpoint)
                 response.raise_for_status()
-            except httpx.HTTPStatusError as e:
+            except httpx2.HTTPStatusError as e:
                 raise OpenIDConfigurationError(str(e), e.response) from e
-            except httpx.HTTPError as e:
+            except httpx2.HTTPError as e:
                 raise OpenIDConfigurationError(str(e)) from e
             self.openid_configuration: dict[str, Any] = response.json()
 

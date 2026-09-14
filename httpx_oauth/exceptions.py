@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 
 
 class HTTPXOAuthError(Exception):
@@ -17,7 +17,7 @@ class GetProfileError(HTTPXOAuthError):
     def __init__(
         self,
         message: str = "Error while retrieving user profile.",
-        response: httpx.Response | None = None,
+        response: httpx2.Response | None = None,
     ) -> None:
         self.response = response
         super().__init__(message)
@@ -29,6 +29,6 @@ class GetIdEmailError(GetProfileError):
     def __init__(
         self,
         message: str = "Error while retrieving id and email.",
-        response: httpx.Response | None = None,
+        response: httpx2.Response | None = None,
     ) -> None:
         super().__init__(message, response)
