@@ -48,16 +48,25 @@ def client_refresh(request: pytest.FixtureRequest) -> OAuth2:
     )
 
 
-@pytest.fixture(scope="module", params=["client_secret_basic", "client_secret_post"])
+@pytest.fixture(
+    scope="module",
+    params=[
+        ("client_secret_basic", "client_secret_basic"),
+        ("client_secret_basic", "client_secret_post"),
+        ("client_secret_post", "client_secret_basic"),
+        ("client_secret_post", "client_secret_post"),
+    ],
+)
 def client_revoke(request: pytest.FixtureRequest) -> OAuth2:
+    token_auth_method, revocation_auth_method = request.param
     return OAuth2(
         CLIENT_ID,
         CLIENT_SECRET,
         AUTHORIZE_ENDPOINT,
         ACCESS_TOKEN_ENDPOINT,
         revoke_token_endpoint=REVOKE_TOKEN_ENDPOINT,
-        token_endpoint_auth_method=request.param,
-        revocation_endpoint_auth_method=request.param,
+        token_endpoint_auth_method=token_auth_method,
+        revocation_endpoint_auth_method=revocation_auth_method,
     )
 
 
@@ -289,24 +298,32 @@ class TestRevokeToken:
             await client.revoke_token("TOKEN")
 
     @respx.mock
+    @pytest.mark.parametrize("token_type_hint", [None, "TOKEN_TYPE_HINT"])
     async def test_revoke_token(
-        self, load_mock, get_respx_call_args, client_revoke: OAuth2
+        self, load_mock, get_respx_call_args, client_revoke: OAuth2, token_type_hint
     ):
         request = respx.post(client_revoke.revoke_token_endpoint).mock(
             return_value=Response(200)
         )
-        await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
+        await client_revoke.revoke_token("TOKEN", token_type_hint)
 
         url, headers, content = await get_respx_call_args(request)
+        assert url == client_revoke.revoke_token_endpoint
         assert headers["Content-Type"] == "application/x-www-form-urlencoded"
         assert headers["Accept"] == "application/json"
         assert "token=TOKEN" in content
-        assert "token_type_hint=TOKEN_TYPE_HINT" in content
+        if token_type_hint is None:
+            assert "token_type_hint" not in content
+        else:
+            assert "token_type_hint=TOKEN_TYPE_HINT" in content
 
         if client_revoke.revocation_endpoint_auth_method == "client_secret_basic":
             assert "Authorization" in headers
             assert headers["Authorization"].startswith("Basic ")
+            assert "client_id" not in content
+            assert "client_secret" not in content
         elif client_revoke.revocation_endpoint_auth_method == "client_secret_post":
+            assert "Authorization" not in headers
             assert f"client_id={CLIENT_ID}" in content
             assert f"client_secret={CLIENT_SECRET}" in content
 

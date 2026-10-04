@@ -382,7 +382,7 @@ class BaseOAuth2(Generic[T]):
                 client,
                 "POST",
                 self.revoke_token_endpoint,
-                auth_method=self.token_endpoint_auth_method,
+                auth_method=self.revocation_endpoint_auth_method,
                 data=data,
             )
             await self.send_request(client, request, auth, exc_class=RevokeTokenError)
