@@ -492,7 +492,7 @@ class BaseOAuth2(Generic[T]):
         except httpx.HTTPStatusError as e:
             raise exc_class(str(e), e.response) from e
         except httpx.HTTPError as e:
-            raise exc_class(str(e)) from e
+            raise exc_class(str(e) or type(e).__name__) from e
 
         return response
 

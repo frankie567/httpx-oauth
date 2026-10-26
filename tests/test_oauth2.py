@@ -1,8 +1,18 @@
+import asyncio
 import time
 
 import pytest
 import respx
-from httpx import HTTPError, Response
+from httpx import (
+    ConnectError,
+    ConnectTimeout,
+    HTTPError,
+    HTTPStatusError,
+    PoolTimeout,
+    ReadTimeout,
+    Response,
+    WriteTimeout,
+)
 
 from httpx_oauth.oauth2 import (
     GetAccessTokenError,
@@ -23,6 +33,16 @@ ACCESS_TOKEN_ENDPOINT = "https://www.camelot.bt/access-token"
 REDIRECT_URI = "https://www.tintagel.bt/oauth-callback"
 REFRESH_TOKEN_ENDPOINT = "https://www.camelot.bt/refresh"
 REVOKE_TOKEN_ENDPOINT = "https://www.camelot.bt/revoke"
+
+HTTP_ERROR_CASES = [
+    (HTTPError, "ERROR", "ERROR"),
+    (ReadTimeout, "Read timed out", "Read timed out"),
+    (ConnectTimeout, "", "ConnectTimeout"),
+    (ReadTimeout, "", "ReadTimeout"),
+    (WriteTimeout, "", "WriteTimeout"),
+    (PoolTimeout, "", "PoolTimeout"),
+    (ConnectError, "", "ConnectError"),
+]
 
 
 @pytest.fixture(scope="module", params=["client_secret_basic", "client_secret_post"])
@@ -196,14 +216,31 @@ class TestGetAccessToken:
         with pytest.raises(GetAccessTokenError) as excinfo:
             await client.get_access_token("CODE", REDIRECT_URI)
         assert isinstance(excinfo.value.response, Response)
+        assert isinstance(excinfo.value.__cause__, HTTPStatusError)
+        assert excinfo.value.response is excinfo.value.__cause__.response
+        assert str(excinfo.value) == str(excinfo.value.__cause__)
 
+    @pytest.mark.parametrize("error_type,message,expected_message", HTTP_ERROR_CASES)
     @respx.mock
-    async def test_get_access_token_http_error(self, client: OAuth2):
-        respx.post(client.access_token_endpoint).mock(side_effect=HTTPError("ERROR"))
+    async def test_get_access_token_http_error(
+        self, client: OAuth2, error_type, message, expected_message
+    ):
+        error = error_type(message)
+        respx.post(client.access_token_endpoint).mock(side_effect=error)
 
         with pytest.raises(GetAccessTokenError) as excinfo:
             await client.get_access_token("CODE", REDIRECT_URI)
         assert excinfo.value.response is None
+        assert str(excinfo.value) == expected_message
+        assert excinfo.value.__cause__ is error
+
+    async def test_get_access_token_cancelled(self, client: OAuth2, mocker):
+        error = asyncio.CancelledError()
+        mocker.patch("httpx.AsyncClient.send", side_effect=error)
+
+        with pytest.raises(asyncio.CancelledError) as excinfo:
+            await client.get_access_token("CODE", REDIRECT_URI)
+        assert excinfo.value is error
 
     @respx.mock
     async def test_get_access_token_json_error(self, client: OAuth2):
@@ -259,16 +296,23 @@ class TestRefreshToken:
         with pytest.raises(RefreshTokenError) as excinfo:
             await client_refresh.refresh_token("REFRESH_TOKEN")
         assert isinstance(excinfo.value.response, Response)
+        assert isinstance(excinfo.value.__cause__, HTTPStatusError)
+        assert excinfo.value.response is excinfo.value.__cause__.response
+        assert str(excinfo.value) == str(excinfo.value.__cause__)
 
+    @pytest.mark.parametrize("error_type,message,expected_message", HTTP_ERROR_CASES)
     @respx.mock
-    async def test_refresh_token_http_error(self, client_refresh: OAuth2):
-        respx.post(client_refresh.refresh_token_endpoint).mock(
-            side_effect=HTTPError("ERROR")
-        )
+    async def test_refresh_token_http_error(
+        self, client_refresh: OAuth2, error_type, message, expected_message
+    ):
+        error = error_type(message)
+        respx.post(client_refresh.refresh_token_endpoint).mock(side_effect=error)
 
         with pytest.raises(RefreshTokenError) as excinfo:
             await client_refresh.refresh_token("REFRESH_TOKEN")
         assert excinfo.value.response is None
+        assert str(excinfo.value) == expected_message
+        assert excinfo.value.__cause__ is error
 
     @respx.mock
     async def test_refresh_token_json_error(self, client_refresh: OAuth2):
@@ -319,16 +363,23 @@ class TestRevokeToken:
         with pytest.raises(RevokeTokenError) as excinfo:
             await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
         assert isinstance(excinfo.value.response, Response)
+        assert isinstance(excinfo.value.__cause__, HTTPStatusError)
+        assert excinfo.value.response is excinfo.value.__cause__.response
+        assert str(excinfo.value) == str(excinfo.value.__cause__)
 
+    @pytest.mark.parametrize("error_type,message,expected_message", HTTP_ERROR_CASES)
     @respx.mock
-    async def test_revoke_token_http_error(self, client_revoke: OAuth2):
-        respx.post(client_revoke.revoke_token_endpoint).mock(
-            side_effect=HTTPError("ERROR")
-        )
+    async def test_revoke_token_http_error(
+        self, client_revoke: OAuth2, error_type, message, expected_message
+    ):
+        error = error_type(message)
+        respx.post(client_revoke.revoke_token_endpoint).mock(side_effect=error)
 
         with pytest.raises(RevokeTokenError) as excinfo:
             await client_revoke.revoke_token("TOKEN", "TOKEN_TYPE_HINT")
         assert excinfo.value.response is None
+        assert str(excinfo.value) == expected_message
+        assert excinfo.value.__cause__ is error
 
 
 @pytest.mark.asyncio
